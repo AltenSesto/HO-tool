@@ -1,0 +1,107 @@
+import React from 'react';
+
+import CytoscapeComponent from 'react-cytoscapejs';
+import cytoscape from 'cytoscape';
+import popper from 'cytoscape-popper';
+
+import SystemObject from '../../entities/system-description/system-object';
+import Element from '../../entities/graph/element';
+import style from '../../entities/graph/style';
+import { Core } from 'cytoscape';
+import NodeActions from '../graph/node-actions';
+
+cytoscape.use(popper);
+
+interface State {
+    elements: Element[];
+    cy: Core | null;
+}
+
+interface Props {
+    objects: SystemObject[];
+    objectDeleted: (id: string) => void;
+    objectUpdated: (updatedObject: SystemObject) => void;
+}
+
+export default class Graph extends React.Component<Props, State> {
+
+    constructor(props: Props) {
+        super(props);
+        this.initCytoscape = this.initCytoscape.bind(this);
+        this.updateNode = this.updateNode.bind(this);
+        this.state = {
+            elements: [],
+            cy: null
+        };
+    }
+
+    static getDerivedStateFromProps(props: Props, state: State): State {
+        const newObjects = props.objects.filter(o => !state.elements.some(e => o.id === e.data.id && !e.data.updateRequired));
+        const deletedObjects = state.elements.filter(e => props.objects.every(o => e.data.id !== o.id) || e.data.updateRequired);
+        const elements = state.elements
+            .filter(e => deletedObjects.indexOf(e) === -1)
+            .concat(newObjects.map((o) => Graph.createNode(o)));
+        return {
+            elements: elements,
+            cy: state.cy
+        };
+    }
+
+    render() {
+        // if cytoscape is not initialized yet it is impossible to render elements, so first init empty cytoscape 
+        const elements = this.state.cy ? this.state.elements : [];
+
+        const nodeActions = elements.map(e =>
+            <NodeActions
+                key={e.data.id}
+                cy={this.state.cy as Core}
+                object={e.data.object as SystemObject}
+                nodeUpdated={this.updateNode}
+                nodeDeleted={this.props.objectDeleted}>
+            </NodeActions>);
+
+        return (
+            <React.Fragment>
+                {nodeActions}
+                <CytoscapeComponent elements={elements} style={{ width: '1200px', height: '1200px', zIndex: 10 }} stylesheet={style} cy={this.initCytoscape} />
+            </React.Fragment>
+        );
+    }
+
+    private updateNode(updatedObject: SystemObject) {
+        const element = this.state.elements.find(e => e.data.id === updatedObject.id);
+        if (element) {
+            element.data.updateRequired = true; // not mutating state as rerender is not needed now
+        }
+        this.props.objectUpdated(updatedObject);
+    } 
+
+    private initCytoscape(cy: Core) {
+        // this method must run only once
+        if (this.state.cy) {
+            return;
+        }
+
+        cy.zoom(1.1); // hack to fix blurring
+
+        this.setState({
+            cy: cy,
+            elements: this.state.elements
+        });
+    }
+
+    private static createNode(object: SystemObject): Element {
+        return {
+            group: 'nodes',
+            data: {
+                id: object.id,
+                label: `<<${object.type.toString()}>>\n\n${object.name}`,
+                object: object
+            },
+            position: {
+                x: object.posX, y: object.posY
+            },
+            classes: [object.type.toString()]
+        };
+    }
+};
