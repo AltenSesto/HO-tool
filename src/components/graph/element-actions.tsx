@@ -1,10 +1,11 @@
 import React from 'react';
-import { Core, Singular, EventObject } from 'cytoscape';
+import { Core, Singular, EventObject, NodeSingular } from 'cytoscape';
+import Popper from 'popper.js';
 
 interface Props {
     id: string,
     cy: Core,
-    popperInitialized: (popperObj: any, ele: Singular) => void,
+    popperInitialized?: (popperObj: any, ele: Singular) => void,
     elementDeleted: (id: string) => void
 }
 
@@ -14,8 +15,9 @@ export default class ElementActions extends React.Component<Props> {
     private readonly EVENT_ADD = 'add';
     private readonly EVENT_POSITION = 'position';
 
-    private ele: Singular | null = null;
-    private popperObj: any = null;
+    private node: NodeSingular | null = null;
+    private node1: NodeSingular | null = null;
+    private popperObj: Popper | null = null;
     private root: HTMLElement | null = null;
 
     constructor(props: Props) {
@@ -39,7 +41,8 @@ export default class ElementActions extends React.Component<Props> {
     }
 
     componentWillUnmount() {
-        this.ele && this.ele.off(this.EVENT_POSITION, undefined, this.updatePopperPosition);
+        this.node && this.node.off(this.EVENT_POSITION, undefined, this.updatePopperPosition);
+        this.node1 && this.node1.off(this.EVENT_POSITION, undefined, this.updatePopperPosition);
         this.props.cy.off(this.CY_EVENTS, undefined, this.updatePopperPosition);
         this.props.cy.off(this.EVENT_ADD, undefined, this.initPopper);
     }
@@ -49,25 +52,34 @@ export default class ElementActions extends React.Component<Props> {
     }
 
     private initPopper(event: EventObject) {
-        const ele = event.target.element();
-        if (ele.data()['id'] !== this.props.id) {
+        const ele: Singular = event.target.element();
+        if (ele.data().id !== this.props.id) {
             // some other component's event
             return;
         }
 
-        this.ele = ele;
+        if (ele.isEdge()) {
+            const nodes = ele.connectedNodes();
+            this.node = nodes[0];
+            this.node1 = nodes[1];
+        } else if (ele.isNode()) {
+            this.node = ele;
+        } else {
+            throw new Error('Unable to initialize popper - unknown node type');
+        }
 
-        this.popperObj = ele.popper({
+        this.popperObj = (ele as any).popper({
             content: () => this.root,
             popper: {
                 placement: 'top'
             }
         });
-        this.ele && this.ele.on(this.EVENT_POSITION, this.updatePopperPosition);
+        this.node && this.node.on(this.EVENT_POSITION, this.updatePopperPosition);
+        this.node1 && this.node1.on(this.EVENT_POSITION, this.updatePopperPosition);
         this.props.cy.on(this.CY_EVENTS, this.updatePopperPosition);
         this.props.cy.off(this.EVENT_ADD, undefined, this.initPopper);
 
-        this.props.popperInitialized(this.popperObj, this.ele as Singular);
+        this.props.popperInitialized && this.props.popperInitialized(this.popperObj, ele);
     }
 
     private updatePopperPosition() {

@@ -16,13 +16,7 @@ export default class SystemDescription extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            entities: [
-                {id: 'node1', type:ObjectTypes.kind, name:'node1', posX: 100, posY: 100},
-                {id: 'link', source:'node2', target:'node1'},
-                {id: 'node2', type:ObjectTypes.role, name:'node2', posX: 200, posY: 200},
-                {id: 'link1', source:'node2', target:'node3'},
-                {id: 'node3', type:ObjectTypes.role, name:'node3', posX: 300, posY: 200},
-            ]
+            entities: []
         };
         this.addObject = this.addObject.bind(this);
         this.updateObject = this.updateObject.bind(this);

@@ -10,6 +10,7 @@ import style from '../../entities/graph/style';
 import { Core } from 'cytoscape';
 import NodeActions from '../graph/node-actions';
 import { GraphEntity, isSystemObject, isConnection } from '../../entities/graph/graph-entity';
+import ElementActions from '../graph/element-actions';
 
 cytoscape.use(popper);
 
@@ -52,20 +53,28 @@ export default class Graph extends React.Component<Props, State> {
         // if cytoscape is not initialized yet it is impossible to render elements, so first init empty cytoscape 
         const elements = this.state.cy ? this.state.elements : [];
 
-        const nodeActions = elements
-            .filter(e => e.group === 'nodes')
-            .map(e =>
-            <NodeActions
-                key={e.data.id}
-                cy={this.state.cy as Core}
-                object={e.data.object as SystemObject}
-                nodeUpdated={this.updateNode}
-                nodeDeleted={this.props.entitiesDeleted}>
-            </NodeActions>);
+        const actions = elements.map(e => {
+                if (e.group === 'nodes') {
+                    return <NodeActions
+                        key={e.data.id}
+                        cy={this.state.cy as Core}
+                        object={e.data.object as SystemObject}
+                        nodeUpdated={this.updateNode}
+                        nodeDeleted={this.props.entitiesDeleted}>
+                    </NodeActions>
+                } else {
+                    return <ElementActions
+                        key={e.data.id}
+                        id={e.data.id}
+                        cy={this.state.cy as Core}
+                        elementDeleted={(id) => this.props.entitiesDeleted([id])}>
+                    </ElementActions>
+                }
+            });
 
         return (
             <React.Fragment>
-                {nodeActions}
+                {actions}
                 <CytoscapeComponent elements={elements} style={{ width: '1200px', height: '1200px', zIndex: 10 }} stylesheet={style} cy={this.initCytoscape} />
             </React.Fragment>
         );
@@ -110,7 +119,7 @@ export default class Graph extends React.Component<Props, State> {
         }
         if (isConnection(entity)) {
             return {
-                group: "edges", 
+                group: "edges",
                 data: {
                     id: entity.id,
                     source: entity.source,
