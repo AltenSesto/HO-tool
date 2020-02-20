@@ -9,6 +9,7 @@ import Element from '../../entities/graph/element';
 import style from '../../entities/graph/style';
 import { Core } from 'cytoscape';
 import NodeActions from '../graph/node-actions';
+import { GraphEntity, isSystemObject, isConnection } from '../../entities/graph/graph-entity';
 
 cytoscape.use(popper);
 
@@ -18,8 +19,8 @@ interface State {
 }
 
 interface Props {
-    objects: SystemObject[];
-    objectDeleted: (id: string) => void;
+    entities: GraphEntity[];
+    entitiesDeleted: (ids: string[]) => void;
     objectUpdated: (updatedObject: SystemObject) => void;
 }
 
@@ -36,11 +37,11 @@ export default class Graph extends React.Component<Props, State> {
     }
 
     static getDerivedStateFromProps(props: Props, state: State): State {
-        const newObjects = props.objects.filter(o => !state.elements.some(e => o.id === e.data.id && !e.data.updateRequired));
-        const deletedObjects = state.elements.filter(e => props.objects.every(o => e.data.id !== o.id) || e.data.updateRequired);
+        const newEntities = props.entities.filter(o => !state.elements.some(e => o.id === e.data.id && !e.data.updateRequired));
+        const deletedEntities = state.elements.filter(e => props.entities.every(o => e.data.id !== o.id) || e.data.updateRequired);
         const elements = state.elements
-            .filter(e => deletedObjects.indexOf(e) === -1)
-            .concat(newObjects.map((o) => Graph.createNode(o)));
+            .filter(e => deletedEntities.indexOf(e) === -1)
+            .concat(newEntities.map((o) => Graph.createElement(o)));
         return {
             elements: elements,
             cy: state.cy
@@ -51,13 +52,15 @@ export default class Graph extends React.Component<Props, State> {
         // if cytoscape is not initialized yet it is impossible to render elements, so first init empty cytoscape 
         const elements = this.state.cy ? this.state.elements : [];
 
-        const nodeActions = elements.map(e =>
+        const nodeActions = elements
+            .filter(e => e.group === 'nodes')
+            .map(e =>
             <NodeActions
                 key={e.data.id}
                 cy={this.state.cy as Core}
                 object={e.data.object as SystemObject}
                 nodeUpdated={this.updateNode}
-                nodeDeleted={this.props.objectDeleted}>
+                nodeDeleted={this.props.entitiesDeleted}>
             </NodeActions>);
 
         return (
@@ -74,7 +77,7 @@ export default class Graph extends React.Component<Props, State> {
             element.data.updateRequired = true; // not mutating state as rerender is not needed now
         }
         this.props.objectUpdated(updatedObject);
-    } 
+    }
 
     private initCytoscape(cy: Core) {
         // this method must run only once
@@ -90,18 +93,32 @@ export default class Graph extends React.Component<Props, State> {
         });
     }
 
-    private static createNode(object: SystemObject): Element {
-        return {
-            group: 'nodes',
-            data: {
-                id: object.id,
-                label: `<<${object.type.toString()}>>\n\n${object.name}`,
-                object: object
-            },
-            position: {
-                x: object.posX, y: object.posY
-            },
-            classes: [object.type.toString()]
-        };
+    private static createElement(entity: GraphEntity): Element {
+        if (isSystemObject(entity)) {
+            return {
+                group: 'nodes',
+                data: {
+                    id: entity.id,
+                    label: `<<${entity.type.toString()}>>\n\n${entity.name}`,
+                    object: entity
+                },
+                position: {
+                    x: entity.posX, y: entity.posY
+                },
+                classes: [entity.type.toString()]
+            };
+        }
+        if (isConnection(entity)) {
+            return {
+                group: "edges", 
+                data: {
+                    id: entity.id,
+                    source: entity.source,
+                    target: entity.target
+                },
+                pannable: true
+            }
+        }
+        throw new Error(`Unknown entity type. ${entity}`);
     }
 };
