@@ -20,6 +20,7 @@ interface State {
     elements: Element[];
     cy: Core | null;
     connectionCreatingSource: ObjectConnections | null;
+    isConnectionTargetValid: boolean;
 }
 
 interface Props {
@@ -29,18 +30,31 @@ interface Props {
     connectionCreated: (connection: Connection) => void
 }
 
+enum ConnectionTargetOptions {
+    NotValid,
+    Valid,
+    SwapEnds
+}
+
 export default class Graph extends React.Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
+        
         this.initCytoscape = this.initCytoscape.bind(this);
         this.updateNode = this.updateNode.bind(this);
         this.startCreatingConnection = this.startCreatingConnection.bind(this);
         this.nodeClicked = this.nodeClicked.bind(this);
+        this.graphClicked = this.graphClicked.bind(this);
+        this.validateConnectionTarget = this.validateConnectionTarget.bind(this);
+        this.nodeMouseEntered = this.nodeMouseEntered.bind(this);
+        this.nodeMouseLeft = this.nodeMouseLeft.bind(this);
+        
         this.state = {
             elements: [],
             cy: null,
-            connectionCreatingSource: null
+            connectionCreatingSource: null,
+            isConnectionTargetValid: false
         };
     }
 
@@ -50,11 +64,7 @@ export default class Graph extends React.Component<Props, State> {
         const elements = state.elements
             .filter(e => deletedEntities.indexOf(e) === -1)
             .concat(newEntities.map((o) => Graph.createElement(o)));
-        return {
-            elements: elements,
-            cy: state.cy,
-            connectionCreatingSource: state.connectionCreatingSource
-        };
+        return {...state, ...{elements: elements}};
     }
 
     render() {
@@ -71,6 +81,8 @@ export default class Graph extends React.Component<Props, State> {
                         connectionCreateStarted={this.startCreatingConnection}
                         nodeUpdated={this.updateNode}
                         nodeDeleted={this.props.entitiesDeleted}
+                        onMouseOver={this.nodeMouseEntered}
+                        onMouseOut={this.nodeMouseLeft}
                         onClick={this.nodeClicked}>
                     </NodeActions>
                 } else {
@@ -84,39 +96,83 @@ export default class Graph extends React.Component<Props, State> {
                 }
             });
 
+        let cursorStyle = 'default';
+        if (this.state.connectionCreatingSource) {
+            if (this.state.isConnectionTargetValid) {
+                cursorStyle = 'pointer';
+            } else {
+                cursorStyle = 'not-allowed';
+            }
+        }
+
         return (
             <React.Fragment>
                 {actions}
-                <CytoscapeComponent elements={elements} style={{ width: '1200px', height: '1200px', zIndex: 10 }} stylesheet={style} cy={this.initCytoscape} />
+                <CytoscapeComponent 
+                    elements={elements}
+                    style={{ width: '1200px', height: '1200px', zIndex: 10, cursor: cursorStyle }}
+                    stylesheet={style}
+                    cy={this.initCytoscape} />
             </React.Fragment>
         );
     }
 
-    private nodeClicked(target: SystemObject) {
-        if (!this.state.connectionCreatingSource) {
-            return;
+    private nodeMouseEntered(target: SystemObject) {
+        if (this.state.connectionCreatingSource) {
+            const connectionOptions = this.validateConnectionTarget(target);
+            const isTargetValid = connectionOptions === ConnectionTargetOptions.Valid || connectionOptions === ConnectionTargetOptions.SwapEnds;
+            this.setState({...this.state, ...{isConnectionTargetValid: isTargetValid}});
         }
-        if (this.state.connectionCreatingSource.connections.some(e => e.target === target.id)) {
-            this.setState({...this.state, ...{connectionCreatingSource: null}});
-            return;
+    }
+
+    private nodeMouseLeft() {
+        if (this.state.connectionCreatingSource) {
+            this.setState({...this.state, ...{isConnectionTargetValid: false}});
+        }
+    }
+
+    private graphClicked() {
+        this.setState({...this.state, ...{connectionCreatingSource: null}});
+    }
+
+    private validateConnectionTarget(target: SystemObject): ConnectionTargetOptions {
+        if (!this.state.connectionCreatingSource || this.state.connectionCreatingSource.connections.some(e => e.target === target.id)) {
+            return ConnectionTargetOptions.NotValid;
         }
 
-        let connectionSource;
-        let connectionTarget;
         if ((this.state.connectionCreatingSource.object.type === ObjectTypes.kind && target.type === ObjectTypes.role) ||
             (this.state.connectionCreatingSource.object.type === ObjectTypes.role && target.type === ObjectTypes.relator)) {
-            connectionSource = this.state.connectionCreatingSource.object;
-            connectionTarget = target;
-        } else if ((this.state.connectionCreatingSource.object.type === ObjectTypes.role && target.type === ObjectTypes.kind) ||
+            return ConnectionTargetOptions.Valid;
+        }
+        if ((this.state.connectionCreatingSource.object.type === ObjectTypes.role && target.type === ObjectTypes.kind) ||
             (this.state.connectionCreatingSource.object.type === ObjectTypes.relator && target.type === ObjectTypes.role)) {
-            connectionSource = target;
-            connectionTarget = this.state.connectionCreatingSource.object;
-        } else {
-            this.setState({...this.state, ...{connectionCreatingSource: null}});
+            return ConnectionTargetOptions.SwapEnds;
+        }
+        return ConnectionTargetOptions.NotValid;
+    }
+
+    private nodeClicked(target: SystemObject) {
+        if (this.state.connectionCreatingSource === null) {
             return;
         }
 
-        this.setState({...this.state, ...{connectionCreatingSource: null}});
+        const connectionOptions = this.validateConnectionTarget(target);
+        let connectionSource;
+        let connectionTarget;
+
+        switch (connectionOptions) {
+            case ConnectionTargetOptions.Valid:
+                connectionSource = this.state.connectionCreatingSource.object;
+                connectionTarget = target;
+                break;
+            case ConnectionTargetOptions.SwapEnds:
+                connectionSource = target;
+                connectionTarget = this.state.connectionCreatingSource.object;
+                break;
+            default:
+                return;
+        }
+
         this.props.connectionCreated({
             id: `connection-${new Date().getTime()}`,
             source: connectionSource.id,
@@ -143,14 +199,11 @@ export default class Graph extends React.Component<Props, State> {
         if (this.state.cy) {
             return;
         }
-
         cy.zoom(1.1); // hack to fix blurring
 
-        this.setState({
-            cy: cy,
-            elements: this.state.elements,
-            connectionCreatingSource: this.state.connectionCreatingSource
-        });
+        cy.on('click', this.graphClicked);
+
+        this.setState({...this.state, ...{cy: cy}});
     }
 
     private static createElement(entity: GraphEntity): Element {

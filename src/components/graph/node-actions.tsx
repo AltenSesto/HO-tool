@@ -11,24 +11,32 @@ interface Props {
     nodeDeleted: (nodeAndEdgesIds: string[]) => void,
     nodeUpdated: (updatedObj: SystemObject) => void,
     connectionCreateStarted: (source: ObjectConnections) => void,
-    onClick: (obj: SystemObject) => void
+    onClick: (obj: SystemObject) => void,
+    onMouseOver: (obj: SystemObject) => void,
+    onMouseOut: (obj: SystemObject) => void
 }
 
 export default class NodeActions extends React.Component<Props> {
 
     private readonly EVENT_DRAGFREE = 'dragfree';
     private readonly EVENT_CLICK = 'click';
+    private readonly EVENT_MOUSEOVER = 'mouseover';
+    private readonly EVENT_MOUSEOUT = 'mouseout';
 
     private ele: NodeSingular | null = null;
 
     constructor(props: Props) {
         super(props);
+
         this.initPopper = this.initPopper.bind(this);
         this.rename = this.rename.bind(this);
         this.saveNodePosition = this.saveNodePosition.bind(this);
         this.deleteNodeWithEdges = this.deleteNodeWithEdges.bind(this);
         this.nodeClicked = this.nodeClicked.bind(this);
         this.startCreateConnection = this.startCreateConnection.bind(this);
+        this.mouseEntered = this.mouseEntered.bind(this);
+        this.mouseLeft = this.mouseLeft.bind(this);
+
         this.state = {
             isActive: false
         };
@@ -56,6 +64,16 @@ export default class NodeActions extends React.Component<Props> {
     componentWillUnmount() {
         this.ele && this.ele.off(this.EVENT_DRAGFREE, undefined, this.saveNodePosition);
         this.ele && this.ele.off(this.EVENT_CLICK, undefined, this.nodeClicked);
+        this.ele && this.ele.off(this.EVENT_MOUSEOVER, undefined, this.mouseEntered);
+        this.ele && this.ele.off(this.EVENT_MOUSEOUT, undefined, this.mouseLeft);
+    }
+
+    private mouseEntered() {
+        this.props.onMouseOver(this.props.object);        
+    }
+
+    private mouseLeft() {
+        this.props.onMouseOut(this.props.object);        
     }
 
     private startCreateConnection() {
@@ -101,6 +119,8 @@ export default class NodeActions extends React.Component<Props> {
             this.ele = ele;
             ele.on(this.EVENT_DRAGFREE, this.saveNodePosition);
             ele.on(this.EVENT_CLICK, this.nodeClicked);
+            ele.on(this.EVENT_MOUSEOUT, this.mouseLeft);
+            ele.on(this.EVENT_MOUSEOVER, this.mouseEntered);
         }
     }
 };
