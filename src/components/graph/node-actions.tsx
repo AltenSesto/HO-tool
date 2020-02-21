@@ -20,8 +20,6 @@ export default class NodeActions extends React.Component<Props> {
 
     private readonly EVENT_DRAGFREE = 'dragfree';
     private readonly EVENT_CLICK = 'click';
-    private readonly EVENT_MOUSEOVER = 'mouseover';
-    private readonly EVENT_MOUSEOUT = 'mouseout';
 
     private ele: NodeSingular | null = null;
 
@@ -49,8 +47,10 @@ export default class NodeActions extends React.Component<Props> {
             cy={this.props.cy} 
             elementDeleted={this.deleteNodeWithEdges} 
             popperInitialized={this.initPopper}
-            updateRequired={true}>
-                <span>{this.props.isConnectionCreating ? 'linking' : ''}</span>
+            updateRequired={true}
+            mouseEntered={this.mouseEntered}
+            mouseLeft={this.mouseLeft}
+            childrenStatic={<span>{this.props.isConnectionCreating ? 'linking' : ''}</span>}>
                 <button type='button' onClick={this.startCreateConnection}>Link</button>
                 <button type='button' onClick={this.rename}>Rename</button>
             </ElementActions>
@@ -64,8 +64,6 @@ export default class NodeActions extends React.Component<Props> {
     componentWillUnmount() {
         this.ele && this.ele.off(this.EVENT_DRAGFREE, undefined, this.saveNodePosition);
         this.ele && this.ele.off(this.EVENT_CLICK, undefined, this.nodeClicked);
-        this.ele && this.ele.off(this.EVENT_MOUSEOVER, undefined, this.mouseEntered);
-        this.ele && this.ele.off(this.EVENT_MOUSEOUT, undefined, this.mouseLeft);
     }
 
     private mouseEntered() {
@@ -119,8 +117,6 @@ export default class NodeActions extends React.Component<Props> {
             this.ele = ele;
             ele.on(this.EVENT_DRAGFREE, this.saveNodePosition);
             ele.on(this.EVENT_CLICK, this.nodeClicked);
-            ele.on(this.EVENT_MOUSEOUT, this.mouseLeft);
-            ele.on(this.EVENT_MOUSEOVER, this.mouseEntered);
         }
     }
 };

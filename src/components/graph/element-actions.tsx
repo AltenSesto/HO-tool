@@ -1,21 +1,31 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { Core, Singular, EventObject, NodeSingular } from 'cytoscape';
 import Popper from 'popper.js';
 
 interface Props {
-    id: string,
-    cy: Core,
-    popperInitialized?: (popperObj: any, ele: Singular) => void,
-    elementDeleted: (id: string) => void,
-    updateRequired: boolean
+    id: string;
+    cy: Core;
+    updateRequired: boolean;
+    childrenStatic?: ReactElement;
+    popperInitialized?: (popperObj: any, ele: Singular) => void;
+    mouseEntered?: () => void;
+    mouseLeft?: () => void;
+    elementDeleted: (id: string) => void;
 }
 
-export default class ElementActions extends React.Component<Props> {
+interface State {
+    areActionsVisible: boolean;
+}
+
+export default class ElementActions extends React.Component<Props, State> {
 
     private readonly CY_EVENTS = 'pan zoom';
     private readonly EVENT_ADD = 'add';
     private readonly EVENT_POSITION = 'position';
+    private readonly EVENT_MOUSEOVER = 'mouseover';
+    private readonly EVENT_MOUSEOUT = 'mouseout';
 
+    private ele: Singular | null = null;
     private node: NodeSingular | null = null;
     private node1: NodeSingular | null = null;
     private popperObj: Popper | null = null;
@@ -23,15 +33,28 @@ export default class ElementActions extends React.Component<Props> {
 
     constructor(props: Props) {
         super(props);
+
         this.updatePopperPosition = this.updatePopperPosition.bind(this);
         this.initPopper = this.initPopper.bind(this);
+        this.mouseEntered = this.mouseEntered.bind(this);
+        this.mouseLeft = this.mouseLeft.bind(this);
+
+        this.state = {
+            areActionsVisible: false
+        };
     }
 
     render() {
+        const visibility = this.state.areActionsVisible ? 'visible' : 'hidden';
         return (
-            <div ref={r => this.root = r} style={{ marginBottom: '10px', zIndex: 100 }}>
-                {this.props.children}
-                <button type='button' onClick={() => this.props.elementDeleted(this.props.id)}>Delete</button>
+            <div ref={r => this.root = r} style={{ marginBottom: '10px', zIndex: 100 }}
+                onMouseEnter={() => this.setState({ areActionsVisible: true })}
+                onMouseLeave={() => this.setState({ areActionsVisible: false })}>
+                {this.props.childrenStatic}
+                <div style={{ visibility: visibility }}>
+                    {this.props.children}
+                    <button type='button' onClick={() => this.props.elementDeleted(this.props.id)}>Delete</button>
+                </div>
             </div>
         );
     };
@@ -45,10 +68,26 @@ export default class ElementActions extends React.Component<Props> {
         this.node1 && this.node1.off(this.EVENT_POSITION, undefined, this.updatePopperPosition);
         this.props.cy.off(this.CY_EVENTS, undefined, this.updatePopperPosition);
         this.props.cy.off(this.EVENT_ADD, undefined, this.initPopper);
+        this.ele && this.ele.off(this.EVENT_MOUSEOVER, undefined, this.mouseEntered);
+        this.ele && this.ele.off(this.EVENT_MOUSEOUT, undefined, this.mouseLeft);
     }
 
-    shouldComponentUpdate() {
-        return this.props.updateRequired;
+    shouldComponentUpdate(_newProps: Readonly<Props>, newState: Readonly<State>) {
+        return this.props.updateRequired || this.state !== newState;
+    }
+
+    private mouseEntered() {
+        this.setState({ areActionsVisible: true });
+        if (this.props.mouseEntered) {
+            this.props.mouseEntered();
+        }
+    }
+
+    private mouseLeft() {
+        this.setState({ areActionsVisible: false });
+        if (this.props.mouseLeft) {
+            this.props.mouseLeft();
+        }
     }
 
     private initPopper(event: EventObject) {
@@ -58,6 +97,7 @@ export default class ElementActions extends React.Component<Props> {
             return;
         }
 
+        this.ele = ele;
         if (ele.isEdge()) {
             const nodes = ele.connectedNodes();
             this.node = nodes[0];
@@ -78,6 +118,8 @@ export default class ElementActions extends React.Component<Props> {
         this.node1 && this.node1.on(this.EVENT_POSITION, this.updatePopperPosition);
         this.props.cy.on(this.CY_EVENTS, this.updatePopperPosition);
         this.props.cy.off(this.EVENT_ADD, undefined, this.initPopper);
+        ele.on(this.EVENT_MOUSEOUT, this.mouseLeft);
+        ele.on(this.EVENT_MOUSEOVER, this.mouseEntered);
 
         this.props.popperInitialized && this.props.popperInitialized(this.popperObj, ele);
     }
