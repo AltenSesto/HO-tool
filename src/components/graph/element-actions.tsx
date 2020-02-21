@@ -6,7 +6,8 @@ interface Props {
     id: string,
     cy: Core,
     popperInitialized?: (popperObj: any, ele: Singular) => void,
-    elementDeleted: (id: string) => void
+    elementDeleted: (id: string) => void,
+    updateRequired: boolean
 }
 
 export default class ElementActions extends React.Component<Props> {
@@ -29,7 +30,6 @@ export default class ElementActions extends React.Component<Props> {
     render() {
         return (
             <div ref={r => this.root = r} style={{ marginBottom: '10px', zIndex: 100 }}>
-                <span>{this.props.id}</span>
                 {this.props.children}
                 <button type='button' onClick={() => this.props.elementDeleted(this.props.id)}>Delete</button>
             </div>
@@ -48,7 +48,7 @@ export default class ElementActions extends React.Component<Props> {
     }
 
     shouldComponentUpdate() {
-        return false;
+        return this.props.updateRequired;
     }
 
     private initPopper(event: EventObject) {

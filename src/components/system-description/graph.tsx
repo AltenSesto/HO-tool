@@ -1,28 +1,32 @@
 import React from 'react';
 
 import CytoscapeComponent from 'react-cytoscapejs';
-import cytoscape from 'cytoscape';
+import cytoscape, { Core } from 'cytoscape';
 import popper from 'cytoscape-popper';
 
 import SystemObject from '../../entities/system-description/system-object';
 import Element from '../../entities/graph/element';
 import style from '../../entities/graph/style';
-import { Core } from 'cytoscape';
 import NodeActions from '../graph/node-actions';
 import { GraphEntity, isSystemObject, isConnection } from '../../entities/graph/graph-entity';
 import ElementActions from '../graph/element-actions';
+import Connection from '../../entities/system-description/connection';
+import { ObjectTypes } from '../../entities/system-description/object-types';
+import ObjectConnections from '../../entities/system-description/object-connections';
 
 cytoscape.use(popper);
 
 interface State {
     elements: Element[];
     cy: Core | null;
+    connectionCreatingSource: ObjectConnections | null;
 }
 
 interface Props {
     entities: GraphEntity[];
     entitiesDeleted: (ids: string[]) => void;
     objectUpdated: (updatedObject: SystemObject) => void;
+    connectionCreated: (connection: Connection) => void
 }
 
 export default class Graph extends React.Component<Props, State> {
@@ -31,9 +35,12 @@ export default class Graph extends React.Component<Props, State> {
         super(props);
         this.initCytoscape = this.initCytoscape.bind(this);
         this.updateNode = this.updateNode.bind(this);
+        this.startCreatingConnection = this.startCreatingConnection.bind(this);
+        this.nodeClicked = this.nodeClicked.bind(this);
         this.state = {
             elements: [],
-            cy: null
+            cy: null,
+            connectionCreatingSource: null
         };
     }
 
@@ -45,7 +52,8 @@ export default class Graph extends React.Component<Props, State> {
             .concat(newEntities.map((o) => Graph.createElement(o)));
         return {
             elements: elements,
-            cy: state.cy
+            cy: state.cy,
+            connectionCreatingSource: state.connectionCreatingSource
         };
     }
 
@@ -59,15 +67,19 @@ export default class Graph extends React.Component<Props, State> {
                         key={e.data.id}
                         cy={this.state.cy as Core}
                         object={e.data.object as SystemObject}
+                        isConnectionCreating={this.state.connectionCreatingSource !== null && this.state.connectionCreatingSource.object.id === e.data.id}
+                        connectionCreateStarted={this.startCreatingConnection}
                         nodeUpdated={this.updateNode}
-                        nodeDeleted={this.props.entitiesDeleted}>
+                        nodeDeleted={this.props.entitiesDeleted}
+                        onClick={this.nodeClicked}>
                     </NodeActions>
                 } else {
                     return <ElementActions
                         key={e.data.id}
                         id={e.data.id}
                         cy={this.state.cy as Core}
-                        elementDeleted={(id) => this.props.entitiesDeleted([id])}>
+                        elementDeleted={(id) => this.props.entitiesDeleted([id])}
+                        updateRequired={false}>
                     </ElementActions>
                 }
             });
@@ -78,6 +90,44 @@ export default class Graph extends React.Component<Props, State> {
                 <CytoscapeComponent elements={elements} style={{ width: '1200px', height: '1200px', zIndex: 10 }} stylesheet={style} cy={this.initCytoscape} />
             </React.Fragment>
         );
+    }
+
+    private nodeClicked(target: SystemObject) {
+        if (!this.state.connectionCreatingSource) {
+            return;
+        }
+        if (this.state.connectionCreatingSource.connections.some(e => e.target === target.id)) {
+            this.setState({...this.state, ...{connectionCreatingSource: null}});
+            return;
+        }
+
+        let connectionSource;
+        let connectionTarget;
+        if ((this.state.connectionCreatingSource.object.type === ObjectTypes.kind && target.type === ObjectTypes.role) ||
+            (this.state.connectionCreatingSource.object.type === ObjectTypes.role && target.type === ObjectTypes.relator)) {
+            connectionSource = this.state.connectionCreatingSource.object;
+            connectionTarget = target;
+        } else if ((this.state.connectionCreatingSource.object.type === ObjectTypes.role && target.type === ObjectTypes.kind) ||
+            (this.state.connectionCreatingSource.object.type === ObjectTypes.relator && target.type === ObjectTypes.role)) {
+            connectionSource = target;
+            connectionTarget = this.state.connectionCreatingSource.object;
+        } else {
+            this.setState({...this.state, ...{connectionCreatingSource: null}});
+            return;
+        }
+
+        this.setState({...this.state, ...{connectionCreatingSource: null}});
+        this.props.connectionCreated({
+            id: `connection-${new Date().getTime()}`,
+            source: connectionSource.id,
+            target: connectionTarget.id 
+        });
+    }
+
+    private startCreatingConnection(source: ObjectConnections) {
+        if (!this.state.connectionCreatingSource) {
+            this.setState({...this.state, ...{connectionCreatingSource: source}});
+        }
     }
 
     private updateNode(updatedObject: SystemObject) {
@@ -98,7 +148,8 @@ export default class Graph extends React.Component<Props, State> {
 
         this.setState({
             cy: cy,
-            elements: this.state.elements
+            elements: this.state.elements,
+            connectionCreatingSource: this.state.connectionCreatingSource
         });
     }
 
@@ -120,11 +171,7 @@ export default class Graph extends React.Component<Props, State> {
         if (isConnection(entity)) {
             return {
                 group: "edges",
-                data: {
-                    id: entity.id,
-                    source: entity.source,
-                    target: entity.target
-                },
+                data: entity,
                 pannable: true
             }
         }

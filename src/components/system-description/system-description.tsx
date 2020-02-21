@@ -3,22 +3,18 @@ import Toolbar from './toolbar';
 import SystemObject from '../../entities/system-description/system-object';
 import Graph from './graph';
 import { GraphEntity } from '../../entities/graph/graph-entity';
-import { ObjectTypes } from '../../entities/system-description/object-types';
-
-interface Props {
-}
 
 interface State {
     entities: GraphEntity[]
 }
 
-export default class SystemDescription extends React.Component<Props, State> {
-    constructor(props: Props) {
+export default class SystemDescription extends React.Component<{}, State> {
+    constructor(props: {}) {
         super(props);
         this.state = {
             entities: []
         };
-        this.addObject = this.addObject.bind(this);
+        this.addEntity = this.addEntity.bind(this);
         this.updateObject = this.updateObject.bind(this);
         this.deleteEntities = this.deleteEntities.bind(this);
     }
@@ -26,15 +22,19 @@ export default class SystemDescription extends React.Component<Props, State> {
     render() {
         return (
             <React.Fragment>
-                <Toolbar objectAdded={this.addObject}></Toolbar>
-                <Graph entities={this.state.entities} entitiesDeleted={this.deleteEntities} objectUpdated={this.updateObject}></Graph>
+                <Toolbar objectAdded={this.addEntity}></Toolbar>
+                <Graph
+                    entities={this.state.entities}
+                    connectionCreated={this.addEntity}
+                    entitiesDeleted={this.deleteEntities}
+                    objectUpdated={this.updateObject}></Graph>
             </React.Fragment>
         );
-        }
+    }
 
-    private addObject(obj: SystemObject) {
+    private addEntity(entity: GraphEntity) {
         this.setState({
-            entities: this.state.entities.concat(obj)
+            entities: this.state.entities.concat(entity)
         });
     };
 
@@ -48,5 +48,5 @@ export default class SystemDescription extends React.Component<Props, State> {
         this.setState({
             entities: this.state.entities.filter(e => !ids.some(i => e.id === i))
         });
-    }    
+    }
 };
