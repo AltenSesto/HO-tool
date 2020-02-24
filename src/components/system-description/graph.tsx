@@ -8,7 +8,7 @@ import SystemObject from '../../entities/system-description/system-object';
 import Element from '../../entities/graph/element';
 import style from '../../entities/graph/style';
 import NodeActions from '../graph/node-actions';
-import { GraphEntity, isSystemObject, isConnection } from '../../entities/graph/graph-entity';
+import { SystemDescriptionEntity, isSystemObject, isConnection } from '../../entities/system-description/system-description-entity';
 import ElementActions from '../graph/element-actions';
 import Connection from '../../entities/system-description/connection';
 import { ObjectTypes } from '../../entities/system-description/object-types';
@@ -24,7 +24,7 @@ interface State {
 }
 
 interface Props {
-    entities: GraphEntity[];
+    entities: SystemDescriptionEntity[];
     entitiesDeleted: (ids: string[]) => void;
     objectUpdated: (updatedObject: SystemObject) => void;
     connectionCreated: (connection: Connection) => void
@@ -206,7 +206,7 @@ export default class Graph extends React.Component<Props, State> {
         this.setState({...this.state, ...{cy: cy}});
     }
 
-    private static createElement(entity: GraphEntity): Element {
+    private static createElement(entity: SystemDescriptionEntity): Element {
         if (isSystemObject(entity)) {
             return {
                 group: 'nodes',
