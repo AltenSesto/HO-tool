@@ -2,6 +2,7 @@ import React from "react";
 import { SystemModel } from "../../entities/system-model";
 
 interface Props {
+    
     openFile: (model: SystemModel) => void;
     saveFile: () => SystemModel;
 }
@@ -13,7 +14,6 @@ export default class Meny extends React.Component<Props> {
         this.readFile = this.readFile.bind(this);
         this.downloadFile = this.downloadFile.bind(this);
         this.processResult = this.processResult.bind(this);
-        this.trackProgress = this.trackProgress.bind(this);
         this.handleFileError = this.handleFileError.bind(this);
         this.reportError = this.reportError.bind(this);
     }
@@ -21,7 +21,7 @@ export default class Meny extends React.Component<Props> {
     render () {
         let openFile;
         if (window.FileReader && window.FileList) {
-            openFile = <input type="file" onChange={(ev) => this.readFile(ev.target.files)} accept=".json" />;
+            openFile = <input type="file" onChange={(ev) => this.readFile(ev.target.files)} accept=".json"/>;
         } else {
             openFile = <span>File API not supported</span>;
         }
@@ -45,7 +45,6 @@ export default class Meny extends React.Component<Props> {
 
         const reader = new FileReader();
         reader.onload = this.processResult;
-        reader.onprogress = this.trackProgress;
         reader.onerror = this.handleFileError;
         reader.readAsText(file, 'utf-8');
     }
@@ -73,10 +72,6 @@ export default class Meny extends React.Component<Props> {
             message = ev.target.error.message;
         }
         this.reportError(message);
-    }
-
-    private trackProgress(ev: ProgressEvent<FileReader>) {
-        console.log(`loaded ${ev.loaded / ev.total * 100}%`);
     }
 
     private processResult(ev: ProgressEvent<FileReader>) {

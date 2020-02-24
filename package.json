@@ -10,6 +10,7 @@
     "cytoscape": "^3.14.0",
     "cytoscape-popper": "^1.0.6",
     "react": "^16.10.2",
+    "react-beforeunload": "^2.1.0",
     "react-cytoscapejs": "^1.2.1",
     "react-dom": "^16.10.2",
     "react-scripts": "3.2.0",
@@ -38,6 +39,7 @@
     ]
   },
   "devDependencies": {
-    "@types/cytoscape": "^3.8.8"
+    "@types/cytoscape": "^3.8.8",
+    "@types/react-beforeunload": "^2.1.0"
   }
 }

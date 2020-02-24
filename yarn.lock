@@ -1339,6 +1339,13 @@
   resolved "https://registry.yarnpkg.com/@types/q/-/q-1.5.2.tgz#690a1475b84f2a884fd07cd797c00f5f31356ea8"
   integrity sha512-ce5d3q03Ex0sy4R14722Rmt6MT07Ua+k4FwDfdcToYJcMKNtRVQvJ6JCAPdAmAnbRb6CsX6aYb9m96NGod9uTw==
 
+"@types/react-beforeunload@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@types/react-beforeunload/-/react-beforeunload-2.1.0.tgz#023db4bf117a23a8a5f8b28d276cf00324b8ec98"
+  integrity sha512-N/j7wOFQjrmYuIvemMOsI/NNjwErZGjF/4I1NG9VrF1bLqi11BMD/nqBBedIze2FbtddKHgWfQCue3yzCsQJdg==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-dom@16.9.2":
   version "16.9.2"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.9.2.tgz#90f9e6c161850be1feb31d2f448121be2a4f3b47"
@@ -8086,6 +8093,13 @@ react-app-polyfill@^1.0.4:
     raf "^3.4.1"
     regenerator-runtime "^0.13.3"
     whatwg-fetch "^3.0.0"
+
+react-beforeunload@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/react-beforeunload/-/react-beforeunload-2.1.0.tgz#549eaf801cc2457e0702a11f6e07f24c38328b8e"
+  integrity sha512-D/raQTUUQNuPDBmouSFtWypnfhWSFTz8w/Lfm+9WEazmmqSC10rZBYAANLAju5QQWhYRqCuIUs3yFYlt43Y5Iw==
+  dependencies:
+    prop-types "^15.7.2"
 
 react-cytoscapejs@^1.2.1:
   version "1.2.1"

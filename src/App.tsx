@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+import { useBeforeunload } from 'react-beforeunload';
+
 import SystemDescription from './components/system-description/system-description';
 import ErrorBoundary from './components/error-boundary';
 import { SystemModel } from './entities/system-model';
@@ -12,13 +14,30 @@ const App: React.FC = () => {
   const [systemModel, setSystemModel] = useState<SystemModel>({
     systemDescription: []
   });
+	const [hasUnsavedChanges, setHasUnsaveChanges] = useState(false);
 
-  const openFile = (model: SystemModel) => setSystemModel(model);
+	useBeforeunload((ev) => {
+		if (hasUnsavedChanges) {
+			ev.preventDefault();
+		}
+	});
 
-  const saveFile = () => systemModel;
+  const openFile = (model: SystemModel) => {
+    if (!hasUnsavedChanges || window.confirm('You have usaved thanges that will be lost. Continue?')) {
+      setSystemModel(model);
+      setHasUnsaveChanges(false);
+    }
+  };
 
-  const updateSystemDescription = (entities: SystemDescriptionEntity[]) => 
-    setSystemModel({...systemModel, ...{systemDescription: entities}});
+  const saveFile = () => {
+    setHasUnsaveChanges(false);
+    return systemModel
+  };
+
+  const updateSystemDescription = (entities: SystemDescriptionEntity[]) => {
+    setSystemModel({ ...systemModel, ...{ systemDescription: entities } });
+    setHasUnsaveChanges(true);
+  };
 
   return (
     <ErrorBoundary>
