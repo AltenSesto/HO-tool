@@ -21,7 +21,7 @@ export default class SystemDescription extends React.Component<Props> {
     render() {
         return (
             <React.Fragment>
-                <Toolbar objectAdded={this.addEntity}></Toolbar>
+                <Toolbar entityAdded={this.addEntity} allEntities={this.props.entities}></Toolbar>
                 <Graph
                     entities={this.props.entities}
                     connectionCreated={this.addEntity}

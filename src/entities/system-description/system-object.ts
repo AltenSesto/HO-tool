@@ -5,5 +5,6 @@ export default interface SystemObject {
     type: ObjectTypes,
     name: string,
     posX: number,
-    posY: number
+    posY: number,
+    parent?: string
 }

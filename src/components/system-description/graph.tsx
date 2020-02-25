@@ -8,7 +8,7 @@ import SystemObject from '../../entities/system-description/system-object';
 import Element from '../../entities/graph/element';
 import style from '../../entities/graph/style';
 import NodeActions from '../graph/node-actions';
-import { SystemDescriptionEntity, isSystemObject, isConnection } from '../../entities/system-description/system-description-entity';
+import { SystemDescriptionEntity, isSystemObject, isConnection, isSubsystem } from '../../entities/system-description/system-description-entity';
 import ElementActions from '../graph/element-actions';
 import Connection from '../../entities/system-description/connection';
 import { ObjectTypes } from '../../entities/system-description/object-types';
@@ -72,7 +72,7 @@ export default class Graph extends React.Component<Props, State> {
         const elements = this.state.cy ? this.state.elements : [];
 
         const actions = elements.map(e => {
-                if (e.group === 'nodes') {
+                if (e.group === 'nodes' && e.data.object) {
                     return <NodeActions
                         key={e.data.id}
                         cy={this.state.cy as Core}
@@ -213,7 +213,8 @@ export default class Graph extends React.Component<Props, State> {
                 data: {
                     id: entity.id,
                     label: `<<${entity.type.toString()}>>\n\n${entity.name}`,
-                    object: entity
+                    object: entity,
+                    parent: entity.parent
                 },
                 position: {
                     x: entity.posX, y: entity.posY
@@ -227,6 +228,19 @@ export default class Graph extends React.Component<Props, State> {
                 data: entity,
                 pannable: true
             }
+        }
+        if (isSubsystem(entity)) {
+            return {
+                group: 'nodes',
+                data: {
+                    id: entity.id,
+                    label: entity.name
+                },
+                position: {
+                    x: entity.posX, y: entity.posY
+                },
+                classes: ['subsystem']
+            };
         }
         throw new Error(`Unknown entity type. ${entity}`);
     }

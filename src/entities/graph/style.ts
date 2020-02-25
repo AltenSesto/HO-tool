@@ -23,9 +23,21 @@ const graphStyle = [
     {
         selector: 'edge',
         style: {
-            'width': 3,
+            'width': 2,
             'curve-style': 'taxi',
             'line-color': '#000'
+        }
+    },
+    {
+        selector: '.subsystem',
+        style: {
+            'shape': 'rectangle',
+            'text-valign': 'top',
+            'text-border-color': '#000',
+            'text-border-style': 'solid',
+            'text-border-width': '1px',
+            'text-background-padding': '3px',
+            'text-border-opacity': 1
         }
     },
     {

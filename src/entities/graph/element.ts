@@ -8,6 +8,7 @@ export default interface Element {
         label?: string,
         source?: string,
         target?: string,
+        parent?: string,
         object?: SystemObject,
         updateRequired?: boolean
     };
