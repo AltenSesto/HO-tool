@@ -1,4 +1,5 @@
 import SystemObject from "../system-description/system-object";
+import Subsystem from "../system-description/subsystem";
 
 export default interface Element {
     group: 'nodes' | 'edges';
@@ -10,6 +11,7 @@ export default interface Element {
         target?: string,
         parent?: string,
         object?: SystemObject,
+        subsystem?: Subsystem,
         updateRequired?: boolean
     };
 
@@ -22,3 +24,7 @@ export default interface Element {
 
     pannable?: boolean;
 }
+
+export const defaultPosition = {
+    x: 100, y: 100
+};

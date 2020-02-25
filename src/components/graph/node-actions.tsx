@@ -9,7 +9,8 @@ interface Props {
     cy: Core,
     isConnectionCreating: boolean,
     nodeDeleted: (nodeAndEdgesIds: string[]) => void,
-    nodeUpdated: (updatedObj: SystemObject) => void,
+    nodeEditing: (obj: SystemObject) => void,
+    nodeRepositioned: (updatedObj: SystemObject) => void,
     connectionCreateStarted: (source: ObjectConnections) => void,
     onClick: (obj: SystemObject) => void,
     onMouseOver: (obj: SystemObject) => void,
@@ -27,17 +28,12 @@ export default class NodeActions extends React.Component<Props> {
         super(props);
 
         this.initPopper = this.initPopper.bind(this);
-        this.rename = this.rename.bind(this);
         this.saveNodePosition = this.saveNodePosition.bind(this);
         this.deleteNodeWithEdges = this.deleteNodeWithEdges.bind(this);
         this.nodeClicked = this.nodeClicked.bind(this);
         this.startCreateConnection = this.startCreateConnection.bind(this);
         this.mouseEntered = this.mouseEntered.bind(this);
         this.mouseLeft = this.mouseLeft.bind(this);
-
-        this.state = {
-            isActive: false
-        };
     }
 
     render() {
@@ -52,7 +48,7 @@ export default class NodeActions extends React.Component<Props> {
             mouseLeft={this.mouseLeft}
             childrenStatic={<span>{this.props.isConnectionCreating ? 'linking' : ''}</span>}>
                 <button type='button' onClick={this.startCreateConnection}>Link</button>
-                <button type='button' onClick={this.rename}>Rename</button>
+                <button type='button' onClick={() => this.props.nodeEditing(this.props.object)}>Edit</button>
             </ElementActions>
         );
     };
@@ -100,17 +96,8 @@ export default class NodeActions extends React.Component<Props> {
     private saveNodePosition(event: EventObjectNode) {
         const newPosition = event.target.position();
         const updatedObj = { ...this.props.object, ...{ posX: newPosition.x, posY: newPosition.y } };
-        this.props.nodeUpdated(updatedObj);
+        this.props.nodeRepositioned(updatedObj);
     }    
-
-    private rename() {
-        const name = prompt('Enter name');
-        if (!name || !name.trim()) {
-            return;
-        }
-        const updatedObj = { ...this.props.object, ...{ name } };
-        this.props.nodeUpdated(updatedObj);
-    }
 
     private initPopper(_popperObj: any, ele: Singular) {
         if (ele.isNode()) {

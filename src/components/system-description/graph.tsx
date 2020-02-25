@@ -5,7 +5,7 @@ import cytoscape, { Core } from 'cytoscape';
 import popper from 'cytoscape-popper';
 
 import SystemObject from '../../entities/system-description/system-object';
-import Element from '../../entities/graph/element';
+import Element, { defaultPosition } from '../../entities/graph/element';
 import style from '../../entities/graph/style';
 import NodeActions from '../graph/node-actions';
 import { SystemDescriptionEntity, isSystemObject, isConnection, isSubsystem } from '../../entities/system-description/system-description-entity';
@@ -13,6 +13,9 @@ import ElementActions from '../graph/element-actions';
 import Connection from '../../entities/system-description/connection';
 import { ObjectTypes } from '../../entities/system-description/object-types';
 import ObjectConnections from '../../entities/system-description/object-connections';
+import Subsystem from '../../entities/system-description/subsystem';
+import NodeEditor from './node-editor';
+import SubsystemActions from '../graph/subsystem-actions';
 
 cytoscape.use(popper);
 
@@ -21,12 +24,13 @@ interface State {
     cy: Core | null;
     connectionCreatingSource: ObjectConnections | null;
     isConnectionTargetValid: boolean;
+    nodeEditing: SystemObject | Subsystem | null;
 }
 
 interface Props {
     entities: SystemDescriptionEntity[];
     entitiesDeleted: (ids: string[]) => void;
-    objectUpdated: (updatedObject: SystemObject) => void;
+    nodeUpdated: (updatedObject: SystemObject | Subsystem) => void;
     connectionCreated: (connection: Connection) => void
 }
 
@@ -40,7 +44,7 @@ export default class Graph extends React.Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
-        
+
         this.initCytoscape = this.initCytoscape.bind(this);
         this.updateNode = this.updateNode.bind(this);
         this.startCreatingConnection = this.startCreatingConnection.bind(this);
@@ -49,12 +53,16 @@ export default class Graph extends React.Component<Props, State> {
         this.validateConnectionTarget = this.validateConnectionTarget.bind(this);
         this.nodeMouseEntered = this.nodeMouseEntered.bind(this);
         this.nodeMouseLeft = this.nodeMouseLeft.bind(this);
-        
+        this.startEditNode = this.startEditNode.bind(this);
+        this.completeEditNode = this.completeEditNode.bind(this);
+        this.findEntityById = this.findEntityById.bind(this);
+
         this.state = {
             elements: [],
             cy: null,
             connectionCreatingSource: null,
-            isConnectionTargetValid: false
+            isConnectionTargetValid: false,
+            nodeEditing: null
         };
     }
 
@@ -64,7 +72,7 @@ export default class Graph extends React.Component<Props, State> {
         const elements = state.elements
             .filter(e => deletedEntities.indexOf(e) === -1)
             .concat(newEntities.map((o) => Graph.createElement(o)));
-        return {...state, ...{elements: elements}};
+        return { ...state, ...{ elements: elements } };
     }
 
     render() {
@@ -72,29 +80,39 @@ export default class Graph extends React.Component<Props, State> {
         const elements = this.state.cy ? this.state.elements : [];
 
         const actions = elements.map(e => {
-                if (e.group === 'nodes' && e.data.object) {
-                    return <NodeActions
-                        key={e.data.id}
-                        cy={this.state.cy as Core}
-                        object={e.data.object as SystemObject}
-                        isConnectionCreating={this.state.connectionCreatingSource !== null && this.state.connectionCreatingSource.object.id === e.data.id}
-                        connectionCreateStarted={this.startCreatingConnection}
-                        nodeUpdated={this.updateNode}
-                        nodeDeleted={this.props.entitiesDeleted}
-                        onMouseOver={this.nodeMouseEntered}
-                        onMouseOut={this.nodeMouseLeft}
-                        onClick={this.nodeClicked}>
-                    </NodeActions>
-                } else {
-                    return <ElementActions
-                        key={e.data.id}
-                        id={e.data.id}
-                        cy={this.state.cy as Core}
-                        elementDeleted={(id) => this.props.entitiesDeleted([id])}
-                        updateRequired={false}>
-                    </ElementActions>
-                }
-            });
+            if (e.group === 'nodes' && e.data.object) {
+                return <NodeActions
+                    key={e.data.id}
+                    cy={this.state.cy as Core}
+                    object={e.data.object as SystemObject}
+                    isConnectionCreating={this.state.connectionCreatingSource !== null && this.state.connectionCreatingSource.object.id === e.data.id}
+                    connectionCreateStarted={this.startCreatingConnection}
+                    nodeEditing={this.startEditNode}
+                    nodeRepositioned={this.updateNode}
+                    nodeDeleted={this.props.entitiesDeleted}
+                    onMouseOver={this.nodeMouseEntered}
+                    onMouseOut={this.nodeMouseLeft}
+                    onClick={this.nodeClicked}>
+                </NodeActions>
+            } else if (e.group === 'nodes' && e.data.subsystem) {
+                return <SubsystemActions
+                    key={e.data.id}
+                    cy={this.state.cy as Core}
+                    subsystem={e.data.subsystem as Subsystem}
+                    subsystemDeleted={this.props.entitiesDeleted}
+                    subsystemEditing={this.startEditNode}
+                    subsystemRepositioned={this.updateNode}>
+                </SubsystemActions>
+            } else {
+                return <ElementActions
+                    key={e.data.id}
+                    id={e.data.id}
+                    cy={this.state.cy as Core}
+                    elementDeleted={(id) => this.props.entitiesDeleted([id])}
+                    updateRequired={false}>
+                </ElementActions>
+            }
+        });
 
         let cursorStyle = 'default';
         if (this.state.connectionCreatingSource) {
@@ -105,10 +123,21 @@ export default class Graph extends React.Component<Props, State> {
             }
         }
 
+        let nodeEditor;
+        if (this.state.nodeEditing) {
+            nodeEditor = <NodeEditor
+                allEntities={this.props.entities}
+                entity={this.state.nodeEditing}
+                entityUpdated={this.completeEditNode}
+                editCancelled={() => this.setState({ ...this.state, ...{ nodeEditing: null } })}>
+            </NodeEditor>
+        }
+
         return (
             <React.Fragment>
+                {nodeEditor}
                 {actions}
-                <CytoscapeComponent 
+                <CytoscapeComponent
                     elements={elements}
                     style={{ width: '1200px', height: '1200px', zIndex: 10, cursor: cursorStyle }}
                     stylesheet={style}
@@ -117,22 +146,50 @@ export default class Graph extends React.Component<Props, State> {
         );
     }
 
+    private findEntityById(id: string) {
+        return this.props.entities.find(e => e.id === id);
+    }
+
+    private startEditNode(node: SystemObject | Subsystem) {
+        this.setState({ ...this.state, ...{ nodeEditing: node } });
+    }
+
+    private completeEditNode(node: SystemObject | Subsystem) {
+        this.setState({ ...this.state, ...{ nodeEditing: null } });
+        if (isSystemObject(node)) {
+            const oldObject = this.findEntityById(node.id);
+            if (oldObject && isSystemObject(oldObject)) {
+                if (oldObject.parent && !node.parent) {
+                    node.posX = defaultPosition.x;
+                    node.posY = defaultPosition.y;
+                } else if (!oldObject.parent && node.parent) {
+                    const parent = this.findEntityById(node.parent);
+                    if (parent && isSubsystem(parent)) {
+                        node.posX = parent.posX;
+                        node.posY = parent.posY;
+                    }
+                }
+            }
+        }
+        this.updateNode(node);
+    }
+
     private nodeMouseEntered(target: SystemObject) {
         if (this.state.connectionCreatingSource) {
             const connectionOptions = this.validateConnectionTarget(target);
             const isTargetValid = connectionOptions === ConnectionTargetOptions.Valid || connectionOptions === ConnectionTargetOptions.SwapEnds;
-            this.setState({...this.state, ...{isConnectionTargetValid: isTargetValid}});
+            this.setState({ ...this.state, ...{ isConnectionTargetValid: isTargetValid } });
         }
     }
 
     private nodeMouseLeft() {
         if (this.state.connectionCreatingSource) {
-            this.setState({...this.state, ...{isConnectionTargetValid: false}});
+            this.setState({ ...this.state, ...{ isConnectionTargetValid: false } });
         }
     }
 
     private graphClicked() {
-        this.setState({...this.state, ...{connectionCreatingSource: null}});
+        this.setState({ ...this.state, ...{ connectionCreatingSource: null } });
     }
 
     private validateConnectionTarget(target: SystemObject): ConnectionTargetOptions {
@@ -176,22 +233,22 @@ export default class Graph extends React.Component<Props, State> {
         this.props.connectionCreated({
             id: `connection-${new Date().getTime()}`,
             source: connectionSource.id,
-            target: connectionTarget.id 
+            target: connectionTarget.id
         });
     }
 
     private startCreatingConnection(source: ObjectConnections) {
         if (!this.state.connectionCreatingSource) {
-            this.setState({...this.state, ...{connectionCreatingSource: source}});
+            this.setState({ ...this.state, ...{ connectionCreatingSource: source } });
         }
     }
 
-    private updateNode(updatedObject: SystemObject) {
-        const element = this.state.elements.find(e => e.data.id === updatedObject.id);
+    private updateNode(updatedNode: SystemObject | Subsystem) {
+        const element = this.state.elements.find(e => e.data.id === updatedNode.id);
         if (element) {
             element.data.updateRequired = true; // not mutating state as rerender is not needed now
         }
-        this.props.objectUpdated(updatedObject);
+        this.props.nodeUpdated(updatedNode);
     }
 
     private initCytoscape(cy: Core) {
@@ -203,7 +260,7 @@ export default class Graph extends React.Component<Props, State> {
 
         cy.on('click', this.graphClicked);
 
-        this.setState({...this.state, ...{cy: cy}});
+        this.setState({ ...this.state, ...{ cy: cy } });
     }
 
     private static createElement(entity: SystemDescriptionEntity): Element {
@@ -234,7 +291,8 @@ export default class Graph extends React.Component<Props, State> {
                 group: 'nodes',
                 data: {
                     id: entity.id,
-                    label: entity.name
+                    label: entity.name,
+                    subsystem: entity
                 },
                 position: {
                     x: entity.posX, y: entity.posY

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { SystemDescriptionEntity, isSubsystem, isSystemObject } from '../../entities/system-description/system-description-entity';
 import Subsystem from '../../entities/system-description/subsystem';
 import SystemObject from '../../entities/system-description/system-object';
@@ -15,6 +15,11 @@ interface Props {
 const NodeEditor: React.FC<Props> = (props: Props) => {
 
     const [entity, setEntity] = useState(props.entity);
+
+    const inputRef = useRef<HTMLInputElement | null>();
+    useEffect(() => {
+        inputRef.current && inputRef.current.focus();
+    }, []);
 
     const defaultParent = "";
 
@@ -59,7 +64,7 @@ const NodeEditor: React.FC<Props> = (props: Props) => {
     return (
         <form onSubmit={submitEntity} onReset={() => props.editCancelled()}>
             Name:
-                <input type="text" name="name" defaultValue={entity.name} onChange={updateName} required />
+                <input ref={(ref) => inputRef.current = ref} type="text" name="name" defaultValue={entity.name} onChange={updateName} required />
                 {parentEditor}
             <input type="submit" value="OK" />
             <input type="reset" value="Cancel" />

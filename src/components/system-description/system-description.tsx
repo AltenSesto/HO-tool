@@ -3,6 +3,7 @@ import Toolbar from './toolbar';
 import SystemObject from '../../entities/system-description/system-object';
 import Graph from './graph';
 import { SystemDescriptionEntity } from '../../entities/system-description/system-description-entity';
+import Subsystem from '../../entities/system-description/subsystem';
 
 interface Props {
     entities: SystemDescriptionEntity[];
@@ -26,7 +27,7 @@ export default class SystemDescription extends React.Component<Props> {
                     entities={this.props.entities}
                     connectionCreated={this.addEntity}
                     entitiesDeleted={this.deleteEntities}
-                    objectUpdated={this.updateObject}></Graph>
+                    nodeUpdated={this.updateObject}></Graph>
             </React.Fragment>
         );
     }
@@ -36,7 +37,7 @@ export default class SystemDescription extends React.Component<Props> {
         this.props.entitiesChanged(entities);
     };
 
-    private updateObject(updatedObj: SystemObject) {
+    private updateObject(updatedObj: SystemObject | Subsystem) {
         const entities = this.props.entities.map(e => e.id === updatedObj.id ? updatedObj : e);
         this.props.entitiesChanged(entities);
     };

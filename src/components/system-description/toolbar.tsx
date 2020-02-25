@@ -4,6 +4,7 @@ import { ObjectTypes } from '../../entities/system-description/object-types';
 import Subsystem from '../../entities/system-description/subsystem';
 import NodeEditor from './node-editor';
 import { SystemDescriptionEntity, isSystemObject, isSubsystem } from '../../entities/system-description/system-description-entity';
+import { defaultPosition } from '../../entities/graph/element';
 
 interface Props {
     entityAdded: (entity: SystemObject | Subsystem) => void;
@@ -20,20 +21,18 @@ const Toolbar: React.FC<Props> = (props: Props) => {
 
     const startCreatingObject = (type: ObjectTypes) => {
         if (!entityEditing) {
-            const obj = { id: getId(type.toString()), name: "", type, posX: 0, posY: 0 };
+            const obj = { id: getId(type.toString()), name: "", type, posX: defaultPosition.x, posY: defaultPosition.y };
             setEntityEditing(obj);
         }
     };
 
     const completeCreatingEntity = (entity: SystemObject | Subsystem) => {
         setEntityEditing(null);
-        entity.posX = 100;
-        entity.posY = 100;
         if (isSystemObject(entity) && entity.parent) {
             const parent = props.allEntities.find(e => e.id === entity.parent);
             if (parent && isSubsystem(parent)) {
-                entity.posX += parent.posX;
-                entity.posY += parent.posY;
+                entity.posX = parent.posX;
+                entity.posY = parent.posY;
             }
         }
         props.entityAdded(entity);
@@ -48,8 +47,8 @@ const Toolbar: React.FC<Props> = (props: Props) => {
             setEntityEditing({
                 id: getId('subsystem'),
                 name: "",
-                posX: 0,
-                posY: 0
+                posX: defaultPosition.x,
+                posY: defaultPosition.y
             });
         }
     };
