@@ -48,7 +48,8 @@ const Toolbar: React.FC<Props> = (props: Props) => {
                 id: getId('subsystem'),
                 name: "",
                 posX: defaultPosition.x,
-                posY: defaultPosition.y
+                posY: defaultPosition.y,
+                isCollapsed: false
             });
         }
     };

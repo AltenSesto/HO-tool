@@ -3177,6 +3177,11 @@ cyclist@^1.0.1:
   resolved "https://registry.yarnpkg.com/cyclist/-/cyclist-1.0.1.tgz#596e9698fd0c80e12038c2b82d6eb1b35b6224d9"
   integrity sha1-WW6WmP0MgOEgOMK4LW6xs1tiJNk=
 
+cytoscape-expand-collapse@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/cytoscape-expand-collapse/-/cytoscape-expand-collapse-3.2.0.tgz#3b705eec0bc094a9e1874e4e6635450787fcf5ab"
+  integrity sha512-do33Kn4S7yP4QzdV0yK+aQOsXxTBfhA+BORWynKspkn5hw7kuktc5wKJEpr8jq7Vb9tT1bFSOMFr/IGbYJNG/w==
+
 cytoscape-popper@^1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/cytoscape-popper/-/cytoscape-popper-1.0.6.tgz#a58809cec476341d49e1bde6e1a0f580c36fadcf"

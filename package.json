@@ -8,6 +8,7 @@
     "@types/react": "16.9.9",
     "@types/react-dom": "16.9.2",
     "cytoscape": "^3.14.0",
+    "cytoscape-expand-collapse": "^3.2.0",
     "cytoscape-popper": "^1.0.6",
     "react": "^16.10.2",
     "react-beforeunload": "^2.1.0",

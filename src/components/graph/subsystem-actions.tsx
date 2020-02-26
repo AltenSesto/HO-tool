@@ -8,7 +8,7 @@ interface Props {
     cy: Core;
     subsystemDeleted: (nodeIds: string[]) => void,
     subsystemEditing: (subsystem: Subsystem) => void,
-    subsystemRepositioned: (subsystem: Subsystem) => void,
+    subsystemUpdated: (subsystem: Subsystem) => void,
 }
 
 export default class SubsystemActions extends React.Component<Props> {
@@ -21,9 +21,12 @@ export default class SubsystemActions extends React.Component<Props> {
 
     private ele: NodeSingular | null = null;
     private children: string[] = [];
+    private collapseAPI: any;
 
     constructor(props: Props) {
         super(props);
+        this.collapseAPI = (this.props.cy as any).expandCollapse('get');
+
         this.deleteWithChildren = this.deleteWithChildren.bind(this);
         this.initPopper = this.initPopper.bind(this);
         this.updatePositionOnMove = this.updatePositionOnMove.bind(this);
@@ -31,6 +34,7 @@ export default class SubsystemActions extends React.Component<Props> {
         this.updatePositionOnChildRemoved = this.updatePositionOnChildRemoved.bind(this);
         this.updatePositionOnParentChanged = this.updatePositionOnParentChanged.bind(this);
         this.savePosition = this.savePosition.bind(this);
+        this.toggleCollapsedState = this.toggleCollapsedState.bind(this);
     }
 
     render() {
@@ -40,12 +44,15 @@ export default class SubsystemActions extends React.Component<Props> {
             elementDeleted={this.deleteWithChildren}
             popperInitialized={this.initPopper}
             updateRequired={true}>
+            <button type='button' onClick={this.toggleCollapsedState}>
+                {this.props.subsystem.isCollapsed ? 'Expand' : 'Collapse'}
+            </button>
             <button type='button' onClick={() => this.props.subsystemEditing(this.props.subsystem)}>Edit</button>
         </ElementActions>;
     }
 
-    shouldComponentUpdate() {
-        return false;
+    shouldComponentUpdate(newProps: Readonly<Props>) {
+        return newProps.subsystem.isCollapsed !== this.props.subsystem.isCollapsed;
     }
 
     componentWillUnmount() {
@@ -54,7 +61,18 @@ export default class SubsystemActions extends React.Component<Props> {
         this.props.cy.off(this.EVENT_REMOVE, undefined, this.updatePositionOnChildRemoved);
         this.props.cy.off(this.EVENT_MOVE, undefined, this.updatePositionOnParentChanged);
     }
-    
+
+    private toggleCollapsedState() {
+        const newStateCollapsed = !this.props.subsystem.isCollapsed;
+        if (newStateCollapsed) {
+            this.collapseAPI.collapse(this.ele);
+        } else {
+            this.collapseAPI.expand(this.ele);
+        }
+
+        this.props.subsystemUpdated({ ...this.props.subsystem, ...{ isCollapsed: newStateCollapsed } });
+    }
+
     private deleteWithChildren() {
         let ids = [this.props.subsystem.id];
         if (this.ele) {
@@ -112,12 +130,16 @@ export default class SubsystemActions extends React.Component<Props> {
             return;
         }
         const updatedObj = { ...this.props.subsystem, ...{ posX: position.x, posY: position.y } };
-        this.props.subsystemRepositioned(updatedObj);
-    }    
+        this.props.subsystemUpdated(updatedObj);
+    }
 
     private initPopper(_popperObj: any, ele: Singular) {
         if (ele.isNode()) {
             this.ele = ele;
+            if (this.props.subsystem.isCollapsed) {
+                this.collapseAPI.collapse(ele);
+            }
+
             ele.on(this.EVENT_DRAGFREE, this.updatePositionOnMove);
             this.props.cy.on(this.EVENT_REMOVE, this.updatePositionOnChildRemoved);
             this.props.cy.on(this.EVENT_ADD, this.updatePositionOnChildAdded);

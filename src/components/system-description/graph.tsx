@@ -3,6 +3,7 @@ import React from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
 import cytoscape, { Core } from 'cytoscape';
 import popper from 'cytoscape-popper';
+import expandCollapse from 'cytoscape-expand-collapse';
 
 import SystemObject from '../../entities/system-description/system-object';
 import Element, { defaultPosition } from '../../entities/graph/element';
@@ -18,6 +19,7 @@ import NodeEditor from './node-editor';
 import SubsystemActions from '../graph/subsystem-actions';
 
 cytoscape.use(popper);
+expandCollapse(cytoscape);
 
 interface State {
     elements: Element[];
@@ -101,7 +103,7 @@ export default class Graph extends React.Component<Props, State> {
                     subsystem={e.data.subsystem as Subsystem}
                     subsystemDeleted={this.props.entitiesDeleted}
                     subsystemEditing={this.startEditNode}
-                    subsystemRepositioned={this.updateNode}>
+                    subsystemUpdated={this.updateNode}>
                 </SubsystemActions>
             } else {
                 return <ElementActions
@@ -259,6 +261,7 @@ export default class Graph extends React.Component<Props, State> {
         cy.zoom(1.1); // hack to fix blurring
 
         cy.on('click', this.graphClicked);
+        (cy as any).expandCollapse({ animate: false, cueEnabled: false });
 
         this.setState({ ...this.state, ...{ cy: cy } });
     }

@@ -3,4 +3,5 @@ export default interface Subsystem {
     name: string;
     posX: number;
     posY: number;
+    isCollapsed: boolean;
 }
