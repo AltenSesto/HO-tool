@@ -194,7 +194,8 @@ export default class Graph extends React.Component<Props, State> {
     }
 
     private validateConnectionTarget(target: SystemObject): ConnectionTargetOptions {
-        if (!this.state.connectionCreatingSource || this.state.connectionCreatingSource.connections.some(e => e.target === target.id)) {
+        if (!this.state.connectionCreatingSource || 
+                this.state.connectionCreatingSource.connections.some(e => e.target === target.id || e.source === target.id)) {
             return ConnectionTargetOptions.NotValid;
         }
 
