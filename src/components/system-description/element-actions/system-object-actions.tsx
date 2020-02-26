@@ -1,8 +1,8 @@
 import React from 'react';
 import { Core, Singular, NodeSingular, EventObjectNode } from 'cytoscape';
-import SystemObject from '../../entities/system-description/system-object';
-import ElementActions from './element-actions';
-import ObjectConnections from '../../entities/system-description/object-connections';
+import SystemObject from '../../../entities/system-description/system-object';
+import ElementActions from '../../graph/element-actions';
+import ObjectConnections from '../../../entities/system-description/object-connections';
 
 interface Props {
     object: SystemObject,
@@ -17,10 +17,7 @@ interface Props {
     onMouseOut: (obj: SystemObject) => void
 }
 
-export default class NodeActions extends React.Component<Props> {
-
-    private readonly EVENT_DRAGFREE = 'dragfree';
-    private readonly EVENT_CLICK = 'click';
+export default class SystemObjectActions extends React.Component<Props> {
 
     private ele: NodeSingular | null = null;
 
@@ -43,7 +40,6 @@ export default class NodeActions extends React.Component<Props> {
             cy={this.props.cy} 
             elementDeleted={this.deleteNodeWithEdges} 
             popperInitialized={this.initPopper}
-            updateRequired={true}
             mouseEntered={this.mouseEntered}
             mouseLeft={this.mouseLeft}
             childrenStatic={<span>{this.props.isConnectionCreating ? 'linking' : ''}</span>}>
@@ -58,8 +54,8 @@ export default class NodeActions extends React.Component<Props> {
     }
 
     componentWillUnmount() {
-        this.ele && this.ele.off(this.EVENT_DRAGFREE, undefined, this.saveNodePosition);
-        this.ele && this.ele.off(this.EVENT_CLICK, undefined, this.nodeClicked);
+        this.ele && this.ele.off(ElementActions.EVENT_DRAGFREE, undefined, this.saveNodePosition);
+        this.ele && this.ele.off(ElementActions.EVENT_CLICK, undefined, this.nodeClicked);
     }
 
     private mouseEntered() {
@@ -102,8 +98,8 @@ export default class NodeActions extends React.Component<Props> {
     private initPopper(_popperObj: any, ele: Singular) {
         if (ele.isNode()) {
             this.ele = ele;
-            ele.on(this.EVENT_DRAGFREE, this.saveNodePosition);
-            ele.on(this.EVENT_CLICK, this.nodeClicked);
+            ele.on(ElementActions.EVENT_DRAGFREE, this.saveNodePosition);
+            ele.on(ElementActions.EVENT_CLICK, this.nodeClicked);
         }
     }
 };

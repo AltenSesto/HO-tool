@@ -8,15 +8,15 @@ import expandCollapse from 'cytoscape-expand-collapse';
 import SystemObject from '../../entities/system-description/system-object';
 import Element, { defaultPosition } from '../../entities/graph/element';
 import style from '../../entities/graph/style';
-import NodeActions from '../graph/node-actions';
+import SystemObjectActions from './element-actions/system-object-actions';
 import { SystemDescriptionEntity, isSystemObject, isConnection, isSubsystem } from '../../entities/system-description/system-description-entity';
-import ElementActions from '../graph/element-actions';
 import Connection from '../../entities/system-description/connection';
 import { ObjectTypes } from '../../entities/system-description/object-types';
 import ObjectConnections from '../../entities/system-description/object-connections';
 import Subsystem from '../../entities/system-description/subsystem';
 import NodeEditor from './node-editor';
-import SubsystemActions from '../graph/subsystem-actions';
+import SubsystemActions from './element-actions/subsystem-actions';
+import ConnectionActions from '../graph/connection-actions';
 
 cytoscape.use(popper);
 expandCollapse(cytoscape);
@@ -83,7 +83,7 @@ export default class Graph extends React.Component<Props, State> {
 
         const actions = elements.map(e => {
             if (e.group === 'nodes' && e.data.object) {
-                return <NodeActions
+                return <SystemObjectActions
                     key={e.data.id}
                     cy={this.state.cy as Core}
                     object={e.data.object as SystemObject}
@@ -95,7 +95,7 @@ export default class Graph extends React.Component<Props, State> {
                     onMouseOver={this.nodeMouseEntered}
                     onMouseOut={this.nodeMouseLeft}
                     onClick={this.nodeClicked}>
-                </NodeActions>
+                </SystemObjectActions>
             } else if (e.group === 'nodes' && e.data.subsystem) {
                 return <SubsystemActions
                     key={e.data.id}
@@ -106,13 +106,12 @@ export default class Graph extends React.Component<Props, State> {
                     subsystemUpdated={this.updateNode}>
                 </SubsystemActions>
             } else {
-                return <ElementActions
+                return <ConnectionActions
                     key={e.data.id}
                     id={e.data.id}
                     cy={this.state.cy as Core}
-                    elementDeleted={(id) => this.props.entitiesDeleted([id])}
-                    updateRequired={false}>
-                </ElementActions>
+                    elementDeleted={(id) => this.props.entitiesDeleted([id])}>
+                </ConnectionActions>
             }
         });
 

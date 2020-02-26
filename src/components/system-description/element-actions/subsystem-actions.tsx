@@ -1,7 +1,7 @@
 import React from 'react';
 import { Core, Singular, NodeSingular, EventObjectNode, EventObject } from 'cytoscape';
-import Subsystem from '../../entities/system-description/subsystem';
-import ElementActions from './element-actions';
+import Subsystem from '../../../entities/system-description/subsystem';
+import ElementActions from '../../graph/element-actions';
 
 interface Props {
     subsystem: Subsystem;
@@ -12,12 +12,6 @@ interface Props {
 }
 
 export default class SubsystemActions extends React.Component<Props> {
-
-    private readonly EVENT_DRAGFREE = 'dragfree';
-    private readonly EVENT_POSITION = 'position';
-    private readonly EVENT_MOVE = 'move';
-    private readonly EVENT_ADD = 'add';
-    private readonly EVENT_REMOVE = 'remove';
 
     private ele: NodeSingular | null = null;
     private children: string[] = [];
@@ -42,8 +36,7 @@ export default class SubsystemActions extends React.Component<Props> {
             id={this.props.subsystem.id}
             cy={this.props.cy}
             elementDeleted={this.deleteWithChildren}
-            popperInitialized={this.initPopper}
-            updateRequired={true}>
+            popperInitialized={this.initPopper}>
             <button type='button' onClick={this.toggleCollapsedState}>
                 {this.props.subsystem.isCollapsed ? 'Expand' : 'Collapse'}
             </button>
@@ -56,10 +49,10 @@ export default class SubsystemActions extends React.Component<Props> {
     }
 
     componentWillUnmount() {
-        this.ele && this.ele.off(this.EVENT_DRAGFREE, undefined, this.updatePositionOnMove);
-        this.props.cy.off(this.EVENT_ADD, undefined, this.updatePositionOnChildAdded);
-        this.props.cy.off(this.EVENT_REMOVE, undefined, this.updatePositionOnChildRemoved);
-        this.props.cy.off(this.EVENT_MOVE, undefined, this.updatePositionOnParentChanged);
+        this.ele && this.ele.off(ElementActions.EVENT_DRAGFREE, undefined, this.updatePositionOnMove);
+        this.props.cy.off(ElementActions.EVENT_ADD, undefined, this.updatePositionOnChildAdded);
+        this.props.cy.off(ElementActions.EVENT_REMOVE, undefined, this.updatePositionOnChildRemoved);
+        this.props.cy.off(ElementActions.EVENT_MOVE, undefined, this.updatePositionOnParentChanged);
     }
 
     private toggleCollapsedState() {
@@ -90,7 +83,7 @@ export default class SubsystemActions extends React.Component<Props> {
     private updatePositionOnMove(event: EventObjectNode) {
         const newPosition = event.target.position();
         if (this.ele) {
-            this.ele.children().forEach(e => { e.trigger(this.EVENT_POSITION); });
+            this.ele.children().forEach(e => { e.trigger(ElementActions.EVENT_POSITION); });
         }
         this.savePosition(newPosition);
     }
@@ -101,7 +94,7 @@ export default class SubsystemActions extends React.Component<Props> {
             const parent = node.parent();
             if (parent.length > 0 && parent[0].data().id === this.props.subsystem.id) {
                 this.children = this.children.concat(node.data().id);
-                this.ele.trigger(this.EVENT_POSITION);
+                this.ele.trigger(ElementActions.EVENT_POSITION);
             }
         }
     }
@@ -112,7 +105,7 @@ export default class SubsystemActions extends React.Component<Props> {
             const nodeId = node.data().id;
             if (this.children.indexOf(nodeId) > -1) {
                 this.children = this.children.filter(e => e !== nodeId);
-                this.ele.trigger(this.EVENT_POSITION);
+                this.ele.trigger(ElementActions.EVENT_POSITION);
                 // if no more children we have to track our position ourself
                 this.savePosition(this.ele.position());
             }
@@ -140,10 +133,10 @@ export default class SubsystemActions extends React.Component<Props> {
                 this.collapseAPI.collapse(ele);
             }
 
-            ele.on(this.EVENT_DRAGFREE, this.updatePositionOnMove);
-            this.props.cy.on(this.EVENT_REMOVE, this.updatePositionOnChildRemoved);
-            this.props.cy.on(this.EVENT_ADD, this.updatePositionOnChildAdded);
-            this.props.cy.on(this.EVENT_MOVE, this.updatePositionOnParentChanged);
+            ele.on(ElementActions.EVENT_DRAGFREE, this.updatePositionOnMove);
+            this.props.cy.on(ElementActions.EVENT_REMOVE, this.updatePositionOnChildRemoved);
+            this.props.cy.on(ElementActions.EVENT_ADD, this.updatePositionOnChildAdded);
+            this.props.cy.on(ElementActions.EVENT_MOVE, this.updatePositionOnParentChanged);
         }
     }
 };
