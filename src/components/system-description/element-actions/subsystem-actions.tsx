@@ -2,6 +2,7 @@ import React from 'react';
 import { Core, Singular, NodeSingular, EventObjectNode, EventObject } from 'cytoscape';
 import Subsystem from '../../../entities/system-description/subsystem';
 import ElementActions from '../../graph/element-actions';
+import { CollapseApi, getCollapseApi } from '../../../entities/graph/collapse-api';
 
 interface Props {
     subsystem: Subsystem;
@@ -15,11 +16,11 @@ export default class SubsystemActions extends React.Component<Props> {
 
     private ele: NodeSingular | null = null;
     private children: string[] = [];
-    private collapseAPI: any;
+    private collapseAPI: CollapseApi;
 
     constructor(props: Props) {
         super(props);
-        this.collapseAPI = (this.props.cy as any).expandCollapse('get');
+        this.collapseAPI = getCollapseApi(props.cy);
 
         this.deleteWithChildren = this.deleteWithChildren.bind(this);
         this.initPopper = this.initPopper.bind(this);
@@ -58,9 +59,9 @@ export default class SubsystemActions extends React.Component<Props> {
     private toggleCollapsedState() {
         const newStateCollapsed = !this.props.subsystem.isCollapsed;
         if (newStateCollapsed) {
-            this.collapseAPI.collapse(this.ele);
+            this.ele && this.collapseAPI.collapse(this.ele);
         } else {
-            this.collapseAPI.expand(this.ele);
+            this.ele && this.collapseAPI.expand(this.ele);
         }
 
         this.props.subsystemUpdated({ ...this.props.subsystem, ...{ isCollapsed: newStateCollapsed } });

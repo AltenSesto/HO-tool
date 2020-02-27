@@ -31,6 +31,7 @@ export default class SystemObjectActions extends React.Component<Props> {
         this.startCreateConnection = this.startCreateConnection.bind(this);
         this.mouseEntered = this.mouseEntered.bind(this);
         this.mouseLeft = this.mouseLeft.bind(this);
+        this.isParentExpanded = this.isParentExpanded.bind(this);
     }
 
     render() {
@@ -42,6 +43,7 @@ export default class SystemObjectActions extends React.Component<Props> {
             popperInitialized={this.initPopper}
             mouseEntered={this.mouseEntered}
             mouseLeft={this.mouseLeft}
+            allowActionsVisible={this.isParentExpanded}
             childrenStatic={<span>{this.props.isConnectionCreating ? 'linking' : ''}</span>}>
                 <button type='button' onClick={this.startCreateConnection}>Link</button>
                 <button type='button' onClick={() => this.props.nodeEditing(this.props.object)}>Edit</button>
@@ -56,6 +58,14 @@ export default class SystemObjectActions extends React.Component<Props> {
     componentWillUnmount() {
         this.ele && this.ele.off(ElementActions.EVENT_DRAGFREE, undefined, this.saveNodePosition);
         this.ele && this.ele.off(ElementActions.EVENT_CLICK, undefined, this.nodeClicked);
+    }
+
+    private isParentExpanded() {
+        // cytoscape.js-expand-collapse excludes a node from the graph when it's parent collapses, so the parent is lost
+        if (!this.ele) {
+            return true;
+        }
+        return !(this.ele.parent().length === 0 && this.props.object.parent);
     }
 
     private mouseEntered() {

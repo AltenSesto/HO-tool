@@ -17,6 +17,7 @@ import Subsystem from '../../entities/system-description/subsystem';
 import NodeEditor from './node-editor';
 import SubsystemActions from './element-actions/subsystem-actions';
 import ConnectionActions from '../graph/connection-actions';
+import { initCollapseApi } from '../../entities/graph/collapse-api';
 
 cytoscape.use(popper);
 expandCollapse(cytoscape);
@@ -261,7 +262,7 @@ export default class Graph extends React.Component<Props, State> {
         cy.zoom(1.1); // hack to fix blurring
 
         cy.on('click', this.graphClicked);
-        (cy as any).expandCollapse({ animate: false, cueEnabled: false });
+        initCollapseApi(cy);
 
         this.setState({ ...this.state, ...{ cy: cy } });
     }
