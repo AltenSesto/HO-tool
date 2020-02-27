@@ -10,8 +10,8 @@ interface Props {
 
 export default class ConnectionActions extends React.Component<Props> {
 
-    private node: NodeSingular | null = null;
-    private node1: NodeSingular | null = null;
+    private nodeSource: NodeSingular | null = null;
+    private nodeTarget: NodeSingular | null = null;
     private ele: EdgeSingular | null = null;
 
     constructor(props: Props) {
@@ -33,8 +33,8 @@ export default class ConnectionActions extends React.Component<Props> {
     };
 
     componentWillUnmount() {
-        this.node && this.node.off(ElementActions.EVENT_POSITION, undefined, this.updatePopperPosition);
-        this.node1 && this.node1.off(ElementActions.EVENT_POSITION, undefined, this.updatePopperPosition);
+        this.nodeSource && this.nodeSource.off(ElementActions.EVENT_POSITION, undefined, this.updatePopperPosition);
+        this.nodeTarget && this.nodeTarget.off(ElementActions.EVENT_POSITION, undefined, this.updatePopperPosition);
     }
 
     shouldComponentUpdate() {
@@ -44,12 +44,12 @@ export default class ConnectionActions extends React.Component<Props> {
     private areBothEndsExpanded() {
         // connection is not visible only if it's source and target nodes both belong to the same subsystem which is collapsed
         // cytoscape.js-expand-collapse excludes a node from the graph when it's parent collapses, so the parent is lost
-        if (this.node === null || this.node1 === null) {
+        if (this.nodeSource === null || this.nodeTarget === null) {
             return true;
         }
-        const expectedParentSource = this.node.data().object.parent;
-        const expectedParentTarget = this.node1.data().object.parent;
-        const actualParentSource = this.node.parent();
+        const expectedParentSource = this.nodeSource.data().object.parent;
+        const expectedParentTarget = this.nodeTarget.data().object.parent;
+        const actualParentSource = this.nodeSource.parent();
         return !(expectedParentSource === expectedParentTarget && expectedParentSource && actualParentSource.length === 0);
     }
 
@@ -60,11 +60,10 @@ export default class ConnectionActions extends React.Component<Props> {
     private initPopper(_popperObj: any, ele: Singular) {
         if (ele.isEdge()) {
             this.ele = ele;
-            const nodes = ele.connectedNodes();
-            this.node = nodes[0];
-            this.node1 = nodes[1];
+            this.nodeSource = ele.source();
+            this.nodeTarget = ele.target();
         } 
-        this.node && this.node.on(ElementActions.EVENT_POSITION, this.updatePopperPosition);
-        this.node1 && this.node1.on(ElementActions.EVENT_POSITION, this.updatePopperPosition);
+        this.nodeSource && this.nodeSource.on(ElementActions.EVENT_POSITION, this.updatePopperPosition);
+        this.nodeTarget && this.nodeTarget.on(ElementActions.EVENT_POSITION, this.updatePopperPosition);
     }
 };
