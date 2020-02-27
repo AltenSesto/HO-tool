@@ -80,7 +80,8 @@ export default class SystemObjectActions extends React.Component<Props> {
         if (!this.ele) {
             return;
         }
-        const connections = this.ele.connectedEdges().map(e => e.data());
+        const connections = this.ele.connectedEdges()
+            .map(e => { return { id: e.data().id, source: e.data().source, target: e.data().target };});
         this.props.connectionCreateStarted({
             object: this.props.object,
             connections: connections

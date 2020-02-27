@@ -19,7 +19,7 @@ export default class ConnectionActions extends React.Component<Props> {
 
         this.initPopper = this.initPopper.bind(this);
         this.updatePopperPosition = this.updatePopperPosition.bind(this);
-        this.areBothEndsExpanded = this.areBothEndsExpanded.bind(this);
+        this.areNotBothEndsCollapsed = this.areNotBothEndsCollapsed.bind(this);
     }
 
     render() {
@@ -27,7 +27,7 @@ export default class ConnectionActions extends React.Component<Props> {
             id={this.props.id}
             cy={this.props.cy}
             elementDeleted={this.props.elementDeleted}
-            allowActionsVisible={this.areBothEndsExpanded}
+            allowActionsVisible={this.areNotBothEndsCollapsed}
             popperInitialized={this.initPopper}>
         </ElementActions>;
     };
@@ -41,10 +41,14 @@ export default class ConnectionActions extends React.Component<Props> {
         return false;
     }
 
-    private areBothEndsExpanded() {
+    private areNotBothEndsCollapsed() {
         // connection is not visible only if it's source and target nodes both belong to the same subsystem which is collapsed
         // cytoscape.js-expand-collapse excludes a node from the graph when it's parent collapses, so the parent is lost
         if (this.nodeSource === null || this.nodeTarget === null) {
+            return true;
+        }
+        // if one end lies inside a collapsed subsystem it is set to the subsystem itself, not the actual node
+        if (!this.nodeSource.data().object || !this.nodeTarget.data().object) {
             return true;
         }
         const expectedParentSource = this.nodeSource.data().object.parent;
