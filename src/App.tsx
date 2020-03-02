@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-
 import { useBeforeunload } from 'react-beforeunload';
+
+import 'typeface-roboto';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 import SystemDescription from './components/system-description/system-description';
 import ErrorBoundary from './components/error-boundary';
@@ -54,6 +56,7 @@ const App: React.FC = () => {
 
 	return (
 		<ErrorBoundary>
+			<CssBaseline />
 			<Meny openFile={openFile} saveFile={saveFile}></Meny>
 			<SystemDescription entities={systemModel.systemDescription} entitiesChanged={updateSystemDescription}></SystemDescription>
 		</ErrorBoundary>
