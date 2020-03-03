@@ -3,12 +3,15 @@ import { useBeforeunload } from 'react-beforeunload';
 
 import 'typeface-roboto';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { makeStyles } from '@material-ui/core/styles';
+import { Typography, Toolbar, AppBar, Grid } from '@material-ui/core';
 
 import SystemDescription from './components/system-description/system-description';
 import ErrorBoundary from './components/error-boundary';
 import { SystemModel } from './entities/system-model';
 import Meny from './components/meny/meny';
 import { SystemDescriptionEntity, isConnectionToCollapsed } from './entities/system-description/system-description-entity';
+import ProgressSteps from './components/meny/progress-steps';
 
 const App: React.FC = () => {
 
@@ -54,10 +57,36 @@ const App: React.FC = () => {
 		setHasUnsaveChanges(true);
 	};
 
+	const useStyles = makeStyles(() => ({
+		appTitle: {
+			textAlign: 'center'
+		}
+	}));
+	const classes = useStyles();
+
 	return (
 		<ErrorBoundary>
 			<CssBaseline />
-			<Meny openFile={openFile} saveFile={saveFile}></Meny>
+
+			<AppBar position="static">
+				<Toolbar variant="dense">
+					<Grid container>
+						<Grid item xs>
+							<Meny openFile={openFile} saveFile={saveFile}></Meny>
+						</Grid>
+						<Grid item xs={6} className={classes.appTitle}>
+							<Typography variant="h6">
+								Hazard Ontology
+    					</Typography>
+						</Grid>
+						<Grid item xs>
+							&nbsp;
+						</Grid>
+					</Grid>
+				</Toolbar>
+				<ProgressSteps></ProgressSteps>
+			</AppBar>
+
 			<SystemDescription entities={systemModel.systemDescription} entitiesChanged={updateSystemDescription}></SystemDescription>
 		</ErrorBoundary>
 	);

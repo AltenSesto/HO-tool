@@ -1,13 +1,17 @@
 import React from "react";
 import { SystemModel } from "../../entities/system-model";
+import { Button, Menu, MenuItem } from "@material-ui/core";
 
 interface Props {
-    
     openFile: (model: SystemModel) => void;
     saveFile: () => SystemModel;
 }
 
-export default class Meny extends React.Component<Props> {
+interface State {
+    anchorEl: any;
+}
+
+export default class Meny extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
 
@@ -16,23 +20,44 @@ export default class Meny extends React.Component<Props> {
         this.processResult = this.processResult.bind(this);
         this.handleFileError = this.handleFileError.bind(this);
         this.reportError = this.reportError.bind(this);
+        this.openMenu = this.openMenu.bind(this);
+        this.closeMenu = this.closeMenu.bind(this);
+
+        this.state = {
+            anchorEl: null
+        };
     }
-       
-    render () {
+
+    render() {
         let openFile;
         if (window.FileReader && window.FileList) {
-            openFile = <input type="file" onChange={(ev) => this.readFile(ev.target.files)} accept=".json"/>;
+            openFile = <input type="file" onChange={(ev) => this.readFile(ev.target.files)} accept=".json" />;
         } else {
             openFile = <span>File API not supported</span>;
         }
 
         return (
-            <div>
-                {openFile}
-                <button type="button" onClick={this.downloadFile}>Download</button>
-            </div>
+            <React.Fragment>
+                <Button color="inherit" onClick={this.openMenu}>File</Button>
+                <Menu
+                    anchorEl={this.state.anchorEl}
+                    keepMounted
+                    open={Boolean(this.state.anchorEl)}
+                    onClose={this.closeMenu}>
+                    <MenuItem>{openFile}</MenuItem>
+                    <MenuItem onClick={this.downloadFile}>Download</MenuItem>
+                </Menu>
+            </React.Fragment>
         );
     }
+
+    private openMenu(event: any) {
+        this.setState({ anchorEl: event.currentTarget });
+    };
+
+    private closeMenu() {
+        this.setState({ anchorEl: null });
+    };
 
     private readFile(files: FileList | null) {
         if (files === null || files.length !== 1) {
@@ -57,7 +82,7 @@ export default class Meny extends React.Component<Props> {
         element.setAttribute('download', 'HazardOntology.json');
         element.style.display = 'none';
         document.body.appendChild(element);
-      
+
         element.click();
         document.body.removeChild(element);
     }
@@ -81,7 +106,7 @@ export default class Meny extends React.Component<Props> {
 
         const data = ev.target.result as string;
         const model = JSON.parse(data);
-        
+
         this.props.openFile(model);
     }
 };
