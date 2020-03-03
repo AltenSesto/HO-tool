@@ -4,7 +4,9 @@ import { useBeforeunload } from 'react-beforeunload';
 import 'typeface-roboto';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography, Toolbar, AppBar, Grid } from '@material-ui/core';
+import { Typography, Toolbar, AppBar, Grid, IconButton, Collapse } from '@material-ui/core';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import ExpandLess from '@material-ui/icons/ExpandLess';
 
 import SystemDescription from './components/system-description/system-description';
 import ErrorBoundary from './components/error-boundary';
@@ -19,6 +21,7 @@ const App: React.FC = () => {
 		systemDescription: []
 	});
 	const [hasUnsavedChanges, setHasUnsaveChanges] = useState(false);
+	const [isFlowExpanded, setFlowExpanded] = useState(true);
 
 	useBeforeunload((ev) => {
 		if (hasUnsavedChanges) {
@@ -57,12 +60,14 @@ const App: React.FC = () => {
 		setHasUnsaveChanges(true);
 	};
 
-	const useStyles = makeStyles(() => ({
+	const classes = makeStyles(() => ({
 		appTitle: {
 			textAlign: 'center'
-		}
-	}));
-	const classes = useStyles();
+		},
+		flowExpander: {
+			textAlign: 'right'
+		}	
+	}))();
 
 	return (
 		<ErrorBoundary>
@@ -70,21 +75,27 @@ const App: React.FC = () => {
 
 			<AppBar position="static">
 				<Toolbar variant="dense">
-					<Grid container>
+					<Grid container justify="space-evenly">
 						<Grid item xs>
 							<Meny openFile={openFile} saveFile={saveFile}></Meny>
 						</Grid>
 						<Grid item xs={6} className={classes.appTitle}>
 							<Typography variant="h6">
 								Hazard Ontology
-    					</Typography>
+							</Typography>
 						</Grid>
-						<Grid item xs>
-							&nbsp;
+						<Grid item xs className={classes.flowExpander}>
+							<IconButton color="inherit" onClick={() => setFlowExpanded(!isFlowExpanded)}>
+								{isFlowExpanded ? <ExpandLess /> : <ExpandMore />}
+							</IconButton>
+						</Grid>
+						<Grid item xs={12}>
+							<Collapse in={isFlowExpanded} timeout="auto">
+								<ProgressSteps></ProgressSteps>
+							</Collapse>
 						</Grid>
 					</Grid>
 				</Toolbar>
-				<ProgressSteps></ProgressSteps>
 			</AppBar>
 
 			<SystemDescription entities={systemModel.systemDescription} entitiesChanged={updateSystemDescription}></SystemDescription>

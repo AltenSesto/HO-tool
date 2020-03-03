@@ -1,6 +1,6 @@
 import React from 'react';
 import Stepper from '@material-ui/core/Stepper';
-import { Step, StepLabel, Tabs, Tab } from '@material-ui/core';
+import { Step, StepLabel, Tabs, Tab, Grid } from '@material-ui/core';
 
 const stages = [
     { id: 'OHI', name: 'Identify Hazards' },
@@ -13,24 +13,28 @@ const stages = [
 const ProgressSteps: React.FC = () => {
 
     return (
-        <React.Fragment>
-            <Stepper activeStep={0}>
-                {stages.map((stage) => {
-                    return (
-                        <Step key={stage.id}>
-                            <StepLabel >
-                                {stage.name}
-                            </StepLabel>
-                        </Step>
-                    );
-                })}
-            </Stepper>
-            <Tabs value={0}>
-                <Tab label="System Description Formalization" />
-                <Tab label="Mishap Victim Identification" />
-                <Tab label="Hazard Population" />
-            </Tabs>
-        </React.Fragment>
+        <Grid container>
+            <Grid item xs={12}>
+                <Stepper activeStep={0}>
+                    {stages.map((stage) => {
+                        return (
+                            <Step key={stage.id}>
+                                <StepLabel >
+                                    {stage.name}
+                                </StepLabel>
+                            </Step>
+                        );
+                    })}
+                </Stepper>
+            </Grid>
+            <Grid item xs={12}>
+                <Tabs value={0}>
+                    <Tab label="System Description Formalization" />
+                    <Tab label="Mishap Victim Identification" />
+                    <Tab label="Hazard Population" />
+                </Tabs>
+            </Grid>
+        </Grid>
     );
 };
 

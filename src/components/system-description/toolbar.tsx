@@ -1,4 +1,10 @@
 import React, { useState } from 'react';
+
+import AddIcon from '@material-ui/icons/Add';
+import FolderIcon from '@material-ui/icons/Folder';
+import { makeStyles, Backdrop } from '@material-ui/core';
+import { SpeedDial, SpeedDialAction, SpeedDialIcon } from '@material-ui/lab';
+
 import SystemObject from '../../entities/system-description/system-object';
 import { ObjectTypes } from '../../entities/system-description/object-types';
 import Subsystem from '../../entities/system-description/subsystem';
@@ -11,9 +17,32 @@ interface Props {
     allEntities: SystemDescriptionEntity[];
 }
 
+const useStyles = makeStyles(theme => ({
+    root: {
+        height: 380,
+        transform: 'translateZ(0px)',
+        flexGrow: 1,
+    },
+    speedDial: {
+        position: 'absolute',
+        bottom: theme.spacing(2),
+        right: theme.spacing(2),
+    },
+}));
+
 const Toolbar: React.FC<Props> = (props: Props) => {
 
     const [entityEditing, setEntityEditing] = useState<SystemObject | Subsystem | null>(null);
+    const [isSpeedDialOpen, setIsSpeedDialOpen] = useState(false);
+    const classes = useStyles();
+
+    const handleOpenSpeedDial = () => {
+        setIsSpeedDialOpen(true);
+    };
+
+    const handleCloseSpeedDial = () => {
+        setIsSpeedDialOpen(false);
+    };
 
     const getId = (prefix: string) => {
         return `${prefix}-${new Date().getTime()}`;
@@ -24,6 +53,7 @@ const Toolbar: React.FC<Props> = (props: Props) => {
             const obj = { id: getId(type.toString()), name: "", type, posX: defaultPosition.x, posY: defaultPosition.y };
             setEntityEditing(obj);
         }
+        handleCloseSpeedDial();
     };
 
     const completeCreatingEntity = (entity: SystemObject | Subsystem) => {
@@ -54,6 +84,13 @@ const Toolbar: React.FC<Props> = (props: Props) => {
         }
     };
 
+    const actions = [
+        { icon: <AddIcon />, name: 'Kind', action: () => startCreatingObject(ObjectTypes.kind) },
+        { icon: <AddIcon />, name: 'Relator', action: () => startCreatingObject(ObjectTypes.relator) },
+        { icon: <AddIcon />, name: 'Role', action: () => startCreatingObject(ObjectTypes.role) },
+        { icon: <FolderIcon />, name: 'Subsystem', action: startCreatingSubsystem },
+    ];
+    
     let editor;
     if (entityEditing) {
         editor = <NodeEditor
@@ -65,13 +102,28 @@ const Toolbar: React.FC<Props> = (props: Props) => {
     }
 
     return (
-        <div>
-            <button type="button" onClick={() => startCreatingObject(ObjectTypes.kind)}>Add kind</button>
-            <button type="button" onClick={() => startCreatingObject(ObjectTypes.role)}>Add role</button>
-            <button type="button" onClick={() => startCreatingObject(ObjectTypes.relator)}>Add relator</button>
-            <button type="button" onClick={startCreatingSubsystem}>Add subsystem</button>
+        <React.Fragment>
+            <Backdrop open={isSpeedDialOpen} />
+            <SpeedDial
+                ariaLabel="Add new element"
+                className={classes.speedDial}
+                icon={<SpeedDialIcon />}
+                onClose={handleCloseSpeedDial}
+                onOpen={handleOpenSpeedDial}
+                open={isSpeedDialOpen}
+            >
+                {actions.map(action => (
+                    <SpeedDialAction
+                        key={action.name}
+                        icon={action.icon}
+                        tooltipTitle={action.name}
+                        tooltipOpen
+                        onClick={action.action}
+                    />
+                ))}
+            </SpeedDial>
             {editor}
-        </div>
+        </React.Fragment>
     );
 };
 

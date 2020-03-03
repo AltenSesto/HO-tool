@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Dialog, Backdrop, DialogActions, Button, TextField, DialogContent, FormControl, InputLabel, Select, MenuItem, makeStyles } from '@material-ui/core';
+
 import { SystemDescriptionEntity, isSubsystem, isSystemObject } from '../../entities/system-description/system-description-entity';
 import Subsystem from '../../entities/system-description/subsystem';
 import SystemObject from '../../entities/system-description/system-object';
@@ -12,14 +14,20 @@ interface Props {
     editCancelled: () => void;
 }
 
+const useStyles = makeStyles(theme => ({
+    formControl: {
+        marginTop: theme.spacing(1),
+    },
+    selectEmpty: {
+        marginTop: theme.spacing(2),
+    },
+}));
+
 const NodeEditor: React.FC<Props> = (props: Props) => {
 
     const [entity, setEntity] = useState(props.entity);
 
-    const inputRef = useRef<HTMLInputElement | null>();
-    useEffect(() => {
-        inputRef.current && inputRef.current.focus();
-    }, []);
+    const classes = useStyles();
 
     const defaultParent = "";
 
@@ -29,31 +37,45 @@ const NodeEditor: React.FC<Props> = (props: Props) => {
             .filter(e => isSubsystem(e))
             .map(e => e as Subsystem)
             .sort((a, b) => a.name.localeCompare(b.name))
-            .map((e, index) => <option key={index} value={e.id}>{e.name}</option>);
+            .map(e => <MenuItem key={e.id} value={e.id}>{e.name}</MenuItem>);
+
         let entityParent = defaultParent;
         if (entity.parent) {
             entityParent = entity.parent;
         }
-        const updateParent = (ev: React.ChangeEvent<HTMLSelectElement>) => {
+
+        const updateParent = (ev: React.ChangeEvent<{ value: unknown }>) => {
             let parent: string | undefined;
             if (ev.target.value !== defaultParent) {
-                parent = ev.target.value;
+                parent = ev.target.value as string;
             }
-            setEntity({...entity, ...{parent: parent}});
+            setEntity({ ...entity, ...{ parent: parent } });
         };
+
         parentEditor = (
-            <React.Fragment>
-                Subsystem:
-                <select name="subsystem" disabled={subsystems.length === 0} defaultValue={entityParent} onChange={updateParent}>
-                    <option key={-1} value={defaultParent}>(none)</option>
+            <FormControl className={classes.formControl}>
+                <InputLabel shrink id="label-subsystem">
+                    Subsystem
+                </InputLabel>
+                <Select
+                    labelId="label-subsystem"
+                    value={entityParent}
+                    onChange={updateParent}
+                    displayEmpty
+                    disabled={subsystems.length === 0}
+                    className={classes.selectEmpty}
+                >
+                    <MenuItem key="-1" value={defaultParent}>
+                        <em>None</em>
+                    </MenuItem>
                     {subsystems}
-                </select>
-            </React.Fragment>
+                </Select>
+            </FormControl>
         );
     }
 
     const updateName = (ev: React.ChangeEvent<HTMLInputElement>) => {
-        setEntity({...entity, ...{name: ev.target.value}});
+        setEntity({ ...entity, ...{ name: ev.target.value } });
     };
 
     const submitEntity = (ev: React.FormEvent) => {
@@ -62,13 +84,31 @@ const NodeEditor: React.FC<Props> = (props: Props) => {
     };
 
     return (
-        <form onSubmit={submitEntity} onReset={() => props.editCancelled()}>
-            Name:
-                <input ref={(ref) => inputRef.current = ref} type="text" name="name" defaultValue={entity.name} onChange={updateName} required />
-                {parentEditor}
-            <input type="submit" value="OK" />
-            <input type="reset" value="Cancel" />
-        </form>
+        <React.Fragment>
+            <Backdrop open={!!props.entity} />
+            <Dialog open={!!props.entity}>
+                <form autoComplete="off" onSubmit={submitEntity} onReset={() => props.editCancelled()}>
+                    <DialogContent>
+                        <TextField
+                            required
+                            autoFocus
+                            margin="dense"
+                            id="name"
+                            label="Name"
+                            type="text"
+                            fullWidth
+                            defaultValue={entity.name}
+                            onChange={updateName}
+                        />
+                        {parentEditor}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button type="submit" variant="contained" color="primary">OK</Button>
+                        <Button type="reset" color="primary">Cancel</Button>
+                    </DialogActions>
+                </form>
+            </Dialog>
+        </React.Fragment>
     );
 };
 
