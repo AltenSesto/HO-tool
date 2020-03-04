@@ -11,13 +11,13 @@ const graphStyle = [
             'shape': 'round-rectangle',
             'label': 'data(label)',
             'height': 'label',
-            'width': '130px',
+            'width': '110px',
             'text-valign': 'center',
             'text-halign': 'center',
             'text-wrap': 'wrap',
             'text-max-width': '130px',
             'font-size': 11,
-            'padding': '10px'
+            'padding': '5px'
         }
     },
     {

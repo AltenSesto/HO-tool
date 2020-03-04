@@ -1,5 +1,9 @@
 import React from 'react';
 import { Core, Singular, NodeSingular, EventObjectNode } from 'cytoscape';
+import IconButton from '@material-ui/core/IconButton';
+import LinkIcon from "@material-ui/icons/Link";
+import EditIcon from "@material-ui/icons/Edit";
+
 import SystemObject from '../../../entities/system-description/system-object';
 import ElementActions from '../../graph/element-actions';
 import ObjectConnections from '../../../entities/system-description/object-connections';
@@ -36,17 +40,23 @@ export default class SystemObjectActions extends React.Component<Props> {
 
     render() {
         return (
-            <ElementActions 
-            id={this.props.object.id} 
-            cy={this.props.cy} 
-            elementDeleted={this.deleteNodeWithEdges} 
-            popperInitialized={this.initPopper}
-            mouseEntered={this.mouseEntered}
-            mouseLeft={this.mouseLeft}
-            allowActionsVisible={this.isParentExpanded}
-            childrenStatic={<span>{this.props.isConnectionCreating ? 'linking' : ''}</span>}>
-                <button type='button' onClick={this.startCreateConnection}>Link</button>
-                <button type='button' onClick={() => this.props.nodeEditing(this.props.object)}>Edit</button>
+            <ElementActions
+                id={this.props.object.id}
+                cy={this.props.cy}
+                elementDeleted={this.deleteNodeWithEdges}
+                popperInitialized={this.initPopper}
+                mouseEntered={this.mouseEntered}
+                mouseLeft={this.mouseLeft}
+                allowActionsVisible={this.isParentExpanded}
+                childrenStatic={this.props.isConnectionCreating ? <LinkIcon /> : undefined}
+                childrenOverride={this.props.isConnectionCreating ? <React.Fragment></React.Fragment> : undefined}
+            >
+                <IconButton title="Connect" onClick={this.startCreateConnection}>
+                    <LinkIcon />
+                </IconButton>
+                <IconButton title="Edit" onClick={() => this.props.nodeEditing(this.props.object)}>
+                    <EditIcon />
+                </IconButton>
             </ElementActions>
         );
     };
@@ -69,11 +79,11 @@ export default class SystemObjectActions extends React.Component<Props> {
     }
 
     private mouseEntered() {
-        this.props.onMouseOver(this.props.object);        
+        this.props.onMouseOver(this.props.object);
     }
 
     private mouseLeft() {
-        this.props.onMouseOut(this.props.object);        
+        this.props.onMouseOut(this.props.object);
     }
 
     private startCreateConnection() {
@@ -81,7 +91,7 @@ export default class SystemObjectActions extends React.Component<Props> {
             return;
         }
         const connections = this.ele.connectedEdges()
-            .map(e => { return { id: e.data().id, source: e.data().source, target: e.data().target };});
+            .map(e => { return { id: e.data().id, source: e.data().source, target: e.data().target }; });
         this.props.connectionCreateStarted({
             object: this.props.object,
             connections: connections
@@ -104,7 +114,7 @@ export default class SystemObjectActions extends React.Component<Props> {
         const newPosition = event.target.position();
         const updatedObj = { ...this.props.object, ...{ posX: newPosition.x, posY: newPosition.y } };
         this.props.nodeRepositioned(updatedObj);
-    }    
+    }
 
     private initPopper(_popperObj: any, ele: Singular) {
         if (ele.isNode()) {

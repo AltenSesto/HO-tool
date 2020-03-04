@@ -18,16 +18,11 @@ interface Props {
 }
 
 const useStyles = makeStyles(theme => ({
-    root: {
-        height: 380,
-        transform: 'translateZ(0px)',
-        flexGrow: 1,
-    },
     speedDial: {
-        position: 'absolute',
+        position: 'fixed',
         bottom: theme.spacing(2),
         right: theme.spacing(2),
-    },
+    }
 }));
 
 const Toolbar: React.FC<Props> = (props: Props) => {
@@ -86,8 +81,8 @@ const Toolbar: React.FC<Props> = (props: Props) => {
 
     const actions = [
         { icon: <AddIcon />, name: 'Kind', action: () => startCreatingObject(ObjectTypes.kind) },
-        { icon: <AddIcon />, name: 'Relator', action: () => startCreatingObject(ObjectTypes.relator) },
         { icon: <AddIcon />, name: 'Role', action: () => startCreatingObject(ObjectTypes.role) },
+        { icon: <AddIcon />, name: 'Relator', action: () => startCreatingObject(ObjectTypes.relator) },
         { icon: <FolderIcon />, name: 'Subsystem', action: startCreatingSubsystem },
     ];
     

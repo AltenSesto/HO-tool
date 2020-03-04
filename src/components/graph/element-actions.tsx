@@ -1,10 +1,13 @@
 import React, { ReactElement } from 'react';
 import { Core, Singular, EventObject } from 'cytoscape';
 import Popper from 'popper.js';
+import { IconButton } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 interface Props {
     id: string;
     cy: Core;
+    childrenOverride?: ReactElement;
     childrenStatic?: ReactElement;
     popperInitialized?: (popperObj: any, ele: Singular) => void;
     mouseEntered?: () => void;
@@ -49,14 +52,35 @@ export default class ElementActions extends React.Component<Props, State> {
 
     render() {
         const visibility = this.state.areActionsVisible ? 'visible' : 'hidden';
+
+        let children = this.props.childrenOverride;
+        if (!children) {
+            children = (
+                <React.Fragment>
+                    {this.props.children}
+                    <IconButton title="Delete" onClick={() => this.props.elementDeleted(this.props.id)}>
+                        <DeleteIcon />
+                    </IconButton>
+                </React.Fragment>
+            );
+        }
+        
+        let childrenStatic;
+        if (this.props.childrenStatic) {
+            childrenStatic = (
+                <div style={{padding: '12px'}}>
+                    {this.props.childrenStatic}
+                </div>
+            );
+        }
+
         return (
-            <div ref={r => this.root = r} style={{ marginBottom: '10px', zIndex: 100 }}
+            <div ref={r => this.root = r} style={{ zIndex: 100 }}
                 onMouseEnter={() => this.setActionsVisible(true)}
                 onMouseLeave={() => this.setActionsVisible(false)}>
-                {this.props.childrenStatic}
+                {childrenStatic}
                 <div style={{ visibility: visibility }}>
-                    {this.props.children}
-                    <button type='button' onClick={() => this.props.elementDeleted(this.props.id)}>Delete</button>
+                    {children}
                 </div>
             </div>
         );

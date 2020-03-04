@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Dialog, Backdrop, DialogActions, Button, TextField, DialogContent, FormControl, InputLabel, Select, MenuItem, makeStyles } from '@material-ui/core';
 
 import { SystemDescriptionEntity, isSubsystem, isSystemObject } from '../../entities/system-description/system-description-entity';

@@ -1,5 +1,8 @@
 import React from 'react';
 import { Core, Singular, NodeSingular, EventObjectNode, EventObject } from 'cytoscape';
+import { IconButton } from '@material-ui/core';
+import { Edit, ExpandLess, ExpandMore } from "@material-ui/icons";
+
 import Subsystem from '../../../entities/system-description/subsystem';
 import ElementActions from '../../graph/element-actions';
 import { CollapseApi, getCollapseApi } from '../../../entities/graph/collapse-api';
@@ -38,10 +41,12 @@ export default class SubsystemActions extends React.Component<Props> {
             cy={this.props.cy}
             elementDeleted={this.deleteWithChildren}
             popperInitialized={this.initPopper}>
-            <button type='button' onClick={this.toggleCollapsedState}>
-                {this.props.subsystem.isCollapsed ? 'Expand' : 'Collapse'}
-            </button>
-            <button type='button' onClick={() => this.props.subsystemEditing(this.props.subsystem)}>Edit</button>
+            <IconButton title={this.props.subsystem.isCollapsed ? 'Expand' : 'Collapse'} onClick={this.toggleCollapsedState}>
+                {this.props.subsystem.isCollapsed ? <ExpandMore /> : <ExpandLess />}
+            </IconButton>
+            <IconButton title="Edit" onClick={() => this.props.subsystemEditing(this.props.subsystem)}>
+                <Edit />
+            </IconButton>
         </ElementActions>;
     }
 
