@@ -28,6 +28,8 @@ interface State {
     connectionCreatingSource: ObjectConnections | null;
     isConnectionTargetValid: boolean;
     nodeEditing: SystemObject | Subsystem | null;
+    maxX: number;
+    maxY: number;
 }
 
 interface Props {
@@ -45,6 +47,11 @@ enum ConnectionTargetOptions {
 
 export default class Graph extends React.Component<Props, State> {
 
+        // storing max canvas dimentions to use while loading a graph from a file
+        // state will non work here as nodes load one by one without state being updated
+        private newMaxX: number;
+        private newMaxY: number;
+
     constructor(props: Props) {
         super(props);
 
@@ -59,23 +66,31 @@ export default class Graph extends React.Component<Props, State> {
         this.startEditNode = this.startEditNode.bind(this);
         this.completeEditNode = this.completeEditNode.bind(this);
         this.findEntityById = this.findEntityById.bind(this);
+        this.elementMoved = this.elementMoved.bind(this);
 
         this.state = {
             elements: [],
             cy: null,
             connectionCreatingSource: null,
             isConnectionTargetValid: false,
-            nodeEditing: null
+            nodeEditing: null,
+            maxX: 500,
+            maxY: 500
         };
+        this.newMaxX = this.state.maxX;
+        this.newMaxY = this.state.maxY;
     }
+
+
 
     static getDerivedStateFromProps(props: Props, state: State): State {
         const newEntities = props.entities.filter(o => !state.elements.some(e => o.id === e.data.id && !e.data.updateRequired));
         const deletedEntities = state.elements.filter(e => props.entities.every(o => e.data.id !== o.id) || e.data.updateRequired);
+
         const elements = state.elements
             .filter(e => deletedEntities.indexOf(e) === -1)
-            .concat(newEntities.map((o) => Graph.createElement(o)));
-        return { ...state, ...{ elements: elements } };
+            .concat(newEntities.map(e => Graph.createElement(e)));
+        return { ...state, ...{ elements } };
     }
 
     render() {
@@ -95,7 +110,9 @@ export default class Graph extends React.Component<Props, State> {
                     nodeDeleted={this.props.entitiesDeleted}
                     onMouseOver={this.nodeMouseEntered}
                     onMouseOut={this.nodeMouseLeft}
-                    onClick={this.nodeClicked}>
+                    onClick={this.nodeClicked}
+                    onElementMoved={this.elementMoved}
+                >
                 </SystemObjectActions>
             } else if (e.group === 'nodes' && e.data.subsystem) {
                 return <SubsystemActions
@@ -140,12 +157,26 @@ export default class Graph extends React.Component<Props, State> {
                 {nodeEditor}
                 {actions}
                 <CytoscapeComponent
+                    userPanningEnabled={false}
                     elements={elements}
-                    style={{ width: '1200px', height: '1200px', zIndex: 10, cursor: cursorStyle }}
+                    style={{ width: this.state.maxX, height: this.state.maxY, zIndex: 10, cursor: cursorStyle }}
                     stylesheet={style}
                     cy={this.initCytoscape} />
             </React.Fragment>
         );
+    }
+
+    private elementMoved(position: { x: number, y: number }, width: number, height: number) {
+        const margin = 200; // we'll add more space than needed as node dimensions are not correct when loading from file
+        if (position.x + width + margin > this.newMaxX) {
+            this.newMaxX = position.x + width + margin;
+        }
+        if (position.y + height + margin > this.newMaxY) {
+            this.newMaxY = position.y + height + margin;
+        }
+        if (this.newMaxX !== this.state.maxX || this.newMaxY !== this.state.maxY) {
+            this.setState({ ...this.state, ...{ maxX: this.newMaxX, maxY: this.newMaxY } });
+        }
     }
 
     private findEntityById(id: string) {
@@ -195,8 +226,8 @@ export default class Graph extends React.Component<Props, State> {
     }
 
     private validateConnectionTarget(target: SystemObject): ConnectionTargetOptions {
-        if (!this.state.connectionCreatingSource || 
-                this.state.connectionCreatingSource.connections.some(e => e.target === target.id || e.source === target.id)) {
+        if (!this.state.connectionCreatingSource ||
+            this.state.connectionCreatingSource.connections.some(e => e.target === target.id || e.source === target.id)) {
             return ConnectionTargetOptions.NotValid;
         }
 

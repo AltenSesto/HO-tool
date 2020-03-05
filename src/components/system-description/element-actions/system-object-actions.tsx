@@ -18,7 +18,8 @@ interface Props {
     connectionCreateStarted: (source: ObjectConnections) => void,
     onClick: (obj: SystemObject) => void,
     onMouseOver: (obj: SystemObject) => void,
-    onMouseOut: (obj: SystemObject) => void
+    onMouseOut: (obj: SystemObject) => void,
+    onElementMoved: (position: {x: number, y: number}, width: number, height: number) => void
 }
 
 export default class SystemObjectActions extends React.Component<Props> {
@@ -36,6 +37,7 @@ export default class SystemObjectActions extends React.Component<Props> {
         this.mouseEntered = this.mouseEntered.bind(this);
         this.mouseLeft = this.mouseLeft.bind(this);
         this.isParentExpanded = this.isParentExpanded.bind(this);
+        this.elementMoved = this.elementMoved.bind(this);
     }
 
     render() {
@@ -50,6 +52,7 @@ export default class SystemObjectActions extends React.Component<Props> {
                 allowActionsVisible={this.isParentExpanded}
                 childrenStatic={this.props.isConnectionCreating ? <LinkIcon /> : undefined}
                 childrenOverride={this.props.isConnectionCreating ? <React.Fragment></React.Fragment> : undefined}
+                elementMoving={this.elementMoved}
             >
                 <IconButton title="Connect" onClick={this.startCreateConnection}>
                     <LinkIcon />
@@ -76,6 +79,13 @@ export default class SystemObjectActions extends React.Component<Props> {
             return true;
         }
         return !(this.ele.parent().length === 0 && this.props.object.parent);
+    }
+
+    private elementMoved() {
+        if (this.ele) {
+            const position = this.ele.position();
+            this.props.onElementMoved(position, this.ele.outerWidth(), this.ele.outerHeight())
+        }
     }
 
     private mouseEntered() {
@@ -121,6 +131,7 @@ export default class SystemObjectActions extends React.Component<Props> {
             this.ele = ele;
             ele.on(ElementActions.EVENT_DRAGFREE, this.saveNodePosition);
             ele.on(ElementActions.EVENT_CLICK, this.nodeClicked);
+            this.elementMoved(); // to set canvas size on loading graph from file
         }
     }
 };

@@ -12,6 +12,7 @@ interface Props {
     popperInitialized?: (popperObj: any, ele: Singular) => void;
     mouseEntered?: () => void;
     mouseLeft?: () => void;
+    elementMoving?: () => void;
     elementDeleted: (id: string) => void;
     allowActionsVisible?: () => boolean;
 }
@@ -44,6 +45,7 @@ export default class ElementActions extends React.Component<Props, State> {
         this.mouseEntered = this.mouseEntered.bind(this);
         this.mouseLeft = this.mouseLeft.bind(this);
         this.setActionsVisible = this.setActionsVisible.bind(this);
+        this.elementMoved = this.elementMoved.bind(this);
 
         this.state = {
             areActionsVisible: false
@@ -95,7 +97,7 @@ export default class ElementActions extends React.Component<Props, State> {
         this.props.cy.off(ElementActions.EVENT_ADD, undefined, this.initPopper);
         this.ele && this.ele.off(ElementActions.EVENT_MOUSEOVER, undefined, this.mouseEntered);
         this.ele && this.ele.off(ElementActions.EVENT_MOUSEOUT, undefined, this.mouseLeft);
-        this.ele && this.ele.off(ElementActions.EVENT_POSITION, undefined, this.updatePopperPosition);
+        this.ele && this.ele.off(ElementActions.EVENT_POSITION, undefined, this.elementMoved);
     }
 
     private setActionsVisible(visible: boolean) {
@@ -104,6 +106,11 @@ export default class ElementActions extends React.Component<Props, State> {
         } else if (this.state.areActionsVisible) {
             this.setState({areActionsVisible: false});
         }
+    }
+
+    private elementMoved() {
+        this.updatePopperPosition();
+        this.props.elementMoving && this.props.elementMoving();
     }
 
     private mouseEntered() {
@@ -139,7 +146,7 @@ export default class ElementActions extends React.Component<Props, State> {
         this.props.cy.off(ElementActions.EVENT_ADD, undefined, this.initPopper);
         ele.on(ElementActions.EVENT_MOUSEOUT, this.mouseLeft);
         ele.on(ElementActions.EVENT_MOUSEOVER, this.mouseEntered);
-        ele.on(ElementActions.EVENT_POSITION, this.updatePopperPosition);
+        ele.on(ElementActions.EVENT_POSITION, this.elementMoved);
 
         this.props.popperInitialized && this.props.popperInitialized(this.popperObj, ele);
     }
