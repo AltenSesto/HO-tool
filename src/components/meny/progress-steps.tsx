@@ -1,40 +1,63 @@
 import React from 'react';
-import Stepper from '@material-ui/core/Stepper';
-import { Step, StepLabel, Tabs, Tab, Grid } from '@material-ui/core';
+import { List, ListItem, ListItemText, Chip, makeStyles, ListItemIcon } from '@material-ui/core';
 
 const stages = [
-    { id: 'OHI', name: 'Identify Hazards' },
-    { id: 'OCH', name: 'Identify Causes' },
-    { id: 'SARE', name: 'Safety Requirements' },
-    { id: '4', name: 'Control Mitigation' }
+    {
+        id: 'OHI', name: 'Identify Hazards', steps: [
+            { id: 'OHI1', name: 'Modelling' },
+            { id: 'OHI2', name: 'Identify Victims' },
+            { id: 'OHI3', name: 'Identify Hazards' },
+        ]
+    },
+    {
+        id: 'OCH', name: 'Identify Causes', steps: [
+            { id: 'OCH1', name: 'Categorize' },
+            { id: 'OCH2', name: 'Expand' },
+            { id: 'OCH3', name: 'Identify Causes' },
+        ]
+    },
+    {
+        id: 'SARE', name: 'Safety Requirements', steps: [
+            { id: 'SARE1', name: 'Evaluate Severity' },
+            { id: 'SARE2', name: 'Evaluate Probability' },
+            { id: 'SARE3', name: 'Safety Requirements' },
+        ]
+    },
+    { id: '4', name: 'Control Mitigation', steps: [] }
 ];
 
+const useStyles = makeStyles(theme => ({
+    label: {
+        paddingLeft: theme.spacing(1)
+    }
+}));
 
 const ProgressSteps: React.FC = () => {
+    const classes = useStyles();
 
     return (
-        <Grid container>
-            <Grid item xs={12}>
-                <Stepper activeStep={0}>
-                    {stages.map((stage) => {
-                        return (
-                            <Step key={stage.id}>
-                                <StepLabel >
-                                    {stage.name}
-                                </StepLabel>
-                            </Step>
-                        );
-                    })}
-                </Stepper>
-            </Grid>
-            <Grid item xs={12}>
-                <Tabs value={0}>
-                    <Tab label="System Description Formalization" />
-                    <Tab label="Mishap Victim Identification" />
-                    <Tab label="Hazard Population" />
-                </Tabs>
-            </Grid>
-        </Grid>
+        <List dense>
+            {stages.map(stage => (
+                <React.Fragment key={stage.id}>
+                    <ListItem button>
+                        <ListItemIcon>
+                            <Chip label={stage.id} />
+                        </ListItemIcon>
+                        <ListItemText primary={stage.name} className={classes.label} />
+                    </ListItem>
+                    <List disablePadding dense>
+                        {stage.steps.map(step => (
+                            <ListItem button key={step.id}>
+                                <ListItemIcon>
+                                    <Chip size="small" label={step.id} />
+                                </ListItemIcon>
+                                <ListItemText primary={step.name} className={classes.label} />
+                            </ListItem>
+                        ))}
+                    </List>
+                </React.Fragment>
+            ))}
+        </List>
     );
 };
 

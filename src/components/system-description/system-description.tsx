@@ -4,7 +4,7 @@ import SystemObject from '../../entities/system-description/system-object';
 import Graph from './graph';
 import { SystemDescriptionEntity } from '../../entities/system-description/system-description-entity';
 import Subsystem from '../../entities/system-description/subsystem';
-import { Grid, Paper } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 
 interface Props {
     entities: SystemDescriptionEntity[];
@@ -22,16 +22,15 @@ export default class SystemDescription extends React.Component<Props> {
 
     render() {
         return (
-			<Grid container alignItems="stretch">
+            <Grid container alignItems="stretch">
                 <Grid item xs={12}>
                     <Toolbar entityAdded={this.addEntity} allEntities={this.props.entities}></Toolbar>
-                    <Paper variant="outlined" square>
-                        <Graph
-                            entities={this.props.entities}
-                            connectionCreated={this.addEntity}
-                            entitiesDeleted={this.deleteEntities}
-                            nodeUpdated={this.updateObject}></Graph>
-                    </Paper>
+                    <Graph
+                        entities={this.props.entities}
+                        connectionCreated={this.addEntity}
+                        entitiesDeleted={this.deleteEntities}
+                        nodeUpdated={this.updateObject}>
+                    </Graph>
                 </Grid>
             </Grid>
         );
