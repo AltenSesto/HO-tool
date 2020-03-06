@@ -29,7 +29,7 @@ const stages = [
 const useStyles = makeStyles(theme => ({
     label: {
         paddingLeft: theme.spacing(1)
-    }
+    },
 }));
 
 const ProgressSteps: React.FC = () => {
@@ -39,21 +39,24 @@ const ProgressSteps: React.FC = () => {
         <List dense>
             {stages.map(stage => (
                 <React.Fragment key={stage.id}>
-                    <ListItem button>
+                    <ListItem>
                         <ListItemIcon>
-                            <Chip label={stage.id} />
+                            <Chip label={stage.id} variant="outlined" color="primary" />
                         </ListItemIcon>
                         <ListItemText primary={stage.name} className={classes.label} />
                     </ListItem>
                     <List disablePadding dense>
-                        {stage.steps.map(step => (
-                            <ListItem button key={step.id}>
-                                <ListItemIcon>
-                                    <Chip size="small" label={step.id} />
-                                </ListItemIcon>
-                                <ListItemText primary={step.name} className={classes.label} />
-                            </ListItem>
-                        ))}
+                        {stage.steps.map(step => {
+                            const isActive = step.id === 'OHI1';
+                            return (
+                                <ListItem button key={step.id} disabled={!isActive} >
+                                    <ListItemIcon>
+                                        <Chip size="small" disabled={!isActive} label={step.id} color={isActive ? 'secondary' : 'primary'} />
+                                    </ListItemIcon>
+                                    <ListItemText primary={step.name} className={classes.label} />
+                                </ListItem>
+                            );
+                        })}
                     </List>
                     <Divider />
                 </React.Fragment>
