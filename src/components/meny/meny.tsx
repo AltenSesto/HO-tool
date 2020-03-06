@@ -1,6 +1,7 @@
 import React from "react";
 import { SystemModel } from "../../entities/system-model";
 import { Button, Menu, MenuItem } from "@material-ui/core";
+import { SystemDescriptionEntity, isConnectionToCollapsed } from "../../entities/system-description/system-description-entity";
 
 interface Props {
     openFile: (model: SystemModel) => void;
@@ -22,6 +23,7 @@ export default class Meny extends React.Component<Props, State> {
         this.reportError = this.reportError.bind(this);
         this.openMenu = this.openMenu.bind(this);
         this.closeMenu = this.closeMenu.bind(this);
+        this.prepareDataToDownload = this.prepareDataToDownload.bind(this);
 
         this.state = {
             anchorEl: null
@@ -43,7 +45,8 @@ export default class Meny extends React.Component<Props, State> {
                     anchorEl={this.state.anchorEl}
                     keepMounted
                     open={Boolean(this.state.anchorEl)}
-                    onClose={this.closeMenu}>
+                    onClose={this.closeMenu}
+                >
                     <MenuItem>{openFile}</MenuItem>
                     <MenuItem onClick={this.downloadFile}>Download</MenuItem>
                 </Menu>
@@ -72,10 +75,12 @@ export default class Meny extends React.Component<Props, State> {
         reader.onload = this.processResult;
         reader.onerror = this.handleFileError;
         reader.readAsText(file, 'utf-8');
+
+        this.closeMenu();
     }
 
     private downloadFile() {
-        const data = JSON.stringify(this.props.saveFile(), null, '\t');
+        const data = JSON.stringify(this.prepareDataToDownload(), null, '\t');
 
         var element = document.createElement('a');
         element.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(data));
@@ -85,6 +90,27 @@ export default class Meny extends React.Component<Props, State> {
 
         element.click();
         document.body.removeChild(element);
+
+        this.closeMenu();
+    }
+
+    private prepareDataToDownload() {
+        const data = this.props.saveFile();
+        return { ...data, ...{ systemDescription: this.patchCollapsedConnections(data.systemDescription) } };
+    }
+
+    private patchCollapsedConnections (systemDescription: SystemDescriptionEntity[]) {
+        // needed as cytoscape.js-expand-collapse modifies the model so that it brings circular references
+        return systemDescription.map(e => {
+            if (isConnectionToCollapsed(e)) {
+                return {
+                    id: e.id,
+                    source: e.originalEnds.source.data().id,
+                    target: e.originalEnds.target.data().id
+                };
+            }
+            return e;
+        });
     }
 
     private reportError(message: string) {

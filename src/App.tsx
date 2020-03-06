@@ -9,7 +9,7 @@ import SystemDescription from './components/system-description/system-descriptio
 import ErrorBoundary from './components/error-boundary';
 import { SystemModel } from './entities/system-model';
 import Meny from './components/meny/meny';
-import { SystemDescriptionEntity, isConnectionToCollapsed } from './entities/system-description/system-description-entity';
+import { SystemDescriptionEntity } from './entities/system-description/system-description-entity';
 import ProgressSteps from './components/meny/progress-steps';
 
 const drawerWidth = 240;
@@ -62,22 +62,8 @@ const App: React.FC = () => {
 
     const saveFile = () => {
         setHasUnsaveChanges(false);
-        return { ...systemModel, ...{ systemDescription: patchCollapsedConnections(systemModel.systemDescription) } }
+        return systemModel;
     };
-
-    const patchCollapsedConnections = (systemDescription: SystemDescriptionEntity[]) => {
-        // needed as cytoscape.js-expand-collapse modifies the model so that it brings circular references
-        return systemDescription.map(e => {
-            if (isConnectionToCollapsed(e)) {
-                return {
-                    id: e.id,
-                    source: e.originalEnds.source.data().id,
-                    target: e.originalEnds.target.data().id
-                };
-            }
-            return e;
-        });
-    }
 
     const updateSystemDescription = (entities: SystemDescriptionEntity[]) => {
         setSystemModel({ ...systemModel, ...{ systemDescription: entities } });
