@@ -36,12 +36,19 @@ export default class SubsystemActions extends React.Component<Props> {
     }
 
     render() {
+        const isExpandButtonDisabled = !this.ele || this.ele.children().length === 0;
+
         return <ElementActions
             id={this.props.subsystem.id}
             cy={this.props.cy}
             elementDeleted={this.deleteWithChildren}
-            popperInitialized={this.initPopper}>
-            <IconButton title={this.props.subsystem.isCollapsed ? 'Expand' : 'Collapse'} onClick={this.toggleCollapsedState}>
+            popperInitialized={this.initPopper}
+            actionsPlacement="bottom"
+        >
+            <IconButton
+                title={this.props.subsystem.isCollapsed ? 'Expand' : 'Collapse'}
+                onClick={this.toggleCollapsedState}
+            >
                 {this.props.subsystem.isCollapsed ? <ExpandMore /> : <ExpandLess />}
             </IconButton>
             <IconButton title="Edit" onClick={() => this.props.subsystemEditing(this.props.subsystem)}>

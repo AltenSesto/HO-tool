@@ -15,6 +15,7 @@ interface Props {
     elementMoving?: () => void;
     elementDeleted: (id: string) => void;
     allowActionsVisible?: () => boolean;
+    actionsPlacement?: Popper.Placement
 }
 
 interface State {
@@ -139,7 +140,7 @@ export default class ElementActions extends React.Component<Props, State> {
         this.popperObj = (ele as any).popper({
             content: () => this.root,
             popper: {
-                placement: 'top'
+                placement: this.props.actionsPlacement ? this.props.actionsPlacement : 'top'
             }
         });
         this.props.cy.on(ElementActions.CY_EVENTS, this.updatePopperPosition);

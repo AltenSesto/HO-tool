@@ -32,12 +32,7 @@ const graphStyle = [
         selector: '.subsystem',
         style: {
             'shape': 'rectangle',
-            'text-valign': 'top',
-            'text-border-color': '#000',
-            'text-border-style': 'solid',
-            'text-border-width': '1px',
-            'text-background-padding': '3px',
-            'text-border-opacity': 1
+            'text-valign': 'top'
         }
     },
     {
