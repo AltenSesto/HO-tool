@@ -36,8 +36,6 @@ export default class SubsystemActions extends React.Component<Props> {
     }
 
     render() {
-        const isExpandButtonDisabled = !this.ele || this.ele.children().length === 0;
-
         return <ElementActions
             id={this.props.subsystem.id}
             cy={this.props.cy}
