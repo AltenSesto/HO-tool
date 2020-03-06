@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, ListItem, ListItemText, Chip, makeStyles, ListItemIcon } from '@material-ui/core';
+import { List, ListItem, ListItemText, Chip, makeStyles, ListItemIcon, Divider } from '@material-ui/core';
 
 const stages = [
     {
@@ -55,6 +55,7 @@ const ProgressSteps: React.FC = () => {
                             </ListItem>
                         ))}
                     </List>
+                    <Divider />
                 </React.Fragment>
             ))}
         </List>
