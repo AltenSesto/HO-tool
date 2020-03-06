@@ -74,8 +74,8 @@ export default class Graph extends React.Component<Props, State> {
             connectionCreatingSource: null,
             isConnectionTargetValid: false,
             nodeEditing: null,
-            maxX: 500,
-            maxY: 500
+            maxX: 1500,
+            maxY: 900
         };
         this.newMaxX = this.state.maxX;
         this.newMaxY = this.state.maxY;

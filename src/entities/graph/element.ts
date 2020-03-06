@@ -26,5 +26,5 @@ export default interface Element {
 }
 
 export const defaultPosition = {
-    x: 100, y: 100
+    x: 100, y: 50
 };
