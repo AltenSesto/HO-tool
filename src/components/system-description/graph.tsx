@@ -41,8 +41,9 @@ interface Props {
 
 enum ConnectionTargetOptions {
     NotValid,
-    Valid,
-    SwapEnds
+    Unoriented,
+    OrientedStraight,
+    OrientedReversed
 }
 
 export default class Graph extends React.Component<Props, State> {
@@ -209,8 +210,7 @@ export default class Graph extends React.Component<Props, State> {
 
     private nodeMouseEntered(target: SystemObject) {
         if (this.state.connectionCreatingSource) {
-            const connectionOptions = this.validateConnectionTarget(target);
-            const isTargetValid = connectionOptions === ConnectionTargetOptions.Valid || connectionOptions === ConnectionTargetOptions.SwapEnds;
+            const isTargetValid = this.validateConnectionTarget(target) !== ConnectionTargetOptions.NotValid;
             this.setState({ ...this.state, ...{ isConnectionTargetValid: isTargetValid } });
         }
     }
@@ -231,13 +231,18 @@ export default class Graph extends React.Component<Props, State> {
             return ConnectionTargetOptions.NotValid;
         }
 
-        if ((this.state.connectionCreatingSource.object.type === ObjectTypes.kind && target.type === ObjectTypes.role) ||
+        if ((this.state.connectionCreatingSource.object.type === ObjectTypes.relator && target.type === ObjectTypes.role) ||
             (this.state.connectionCreatingSource.object.type === ObjectTypes.role && target.type === ObjectTypes.relator)) {
-            return ConnectionTargetOptions.Valid;
+            return ConnectionTargetOptions.Unoriented;
         }
-        if ((this.state.connectionCreatingSource.object.type === ObjectTypes.role && target.type === ObjectTypes.kind) ||
-            (this.state.connectionCreatingSource.object.type === ObjectTypes.relator && target.type === ObjectTypes.role)) {
-            return ConnectionTargetOptions.SwapEnds;
+        if (this.state.connectionCreatingSource.object.type === ObjectTypes.kind && target.type === ObjectTypes.kind) {
+            return ConnectionTargetOptions.OrientedStraight;
+        }
+        if (this.state.connectionCreatingSource.object.type === ObjectTypes.kind && target.type === ObjectTypes.role) {
+            return ConnectionTargetOptions.OrientedStraight;
+        }
+        if (this.state.connectionCreatingSource.object.type === ObjectTypes.role && target.type === ObjectTypes.kind) {
+            return ConnectionTargetOptions.OrientedReversed;
         }
         return ConnectionTargetOptions.NotValid;
     }
@@ -252,11 +257,12 @@ export default class Graph extends React.Component<Props, State> {
         let connectionTarget;
 
         switch (connectionOptions) {
-            case ConnectionTargetOptions.Valid:
+            case ConnectionTargetOptions.Unoriented:
+            case ConnectionTargetOptions.OrientedStraight:
                 connectionSource = this.state.connectionCreatingSource.object;
                 connectionTarget = target;
                 break;
-            case ConnectionTargetOptions.SwapEnds:
+            case ConnectionTargetOptions.OrientedReversed:
                 connectionSource = target;
                 connectionTarget = this.state.connectionCreatingSource.object;
                 break;
@@ -264,10 +270,23 @@ export default class Graph extends React.Component<Props, State> {
                 return;
         }
 
+        let label: string | undefined;
+        let isOriented = false;
+        if (connectionSource.type === ObjectTypes.kind) {
+            isOriented = true;
+            if (connectionTarget.type === ObjectTypes.kind) {
+                label = 'ispartof';
+            } else if (connectionTarget.type === ObjectTypes.role) {
+                label = 'play';
+            }
+        }
+
         this.props.connectionCreated({
             id: `connection-${new Date().getTime()}`,
             source: connectionSource.id,
-            target: connectionTarget.id
+            target: connectionTarget.id,
+            label: label,
+            isOriented: isOriented
         });
     }
 
@@ -318,7 +337,8 @@ export default class Graph extends React.Component<Props, State> {
             return {
                 group: "edges",
                 data: entity,
-                pannable: true
+                pannable: true,
+                classes: entity.isOriented ? ['arrow-edge'] : []
             }
         }
         if (isSubsystem(entity)) {

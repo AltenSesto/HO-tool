@@ -25,7 +25,8 @@ const graphStyle = [
         style: {
             'width': 2,
             'curve-style': 'taxi',
-            'line-color': '#000'
+            'label': 'data(label)',
+            'font-size': 11
         }
     },
     {
@@ -54,6 +55,12 @@ const graphStyle = [
         style: {
             'background-color': '#fff',
             'color': '#000'
+        }
+    },
+    {
+        selector: `.arrow-edge`,
+        style: {
+            'target-arrow-shape': 'triangle'
         }
     }
 ];
