@@ -47,11 +47,13 @@ const ProgressSteps: React.FC = () => {
                     </ListItem>
                     <List disablePadding dense>
                         {stage.steps.map(step => {
-                            const isActive = step.id === 'OHI1';
+                            const isCurrent = step.id === 'OHI1';
+                            const isNext = step.id === 'OHI2';
+                            const isActive = isCurrent || isNext;
                             return (
                                 <ListItem button key={step.id} disabled={!isActive} >
                                     <ListItemIcon>
-                                        <Chip size="small" disabled={!isActive} label={step.id} color={isActive ? 'secondary' : 'primary'} />
+                                        <Chip size="small" disabled={!isActive} label={step.id} color={isCurrent ? 'secondary' : 'primary'} />
                                     </ListItemIcon>
                                     <ListItemText primary={step.name} className={classes.label} />
                                 </ListItem>
