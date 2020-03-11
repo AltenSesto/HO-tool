@@ -2,5 +2,6 @@ import { SystemDescriptionEntity } from "./system-description/system-description
 
 // This will grow more complex as system evolves
 export interface SystemModel {
-    systemDescription: SystemDescriptionEntity[]
+    currentStep: string;
+    systemDescription: SystemDescriptionEntity[];
 };

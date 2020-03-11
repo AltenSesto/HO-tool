@@ -1,65 +1,76 @@
 import React from 'react';
 import { List, ListItem, ListItemText, Chip, makeStyles, ListItemIcon, Divider } from '@material-ui/core';
+import FlowStep from '../../entities/meny/flow-step';
+import { Flow } from '../../entities/meny/flow';
 
-const stages = [
-    {
-        id: 'OHI', name: 'Identify Hazards', steps: [
-            { id: 'OHI1', name: 'Modelling' },
-            { id: 'OHI2', name: 'Identify Victims' },
-            { id: 'OHI3', name: 'Identify Hazards' },
-        ]
-    },
-    {
-        id: 'OCH', name: 'Identify Causes', steps: [
-            { id: 'OCH1', name: 'Categorize' },
-            { id: 'OCH2', name: 'Expand' },
-            { id: 'OCH3', name: 'Identify Causes' },
-        ]
-    },
-    {
-        id: 'SARE', name: 'Safety Requirements', steps: [
-            { id: 'SARE1', name: 'Evaluate Severity' },
-            { id: 'SARE2', name: 'Evaluate Probability' },
-            { id: 'SARE3', name: 'Safety Requirements' },
-        ]
-    },
-    { id: '4', name: 'Control Mitigation', steps: [] }
-];
 
 const useStyles = makeStyles(theme => ({
     label: {
         paddingLeft: theme.spacing(1)
     },
+    phase: {
+        paddingLeft: theme.spacing(4),
+    },
+    step: {
+        paddingLeft: theme.spacing(8),
+    },
+    bold: {
+        fontWeight: 'bold'
+    }
 }));
 
 const ProgressSteps: React.FC = () => {
     const classes = useStyles();
 
+    const renderSteps = (steps: FlowStep[]) => (
+        <List disablePadding dense>
+            {steps.map(step => {
+                const isCurrent = step.id === 'SDF-1';
+                const isNext = step.id === 'SDF-2';
+                const isActive = isCurrent || isNext;
+
+                return (
+                    <ListItem className={classes.step} button key={step.id} disabled={!isActive} >
+                        <ListItemIcon>
+                            <Chip size="small" disabled={!isActive} label={step.id} color={isCurrent ? 'secondary' : 'primary'} />
+                        </ListItemIcon>
+                        <ListItemText primary={step.label} className={classes.label} />
+                    </ListItem>
+                );
+            })}
+        </List>
+    );
+
+    const renderPhases = (phases: FlowStep[]) => (
+        <List disablePadding dense>
+            {phases.map(phase => {
+                const steps = phase.children ? renderSteps(phase.children) : '';
+                return (
+                    <React.Fragment key={phase.id}>
+                        <ListItem className={classes.phase} >
+                            <ListItemIcon>
+                                <Chip label={phase.id} size='small' variant='outlined' color='primary' />
+                            </ListItemIcon>
+                            <ListItemText primary={phase.label} className={classes.label} />
+                        </ListItem>
+                        {steps}
+                    </React.Fragment>
+                );
+            })}
+        </List>
+    );
+
     return (
         <List dense>
-            {stages.map(stage => (
+            {Flow.map(stage => (
                 <React.Fragment key={stage.id}>
                     <ListItem>
                         <ListItemIcon>
-                            <Chip label={stage.id} variant="outlined" color="primary" />
+                            <Chip label={stage.id} variant='outlined' color='primary' />
                         </ListItemIcon>
-                        <ListItemText primary={stage.name} className={classes.label} />
+                        <ListItemText primary={stage.label} disableTypography className={`${classes.label} ${classes.bold}`} />
                     </ListItem>
-                    <List disablePadding dense>
-                        {stage.steps.map(step => {
-                            const isCurrent = step.id === 'OHI1';
-                            const isNext = step.id === 'OHI2';
-                            const isActive = isCurrent || isNext;
-                            return (
-                                <ListItem button key={step.id} disabled={!isActive} >
-                                    <ListItemIcon>
-                                        <Chip size="small" disabled={!isActive} label={step.id} color={isCurrent ? 'secondary' : 'primary'} />
-                                    </ListItemIcon>
-                                    <ListItemText primary={step.name} className={classes.label} />
-                                </ListItem>
-                            );
-                        })}
-                    </List>
+                    {renderPhases(stage.children)}
                     <Divider />
                 </React.Fragment>
             ))}

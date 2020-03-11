@@ -11,6 +11,7 @@ import { SystemModel } from './entities/system-model';
 import Meny from './components/meny/meny';
 import { SystemDescriptionEntity } from './entities/system-description/system-description-entity';
 import ProgressSteps from './components/meny/progress-steps';
+import { getFirstStepId } from './entities/meny/flow';
 
 const drawerWidth = 240;
 
@@ -43,6 +44,7 @@ const useStyles = makeStyles(theme => ({
 const App: React.FC = () => {
 
     const [systemModel, setSystemModel] = useState<SystemModel>({
+        currentStep: getFirstStepId(),
         systemDescription: []
     });
     const [hasUnsavedChanges, setHasUnsaveChanges] = useState(false);
