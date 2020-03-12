@@ -1,3 +1,13 @@
+const stepsOrder: {
+    [key: string]: number
+} = {
+    'SDF-1': 1,
+    'SDF-2': 2,
+    'SDF-3': 3,
+    'SDF-4': 4,
+    'SDF-5': 5,
+};
+
 export const Flow = [
     {
         id: 'OHI', label: 'Identify Hazards', children: [
@@ -32,5 +42,9 @@ export const Flow = [
 ];
 
 export function getFirstStepId() {
-    return Flow[0].children[0].children[0].id;
+    return <string>Object.keys(stepsOrder).find(e => stepsOrder[e] === 1);
 };
+
+export function getStepIndex(key: string) {
+    return stepsOrder[key];
+}

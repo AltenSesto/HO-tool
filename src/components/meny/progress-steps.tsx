@@ -1,7 +1,7 @@
 import React from 'react';
 import { List, ListItem, ListItemText, Chip, makeStyles, ListItemIcon, Divider } from '@material-ui/core';
 import FlowStep from '../../entities/meny/flow-step';
-import { Flow } from '../../entities/meny/flow';
+import { Flow, getStepIndex } from '../../entities/meny/flow';
 
 
 const useStyles = makeStyles(theme => ({
@@ -19,18 +19,36 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const ProgressSteps: React.FC = () => {
+interface Props {
+    currentStep: string;
+    lastCompletedStep: string;
+    movedForward: (step: string) => void;
+    movedBack: (step: string) => void;
+}
+
+const ProgressSteps: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
+    const currentStepIndex = getStepIndex(props.currentStep);
+    const lastCompletedStepIndex = getStepIndex(props.lastCompletedStep);
+
+    const moveTo = (step: string) => {
+        const stepIndex = getStepIndex(step);
+        if (stepIndex > currentStepIndex) {
+            props.movedForward(step);
+        } else if (stepIndex < currentStepIndex) {
+            props.movedBack(step);
+        }
+    };
 
     const renderSteps = (steps: FlowStep[]) => (
         <List disablePadding dense>
             {steps.map(step => {
-                const isCurrent = step.id === 'SDF-1';
-                const isNext = step.id === 'SDF-2';
-                const isActive = isCurrent || isNext;
+                const stepIndex = getStepIndex(step.id);
+                const isCurrent = stepIndex === currentStepIndex;
+                const isActive = stepIndex <= lastCompletedStepIndex + 1;
 
                 return (
-                    <ListItem className={classes.step} button key={step.id} disabled={!isActive} >
+                    <ListItem className={classes.step} button key={step.id} disabled={!isActive} onClick={() => moveTo(step.id)} >
                         <ListItemIcon>
                             <Chip size="small" disabled={!isActive} label={step.id} color={isCurrent ? 'secondary' : 'primary'} />
                         </ListItemIcon>

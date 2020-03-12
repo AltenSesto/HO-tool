@@ -11,7 +11,7 @@ import { SystemModel } from './entities/system-model';
 import Meny from './components/meny/meny';
 import { SystemDescriptionEntity } from './entities/system-description/system-description-entity';
 import ProgressSteps from './components/meny/progress-steps';
-import { getFirstStepId } from './entities/meny/flow';
+import { getFirstStepId, getStepIndex } from './entities/meny/flow';
 
 const drawerWidth = 240;
 
@@ -45,6 +45,7 @@ const App: React.FC = () => {
 
     const [systemModel, setSystemModel] = useState<SystemModel>({
         currentStep: getFirstStepId(),
+        lastCompletedStep: getFirstStepId(),
         systemDescription: []
     });
     const [hasUnsavedChanges, setHasUnsaveChanges] = useState(false);
@@ -71,6 +72,18 @@ const App: React.FC = () => {
         setSystemModel({ ...systemModel, ...{ systemDescription: entities } });
         setHasUnsaveChanges(true);
     };
+
+    const advanceFlow = (step: string) => {
+        let lastCompletedStep = step;
+        if (getStepIndex(systemModel.lastCompletedStep) > getStepIndex(step)) {
+            lastCompletedStep = systemModel.lastCompletedStep;
+        }
+        setSystemModel({ ...systemModel, ...{ currentStep: step, lastCompletedStep } });
+    }
+
+    const setFlowBack = (step: string) => {
+        setSystemModel({ ...systemModel, ...{ currentStep: step } });
+    }
 
     const classes = useStyles();
 
@@ -109,7 +122,12 @@ const App: React.FC = () => {
                 >
                     <div className={classes.toolbar}></div>
 
-                    <ProgressSteps />
+                    <ProgressSteps
+                        currentStep={systemModel.currentStep}
+                        lastCompletedStep={systemModel.lastCompletedStep}
+                        movedForward={advanceFlow}
+                        movedBack={setFlowBack}
+                    />
                 </Drawer>
 
                 <main className={classes.content}>
