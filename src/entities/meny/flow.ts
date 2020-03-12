@@ -5,7 +5,6 @@ const stepsOrder: {
     'SDF-2': 2,
     'SDF-3': 3,
     'SDF-4': 4,
-    'SDF-5': 5,
 };
 
 export const Flow = [
@@ -13,11 +12,10 @@ export const Flow = [
         id: 'OHI', label: 'Identify Hazards', children: [
             {
                 id: 'OHI-1', label: 'Modelling', children: [
-                    { id: 'SDF-1', label: 'Step 1' },
-                    { id: 'SDF-2', label: 'Step 2' },
-                    { id: 'SDF-3', label: 'Step 3' },
-                    { id: 'SDF-4', label: 'Step 4' },
-                    { id: 'SDF-5', label: 'Step 5' },
+                    { id: 'SDF-1', label: 'Step 1', helpText: 'Identify the <i>kind</i> and <i>role</i> objects explicitly presented in the system description.' },
+                    { id: 'SDF-2', label: 'Step 2', helpText: 'For each <i>kind</i> object obtained in SDF-Step&nbsp;1, identify all the roles it can play, considering the system description.' },
+                    { id: 'SDF-3', label: 'Step 3', helpText: 'For each <i>role</i> object obtained in SDF-Step&nbsp;1 and SDF-Step&nbsp;2, identify the relator that connects this role, and specify all the other roles connected by the identified relator, considering the system description and the analysts&apos; expertise.' },
+                    { id: 'SDF-4', label: 'Step 4', helpText: 'For each <i>role</i> object obtained in SDF-Step&nbsp;1, SDF-Step&nbsp;2 and SDF-Step&nbsp;3, identify all the <i>kind</i> objects that can play the role, considering the system description.' },
                 ]
             },
             { id: 'OHI-2', label: 'Identify Victims', children: [] },
@@ -42,7 +40,7 @@ export const Flow = [
 ];
 
 export function getFirstStepId() {
-    return <string>Object.keys(stepsOrder).find(e => stepsOrder[e] === 1);
+    return Object.keys(stepsOrder).find(e => stepsOrder[e] === 1) as string;
 };
 
 export function getStepIndex(key: string) {
