@@ -26,10 +26,7 @@ const useStyles = makeStyles(theme => ({
         marginBottom: theme.spacing(1),
         marginLeft: theme.spacing(2),
         display: 'flex'
-    },
-    extendedIcon: {
-        marginRight: theme.spacing(1),
-    },
+    }
 }));
 
 const Toolbar: React.FC<Props> = (props: Props) => {
@@ -77,10 +74,10 @@ const Toolbar: React.FC<Props> = (props: Props) => {
     };
 
     const actions = [
-        { icon: <AddIcon className={classes.extendedIcon} />, name: 'Kind', action: () => startCreatingObject(ObjectTypes.kind), showOnSteps: ['SDF-1'] },
-        { icon: <AddIcon className={classes.extendedIcon} />, name: 'Role', action: () => startCreatingObject(ObjectTypes.role), showOnSteps: ['SDF-1'] },
-        { icon: <AddIcon className={classes.extendedIcon} />, name: 'Relator', action: () => startCreatingObject(ObjectTypes.relator), showOnSteps: ['SDF-3'] },
-        { icon: <AddIcon className={classes.extendedIcon} />, name: 'Subsystem', action: startCreatingSubsystem, showOnSteps: ['SDF-1'] },
+        { icon: <AddIcon />, name: 'Kind', action: () => startCreatingObject(ObjectTypes.kind), showOnSteps: ['SDF-1'] },
+        { icon: <AddIcon />, name: 'Role', action: () => startCreatingObject(ObjectTypes.role), showOnSteps: ['SDF-1'] },
+        { icon: <AddIcon />, name: 'Relator', action: () => startCreatingObject(ObjectTypes.relator), showOnSteps: ['SDF-3'] },
+        { icon: <AddIcon />, name: 'Subsystem', action: startCreatingSubsystem, showOnSteps: ['SDF-1'] },
     ].filter(a => a.showOnSteps.some(s => s === props.currentStep));
 
     if (actions.length === 0) {
