@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 
 import AddIcon from '@material-ui/icons/Add';
-import FolderIcon from '@material-ui/icons/Folder';
-import { makeStyles, Backdrop } from '@material-ui/core';
-import { SpeedDial, SpeedDialAction, SpeedDialIcon } from '@material-ui/lab';
+import { makeStyles, Fab } from '@material-ui/core';
 
 import SystemObject from '../../entities/system-description/system-object';
 import { ObjectTypes } from '../../entities/system-description/object-types';
@@ -19,26 +17,25 @@ interface Props {
 }
 
 const useStyles = makeStyles(theme => ({
-    speedDial: {
+    root: {
         position: 'fixed',
-        bottom: theme.spacing(2),
-        right: theme.spacing(2),
-    }
+        bottom: 0,
+        zIndex: 110
+    },
+    fab: {
+        marginBottom: theme.spacing(1),
+        marginLeft: theme.spacing(2),
+        display: 'flex'
+    },
+    extendedIcon: {
+        marginRight: theme.spacing(1),
+    },
 }));
 
 const Toolbar: React.FC<Props> = (props: Props) => {
 
     const [entityEditing, setEntityEditing] = useState<SystemObject | Subsystem | null>(null);
-    const [isSpeedDialOpen, setIsSpeedDialOpen] = useState(false);
     const classes = useStyles();
-
-    const handleOpenSpeedDial = () => {
-        setIsSpeedDialOpen(true);
-    };
-
-    const handleCloseSpeedDial = () => {
-        setIsSpeedDialOpen(false);
-    };
 
     const getId = (prefix: string) => {
         return `${prefix}-${new Date().getTime()}`;
@@ -49,7 +46,6 @@ const Toolbar: React.FC<Props> = (props: Props) => {
             const obj = { id: getId(type.toString()), name: "", type, posX: defaultPosition.x, posY: defaultPosition.y };
             setEntityEditing(obj);
         }
-        handleCloseSpeedDial();
     };
 
     const completeCreatingEntity = (entity: SystemObject | Subsystem) => {
@@ -81,16 +77,16 @@ const Toolbar: React.FC<Props> = (props: Props) => {
     };
 
     const actions = [
-        { icon: <AddIcon />, name: 'Kind', action: () => startCreatingObject(ObjectTypes.kind), showOnSteps: ['SDF-1'] },
-        { icon: <AddIcon />, name: 'Role', action: () => startCreatingObject(ObjectTypes.role), showOnSteps: ['SDF-1'] },
-        { icon: <AddIcon />, name: 'Relator', action: () => startCreatingObject(ObjectTypes.relator), showOnSteps: ['SDF-3'] },
-        { icon: <FolderIcon />, name: 'Subsystem', action: startCreatingSubsystem, showOnSteps: ['SDF-1'] },
+        { icon: <AddIcon className={classes.extendedIcon} />, name: 'Kind', action: () => startCreatingObject(ObjectTypes.kind), showOnSteps: ['SDF-1'] },
+        { icon: <AddIcon className={classes.extendedIcon} />, name: 'Role', action: () => startCreatingObject(ObjectTypes.role), showOnSteps: ['SDF-1'] },
+        { icon: <AddIcon className={classes.extendedIcon} />, name: 'Relator', action: () => startCreatingObject(ObjectTypes.relator), showOnSteps: ['SDF-3'] },
+        { icon: <AddIcon className={classes.extendedIcon} />, name: 'Subsystem', action: startCreatingSubsystem, showOnSteps: ['SDF-1'] },
     ].filter(a => a.showOnSteps.some(s => s === props.currentStep));
 
     if (actions.length === 0) {
         return null;
     }
-    
+
     let editor;
     if (entityEditing) {
         editor = <NodeEditor
@@ -102,28 +98,15 @@ const Toolbar: React.FC<Props> = (props: Props) => {
     }
 
     return (
-        <React.Fragment>
-            <Backdrop open={isSpeedDialOpen} />
-            <SpeedDial
-                ariaLabel="Add new element"
-                className={classes.speedDial}
-                icon={<SpeedDialIcon />}
-                onClose={handleCloseSpeedDial}
-                onOpen={handleOpenSpeedDial}
-                open={isSpeedDialOpen}
-            >
-                {actions.map(action => (
-                    <SpeedDialAction
-                        key={action.name}
-                        icon={action.icon}
-                        tooltipTitle={action.name}
-                        tooltipOpen
-                        onClick={action.action}
-                    />
-                ))}
-            </SpeedDial>
+        <div className={classes.root}>
+            {actions.map(action => (
+                <Fab key={action.name} className={classes.fab} size='small' color='primary' variant='extended' onClick={action.action}>
+                    {action.icon}
+                    {action.name}
+                </Fab>
+            ))}
             {editor}
-        </React.Fragment>
+        </div>
     );
 };
 
