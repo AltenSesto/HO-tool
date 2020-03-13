@@ -15,6 +15,7 @@ import { defaultPosition } from '../../entities/graph/element';
 interface Props {
     entityAdded: (entity: SystemObject | Subsystem) => void;
     allEntities: SystemDescriptionEntity[];
+    currentStep: string;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -80,11 +81,15 @@ const Toolbar: React.FC<Props> = (props: Props) => {
     };
 
     const actions = [
-        { icon: <AddIcon />, name: 'Kind', action: () => startCreatingObject(ObjectTypes.kind) },
-        { icon: <AddIcon />, name: 'Role', action: () => startCreatingObject(ObjectTypes.role) },
-        { icon: <AddIcon />, name: 'Relator', action: () => startCreatingObject(ObjectTypes.relator) },
-        { icon: <FolderIcon />, name: 'Subsystem', action: startCreatingSubsystem },
-    ];
+        { icon: <AddIcon />, name: 'Kind', action: () => startCreatingObject(ObjectTypes.kind), showOnSteps: ['SDF-1'] },
+        { icon: <AddIcon />, name: 'Role', action: () => startCreatingObject(ObjectTypes.role), showOnSteps: ['SDF-1'] },
+        { icon: <AddIcon />, name: 'Relator', action: () => startCreatingObject(ObjectTypes.relator), showOnSteps: ['SDF-3'] },
+        { icon: <FolderIcon />, name: 'Subsystem', action: startCreatingSubsystem, showOnSteps: ['SDF-1'] },
+    ].filter(a => a.showOnSteps.some(s => s === props.currentStep));
+
+    if (actions.length === 0) {
+        return null;
+    }
     
     let editor;
     if (entityEditing) {

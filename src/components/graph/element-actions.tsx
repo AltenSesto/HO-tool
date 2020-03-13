@@ -1,13 +1,10 @@
 import React, { ReactElement } from 'react';
 import { Core, Singular, EventObject } from 'cytoscape';
 import Popper from 'popper.js';
-import { IconButton } from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete';
 
 interface Props {
     id: string;
     cy: Core;
-    childrenOverride?: ReactElement;
     childrenStatic?: ReactElement;
     popperInitialized?: (popperObj: any, ele: Singular) => void;
     mouseEntered?: () => void;
@@ -56,18 +53,6 @@ export default class ElementActions extends React.Component<Props, State> {
     render() {
         const visibility = this.state.areActionsVisible ? 'visible' : 'hidden';
 
-        let children = this.props.childrenOverride;
-        if (!children) {
-            children = (
-                <React.Fragment>
-                    {this.props.children}
-                    <IconButton title="Delete" onClick={() => this.props.elementDeleted(this.props.id)}>
-                        <DeleteIcon />
-                    </IconButton>
-                </React.Fragment>
-            );
-        }
-        
         let childrenStatic;
         if (this.props.childrenStatic) {
             childrenStatic = (
@@ -83,7 +68,7 @@ export default class ElementActions extends React.Component<Props, State> {
                 onMouseLeave={() => this.setActionsVisible(false)}>
                 {childrenStatic}
                 <div style={{ visibility: visibility }}>
-                    {children}
+                    {this.props.children}
                 </div>
             </div>
         );

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Core, Singular, NodeSingular, EdgeSingular } from 'cytoscape';
 import ElementActions from './element-actions';
+import { IconButton } from '@material-ui/core';
+import { Delete } from '@material-ui/icons';
 
 interface Props {
     id: string;
@@ -23,13 +25,19 @@ export default class ConnectionActions extends React.Component<Props> {
     }
 
     render() {
-        return <ElementActions
-            id={this.props.id}
-            cy={this.props.cy}
-            elementDeleted={this.props.elementDeleted}
-            allowActionsVisible={this.areNotBothEndsCollapsed}
-            popperInitialized={this.initPopper}>
-        </ElementActions>;
+        return (
+            <ElementActions
+                id={this.props.id}
+                cy={this.props.cy}
+                elementDeleted={this.props.elementDeleted}
+                allowActionsVisible={this.areNotBothEndsCollapsed}
+                popperInitialized={this.initPopper}
+            >
+                <IconButton title="Delete" onClick={() => this.props.elementDeleted(this.props.id)}>
+                    <Delete />
+                </IconButton>
+            </ElementActions>
+        );
     };
 
     componentWillUnmount() {
@@ -66,7 +74,7 @@ export default class ConnectionActions extends React.Component<Props> {
             this.ele = ele;
             this.nodeSource = ele.source();
             this.nodeTarget = ele.target();
-        } 
+        }
         this.nodeSource && this.nodeSource.on(ElementActions.EVENT_POSITION, this.updatePopperPosition);
         this.nodeTarget && this.nodeTarget.on(ElementActions.EVENT_POSITION, this.updatePopperPosition);
     }

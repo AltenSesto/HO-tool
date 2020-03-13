@@ -33,6 +33,7 @@ interface State {
 }
 
 interface Props {
+    currentStep: string;
     entities: SystemDescriptionEntity[];
     entitiesDeleted: (ids: string[]) => void;
     nodeUpdated: (updatedObject: SystemObject | Subsystem) => void;
@@ -103,6 +104,7 @@ export default class Graph extends React.Component<Props, State> {
                 return <SystemObjectActions
                     key={e.data.id}
                     cy={this.state.cy as Core}
+                    currentFlowStep={this.props.currentStep}
                     object={e.data.object as SystemObject}
                     isConnectionCreating={this.state.connectionCreatingSource !== null && this.state.connectionCreatingSource.object.id === e.data.id}
                     connectionCreateStarted={this.startCreatingConnection}
@@ -119,6 +121,7 @@ export default class Graph extends React.Component<Props, State> {
                 return <SubsystemActions
                     key={e.data.id}
                     cy={this.state.cy as Core}
+                    currentFlowStep={this.props.currentStep}
                     subsystem={e.data.subsystem as Subsystem}
                     subsystemDeleted={this.props.entitiesDeleted}
                     subsystemEditing={this.startEditNode}
@@ -230,19 +233,30 @@ export default class Graph extends React.Component<Props, State> {
             return ConnectionTargetOptions.NotValid;
         }
 
-        if ((this.state.connectionCreatingSource.object.type === ObjectTypes.relator && target.type === ObjectTypes.role) ||
-            (this.state.connectionCreatingSource.object.type === ObjectTypes.role && target.type === ObjectTypes.relator)) {
-            return ConnectionTargetOptions.Unoriented;
+        switch (this.props.currentStep) {
+            case 'SDF-1':
+                if (this.state.connectionCreatingSource.object.type === ObjectTypes.kind && target.type === ObjectTypes.kind) {
+                    return ConnectionTargetOptions.OrientedStraight;
+                }
+                break;
+            case 'SDF-2':
+                if (this.state.connectionCreatingSource.object.type === ObjectTypes.kind && target.type === ObjectTypes.role) {
+                    return ConnectionTargetOptions.OrientedStraight;
+                }
+                break;
+            case 'SDF-3':
+                if ((this.state.connectionCreatingSource.object.type === ObjectTypes.relator && target.type === ObjectTypes.role) ||
+                    (this.state.connectionCreatingSource.object.type === ObjectTypes.role && target.type === ObjectTypes.relator)) {
+                    return ConnectionTargetOptions.Unoriented;
+                }
+                break;
+            case 'SDF-4':
+                if (this.state.connectionCreatingSource.object.type === ObjectTypes.role && target.type === ObjectTypes.kind) {
+                    return ConnectionTargetOptions.OrientedReversed;
+                }
+                break;
         }
-        if (this.state.connectionCreatingSource.object.type === ObjectTypes.kind && target.type === ObjectTypes.kind) {
-            return ConnectionTargetOptions.OrientedStraight;
-        }
-        if (this.state.connectionCreatingSource.object.type === ObjectTypes.kind && target.type === ObjectTypes.role) {
-            return ConnectionTargetOptions.OrientedStraight;
-        }
-        if (this.state.connectionCreatingSource.object.type === ObjectTypes.role && target.type === ObjectTypes.kind) {
-            return ConnectionTargetOptions.OrientedReversed;
-        }
+
         return ConnectionTargetOptions.NotValid;
     }
 

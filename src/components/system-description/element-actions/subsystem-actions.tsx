@@ -1,7 +1,7 @@
 import React from 'react';
 import { Core, Singular, NodeSingular, EventObjectNode, EventObject } from 'cytoscape';
 import { IconButton } from '@material-ui/core';
-import { Edit, ExpandLess, ExpandMore } from "@material-ui/icons";
+import { Edit, ExpandLess, ExpandMore, Delete } from "@material-ui/icons";
 
 import Subsystem from '../../../entities/system-description/subsystem';
 import ElementActions from '../../graph/element-actions';
@@ -10,9 +10,10 @@ import { CollapseApi, getCollapseApi } from '../../../entities/graph/collapse-ap
 interface Props {
     subsystem: Subsystem;
     cy: Core;
-    subsystemDeleted: (nodeIds: string[]) => void,
-    subsystemEditing: (subsystem: Subsystem) => void,
-    subsystemUpdated: (subsystem: Subsystem) => void,
+    subsystemDeleted: (nodeIds: string[]) => void;
+    subsystemEditing: (subsystem: Subsystem) => void;
+    subsystemUpdated: (subsystem: Subsystem) => void;
+    currentFlowStep: string;
 }
 
 export default class SubsystemActions extends React.Component<Props> {
@@ -36,6 +37,20 @@ export default class SubsystemActions extends React.Component<Props> {
     }
 
     render() {
+        let editCommands = <React.Fragment></React.Fragment>;
+        if (this.props.currentFlowStep === 'SDF-1') {
+            editCommands = (
+                <React.Fragment>
+                    <IconButton title="Edit" onClick={() => this.props.subsystemEditing(this.props.subsystem)}>
+                        <Edit />
+                    </IconButton>
+                    <IconButton title="Delete" onClick={this.deleteWithChildren}>
+                        <Delete />
+                    </IconButton>
+                </React.Fragment>
+            );
+        }
+
         return <ElementActions
             id={this.props.subsystem.id}
             cy={this.props.cy}
@@ -49,14 +64,12 @@ export default class SubsystemActions extends React.Component<Props> {
             >
                 {this.props.subsystem.isCollapsed ? <ExpandMore /> : <ExpandLess />}
             </IconButton>
-            <IconButton title="Edit" onClick={() => this.props.subsystemEditing(this.props.subsystem)}>
-                <Edit />
-            </IconButton>
+            {editCommands}
         </ElementActions>;
     }
 
     shouldComponentUpdate(newProps: Readonly<Props>) {
-        return newProps.subsystem.isCollapsed !== this.props.subsystem.isCollapsed;
+        return newProps.subsystem.isCollapsed !== this.props.subsystem.isCollapsed || newProps.currentFlowStep !== this.props.currentFlowStep;
     }
 
     componentWillUnmount() {

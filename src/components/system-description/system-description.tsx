@@ -9,6 +9,7 @@ import { Grid } from '@material-ui/core';
 interface Props {
     entities: SystemDescriptionEntity[];
     entitiesChanged: (entities: SystemDescriptionEntity[]) => void;
+    currentStep: string;
 }
 
 export default class SystemDescription extends React.Component<Props> {
@@ -24,9 +25,10 @@ export default class SystemDescription extends React.Component<Props> {
         return (
             <Grid container alignItems="stretch">
                 <Grid item xs={12}>
-                    <Toolbar entityAdded={this.addEntity} allEntities={this.props.entities}></Toolbar>
+                    <Toolbar currentStep={this.props.currentStep} entityAdded={this.addEntity} allEntities={this.props.entities}></Toolbar>
                     <Graph
                         entities={this.props.entities}
+                        currentStep={this.props.currentStep}
                         connectionCreated={this.addEntity}
                         entitiesDeleted={this.deleteEntities}
                         nodeUpdated={this.updateObject}>

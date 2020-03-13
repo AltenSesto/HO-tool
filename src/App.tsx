@@ -132,7 +132,11 @@ const App: React.FC = () => {
 
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
-                    <SystemDescription entities={systemModel.systemDescription} entitiesChanged={updateSystemDescription}></SystemDescription>
+                    <SystemDescription
+                        currentStep={systemModel.currentStep}
+                        entities={systemModel.systemDescription}
+                        entitiesChanged={updateSystemDescription}
+                    />
                 </main>
             </div>
         </ErrorBoundary>

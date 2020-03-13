@@ -1,16 +1,17 @@
 import React from 'react';
 import { Core, Singular, NodeSingular, EventObjectNode } from 'cytoscape';
 import IconButton from '@material-ui/core/IconButton';
-import LinkIcon from "@material-ui/icons/Link";
-import EditIcon from "@material-ui/icons/Edit";
+import { Link, Edit, Delete } from '@material-ui/icons';
 
 import SystemObject from '../../../entities/system-description/system-object';
 import ElementActions from '../../graph/element-actions';
 import ObjectConnections from '../../../entities/system-description/object-connections';
+import { ObjectTypes } from '../../../entities/system-description/object-types';
 
 interface Props {
     object: SystemObject,
     cy: Core,
+    currentFlowStep: string,
     isConnectionCreating: boolean,
     nodeDeleted: (nodeAndEdgesIds: string[]) => void,
     nodeEditing: (obj: SystemObject) => void,
@@ -19,7 +20,7 @@ interface Props {
     onClick: (obj: SystemObject) => void,
     onMouseOver: (obj: SystemObject) => void,
     onMouseOut: (obj: SystemObject) => void,
-    onElementMoved: (position: {x: number, y: number}, width: number, height: number) => void
+    onElementMoved: (position: { x: number, y: number }, width: number, height: number) => void
 }
 
 export default class SystemObjectActions extends React.Component<Props> {
@@ -38,9 +39,34 @@ export default class SystemObjectActions extends React.Component<Props> {
         this.mouseLeft = this.mouseLeft.bind(this);
         this.isParentExpanded = this.isParentExpanded.bind(this);
         this.elementMoved = this.elementMoved.bind(this);
+        this.isConnectingAllowed = this.isConnectingAllowed.bind(this);
+        this.isEditingAllowed = this.isEditingAllowed.bind(this);
     }
 
     render() {
+        let actionButtons = <React.Fragment></React.Fragment>;
+        if (!this.props.isConnectionCreating) {
+            actionButtons = (
+                <React.Fragment>
+                    {this.isConnectingAllowed() ? (
+                        <IconButton title="Connect" onClick={this.startCreateConnection}>
+                            <Link />
+                        </IconButton>
+                    ) : null}
+                    {this.isEditingAllowed() ? (
+                        <React.Fragment>
+                            <IconButton title="Edit" onClick={() => this.props.nodeEditing(this.props.object)}>
+                                <Edit />
+                            </IconButton>
+                            <IconButton title="Delete" onClick={this.deleteNodeWithEdges}>
+                                <Delete />
+                            </IconButton>
+                        </React.Fragment>
+                    ) : null}
+                </React.Fragment>
+            );
+        }
+
         return (
             <ElementActions
                 id={this.props.object.id}
@@ -50,27 +76,44 @@ export default class SystemObjectActions extends React.Component<Props> {
                 mouseEntered={this.mouseEntered}
                 mouseLeft={this.mouseLeft}
                 allowActionsVisible={this.isParentExpanded}
-                childrenStatic={this.props.isConnectionCreating ? <LinkIcon /> : undefined}
-                childrenOverride={this.props.isConnectionCreating ? <React.Fragment></React.Fragment> : undefined}
+                childrenStatic={this.props.isConnectionCreating ? <Link /> : undefined}
                 elementMoving={this.elementMoved}
             >
-                <IconButton title="Connect" onClick={this.startCreateConnection}>
-                    <LinkIcon />
-                </IconButton>
-                <IconButton title="Edit" onClick={() => this.props.nodeEditing(this.props.object)}>
-                    <EditIcon />
-                </IconButton>
+                {actionButtons}
             </ElementActions>
         );
     };
 
     shouldComponentUpdate(nextProps: Readonly<Props>) {
-        return this.props.isConnectionCreating !== nextProps.isConnectionCreating;
+        return this.props.isConnectionCreating !== nextProps.isConnectionCreating || this.props.currentFlowStep !== nextProps.currentFlowStep;
     }
 
     componentWillUnmount() {
         this.ele && this.ele.off(ElementActions.EVENT_DRAGFREE, undefined, this.saveNodePosition);
         this.ele && this.ele.off(ElementActions.EVENT_CLICK, undefined, this.nodeClicked);
+    }
+
+    private isConnectingAllowed() {
+        switch (this.props.currentFlowStep) {
+            case 'SDF-1':
+            case 'SDF-2':
+                return this.props.object.type === ObjectTypes.kind;
+            case 'SDF-3':
+                return this.props.object.type === ObjectTypes.relator || this.props.object.type === ObjectTypes.role;
+            case 'SDF-4':
+                return this.props.object.type === ObjectTypes.role;
+        }
+        return false;
+    }
+
+    private isEditingAllowed() {
+        switch (this.props.currentFlowStep) {
+            case 'SDF-1':
+                return this.props.object.type === ObjectTypes.kind || this.props.object.type === ObjectTypes.role;
+            case 'SDF-3':
+                return this.props.object.type === ObjectTypes.relator;
+        }
+        return false;
     }
 
     private isParentExpanded() {
