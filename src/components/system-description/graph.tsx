@@ -164,6 +164,7 @@ export default class Graph extends React.Component<Props, State> {
                     elements={elements}
                     style={{ width: this.state.maxX, height: this.state.maxY, zIndex: 10, cursor: cursorStyle }}
                     stylesheet={style}
+                    userZoomingEnabled={false}
                     cy={this.initCytoscape} />
             </React.Fragment>
         );
