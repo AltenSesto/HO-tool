@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { List, ListItem, ListItemText, Chip, makeStyles, ListItemIcon, Divider, ListItemSecondaryAction, IconButton, Popover, Typography } from '@material-ui/core';
-import { Help, HelpOutline } from '@material-ui/icons';
+import React from 'react';
+import { List, ListItem, ListItemText, Chip, makeStyles, ListItemIcon, Divider, ListItemSecondaryAction } from '@material-ui/core';
 import FlowStep from '../../entities/meny/flow-step';
 import { Flow, getStepIndex } from '../../entities/meny/flow';
+import HelpText from './help-text';
 
 
 const useStyles = makeStyles(theme => ({
@@ -17,10 +17,6 @@ const useStyles = makeStyles(theme => ({
     },
     bold: {
         fontWeight: 'bold'
-    },
-    typography: {
-        padding: theme.spacing(2),
-        maxWidth: '320px'
     }
 }));
 
@@ -46,25 +42,14 @@ const ProgressSteps: React.FC<Props> = (props: Props) => {
         }
     };
 
-    const [popoverAnchor, setPopoverAnchor] = useState(null);
-    const [popoverContent, setPopoverContent] = useState('');
-    const openPopover = (event: any, content: string | undefined) => {
-        setPopoverContent(content ? content : '');
-        setPopoverAnchor(event.currentTarget);
-    };
-
-    const closePopover = () => {
-        setPopoverAnchor(null);
-    };
-
-    const isPopoverOpen = Boolean(popoverAnchor);
-    
     const renderSteps = (steps: FlowStep[]) => (
         <List disablePadding dense>
             {steps.map(step => {
                 const stepIndex = getStepIndex(step.id);
                 const isCurrent = stepIndex === currentStepIndex;
                 const isActive = stepIndex <= lastCompletedStepIndex + 1;
+                const helpText = step.helpText ? step.helpText : '';
+                const helpOpenedOnFirstVisit = step.id === props.currentStep && step.id === props.lastCompletedStep;
 
                 return (
                     <ListItem className={classes.step} button key={step.id} disabled={!isActive} onClick={() => moveTo(step.id)} >
@@ -73,24 +58,7 @@ const ProgressSteps: React.FC<Props> = (props: Props) => {
                         </ListItemIcon>
                         <ListItemText primary={step.label} className={classes.label} />
                         <ListItemSecondaryAction>
-                            <IconButton edge="end" onClick={(ev) => openPopover(ev, step.helpText)}>
-                                {isCurrent ? <Help /> : <HelpOutline />}
-                            </IconButton>
-                            <Popover
-                                open={isPopoverOpen}
-                                anchorEl={popoverAnchor}
-                                onClose={closePopover}
-                                anchorOrigin={{
-                                    vertical: 'center',
-                                    horizontal: 'right',
-                                }}
-                                transformOrigin={{
-                                    vertical: 'center',
-                                    horizontal: 'left',
-                                }}
-                            >
-                                <Typography variant='body2' className={classes.typography} dangerouslySetInnerHTML={{__html: popoverContent}}></Typography>
-                            </Popover>
+                            <HelpText open={helpOpenedOnFirstVisit} highlighted={isCurrent} htmlContent={helpText} />
                         </ListItemSecondaryAction>
                     </ListItem>
                 );
