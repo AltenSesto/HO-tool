@@ -1,7 +1,7 @@
 import React from 'react';
 import { List, ListItem, ListItemText, Chip, makeStyles, ListItemIcon, Divider, ListItemSecondaryAction } from '@material-ui/core';
-import FlowStep from '../../entities/meny/flow-step';
-import { Flow, getStepIndex } from '../../entities/meny/flow';
+import { FlowStep, FlowStepId } from '../../entities/meny/flow-step';
+import { flow } from '../../entities/meny/flow';
 import HelpText from './help-text';
 
 
@@ -21,23 +21,19 @@ const useStyles = makeStyles(theme => ({
 }));
 
 interface Props {
-    currentStep: string;
-    lastCompletedStep: string;
-    movedForward: (step: string) => void;
-    movedBack: (step: string) => void;
+    currentStep: FlowStepId;
+    lastCompletedStep: FlowStepId;
+    movedForward: (step: FlowStepId) => void;
+    movedBack: (step: FlowStepId) => void;
 }
 
 const ProgressSteps: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
 
-    const currentStepIndex = getStepIndex(props.currentStep);
-    const lastCompletedStepIndex = getStepIndex(props.lastCompletedStep);
-
-    const moveTo = (step: string) => {
-        const stepIndex = getStepIndex(step);
-        if (stepIndex > currentStepIndex) {
+    const moveTo = (step: FlowStepId) => {
+        if (step.order > props.currentStep.order) {
             props.movedForward(step);
-        } else if (stepIndex < currentStepIndex) {
+        } else if (step.order < props.currentStep.order) {
             props.movedBack(step);
         }
     };
@@ -45,20 +41,34 @@ const ProgressSteps: React.FC<Props> = (props: Props) => {
     const renderSteps = (steps: FlowStep[]) => (
         <List disablePadding dense>
             {steps.map(step => {
-                const stepIndex = getStepIndex(step.id);
-                const isCurrent = stepIndex === currentStepIndex;
-                const isActive = stepIndex <= lastCompletedStepIndex + 1;
+                const isCurrent = step.id.order === props.currentStep.order;
+                const isActive = step.id.order <= props.lastCompletedStep.order + 1;
                 const helpText = step.helpText ? step.helpText : '';
                 const helpOpenedOnFirstVisit = step.id === props.currentStep && step.id === props.lastCompletedStep;
 
                 return (
-                    <ListItem className={classes.step} button key={step.id} disabled={!isActive} onClick={() => moveTo(step.id)} >
+                    <ListItem
+                        className={classes.step}
+                        button
+                        key={step.id.name}
+                        disabled={!isActive}
+                        onClick={() => moveTo(step.id)}
+                    >
                         <ListItemIcon>
-                            <Chip size="small" disabled={!isActive} label={step.id} color={isCurrent ? 'secondary' : 'primary'} />
+                            <Chip
+                                size="small"
+                                disabled={!isActive}
+                                label={step.id.name}
+                                color={isCurrent ? 'secondary' : 'primary'}
+                            />
                         </ListItemIcon>
                         <ListItemText primary={step.label} className={classes.label} />
                         <ListItemSecondaryAction>
-                            <HelpText open={helpOpenedOnFirstVisit} highlighted={isCurrent} htmlContent={helpText} />
+                            <HelpText
+                                open={helpOpenedOnFirstVisit}
+                                highlighted={isCurrent}
+                                htmlContent={helpText}
+                            />
                         </ListItemSecondaryAction>
                     </ListItem>
                 );
@@ -71,10 +81,15 @@ const ProgressSteps: React.FC<Props> = (props: Props) => {
             {phases.map(phase => {
                 const steps = phase.children ? renderSteps(phase.children) : '';
                 return (
-                    <React.Fragment key={phase.id}>
+                    <React.Fragment key={phase.id.name}>
                         <ListItem className={classes.phase} >
                             <ListItemIcon>
-                                <Chip label={phase.id} size='small' variant='outlined' color='primary' />
+                                <Chip
+                                    label={phase.id.name}
+                                    size='small'
+                                    variant='outlined'
+                                    color='primary'
+                                />
                             </ListItemIcon>
                             <ListItemText primary={phase.label} className={classes.label} />
                         </ListItem>
@@ -87,13 +102,17 @@ const ProgressSteps: React.FC<Props> = (props: Props) => {
 
     return (
         <List dense>
-            {Flow.map(stage => (
-                <React.Fragment key={stage.id}>
+            {flow.map(stage => (
+                <React.Fragment key={stage.id.name}>
                     <ListItem>
                         <ListItemIcon>
-                            <Chip label={stage.id} variant='outlined' color='primary' />
+                            <Chip label={stage.id.name} variant='outlined' color='primary' />
                         </ListItemIcon>
-                        <ListItemText primary={stage.label} disableTypography className={`${classes.label} ${classes.bold}`} />
+                        <ListItemText
+                            primary={stage.label}
+                            disableTypography
+                            className={`${classes.label} ${classes.bold}`}
+                        />
                     </ListItem>
                     {renderPhases(stage.children)}
                     <Divider />

@@ -18,6 +18,8 @@ import NodeEditor from './node-editor';
 import SubsystemActions from './element-actions/subsystem-actions';
 import ConnectionActions from '../graph/connection-actions';
 import { initCollapseApi } from '../../entities/graph/collapse-api';
+import { FlowStepId } from '../../entities/meny/flow-step';
+import { flowSteps } from '../../entities/meny/flow';
 
 cytoscape.use(popper);
 expandCollapse(cytoscape);
@@ -33,7 +35,7 @@ interface State {
 }
 
 interface Props {
-    currentStep: string;
+    currentStep: FlowStepId;
     entities: SystemDescriptionEntity[];
     entitiesDeleted: (ids: string[]) => void;
     nodeUpdated: (updatedObject: SystemObject | Subsystem) => void;
@@ -236,23 +238,23 @@ export default class Graph extends React.Component<Props, State> {
         }
 
         switch (this.props.currentStep) {
-            case 'SDF-1':
+            case flowSteps.SDF_1:
                 if (this.state.connectionCreatingSource.object.type === ObjectTypes.kind && target.type === ObjectTypes.kind) {
                     return ConnectionTargetOptions.OrientedStraight;
                 }
                 break;
-            case 'SDF-2':
+            case flowSteps.SDF_2:
                 if (this.state.connectionCreatingSource.object.type === ObjectTypes.kind && target.type === ObjectTypes.role) {
                     return ConnectionTargetOptions.OrientedStraight;
                 }
                 break;
-            case 'SDF-3':
+            case flowSteps.SDF_3:
                 if ((this.state.connectionCreatingSource.object.type === ObjectTypes.relator && target.type === ObjectTypes.role) ||
                     (this.state.connectionCreatingSource.object.type === ObjectTypes.role && target.type === ObjectTypes.relator)) {
                     return ConnectionTargetOptions.Unoriented;
                 }
                 break;
-            case 'SDF-4':
+            case flowSteps.SDF_4:
                 if (this.state.connectionCreatingSource.object.type === ObjectTypes.role && target.type === ObjectTypes.kind) {
                     return ConnectionTargetOptions.OrientedReversed;
                 }

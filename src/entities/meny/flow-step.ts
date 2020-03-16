@@ -1,8 +1,11 @@
-interface FlowStep {
-    id: string;
+export interface FlowStep {
+    id: FlowStepId;
     label?: string;
     children?: FlowStep[];
     helpText?: string;
 }
 
-export default FlowStep;
+export interface FlowStepId {
+    name: string;
+    order: number;
+}

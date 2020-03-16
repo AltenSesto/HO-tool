@@ -9,11 +9,13 @@ import Subsystem from '../../entities/system-description/subsystem';
 import NodeEditor from './node-editor';
 import { SystemDescriptionEntity, isSystemObject, isSubsystem } from '../../entities/system-description/system-description-entity';
 import { defaultPosition } from '../../entities/graph/element';
+import { FlowStepId } from '../../entities/meny/flow-step';
+import { flowSteps } from '../../entities/meny/flow';
 
 interface Props {
     entityAdded: (entity: SystemObject | Subsystem) => void;
     allEntities: SystemDescriptionEntity[];
-    currentStep: string;
+    currentStep: FlowStepId;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -74,10 +76,30 @@ const Toolbar: React.FC<Props> = (props: Props) => {
     };
 
     const actions = [
-        { icon: <AddIcon />, name: 'Kind', action: () => startCreatingObject(ObjectTypes.kind), showOnSteps: ['SDF-1'] },
-        { icon: <AddIcon />, name: 'Role', action: () => startCreatingObject(ObjectTypes.role), showOnSteps: ['SDF-1'] },
-        { icon: <AddIcon />, name: 'Relator', action: () => startCreatingObject(ObjectTypes.relator), showOnSteps: ['SDF-3'] },
-        { icon: <AddIcon />, name: 'Subsystem', action: startCreatingSubsystem, showOnSteps: ['SDF-1'] },
+        {
+            icon: <AddIcon />,
+            name: 'Kind',
+            action: () => startCreatingObject(ObjectTypes.kind),
+            showOnSteps: [flowSteps.SDF_1]
+        },
+        {
+            icon: <AddIcon />,
+            name: 'Role',
+            action: () => startCreatingObject(ObjectTypes.role),
+            showOnSteps: [flowSteps.SDF_1]
+        },
+        {
+            icon: <AddIcon />,
+            name: 'Relator',
+            action: () => startCreatingObject(ObjectTypes.relator),
+            showOnSteps: [flowSteps.SDF_3]
+        },
+        {
+            icon: <AddIcon />,
+            name: 'Subsystem',
+            action: startCreatingSubsystem,
+            showOnSteps: [flowSteps.SDF_1]
+        },
     ].filter(a => a.showOnSteps.some(s => s === props.currentStep));
 
     if (actions.length === 0) {

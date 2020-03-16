@@ -1,48 +1,73 @@
-const stepsOrder: {
-    [key: string]: number
-} = {
-    'SDF-1': 1,
-    'SDF-2': 2,
-    'SDF-3': 3,
-    'SDF-4': 4,
+export const flowSteps = {
+    OHI: { name: 'OHI', order: -1 },
+    OHI_1: { name: 'OHI-1', order: -1 },
+    SDF_1: { name: 'SDF-1', order: 1 },
+    SDF_2: { name: 'SDF-2', order: 2 },
+    SDF_3: { name: 'SDF-3', order: 3 },
+    SDF_4: { name: 'SDF-4', order: 4 },
+    OHI_2: { name: 'OHI-2', order: -1 },
+    OHI_3: { name: 'OHI-3', order: -1 },
+    OCH: { name: 'OCH', order: -1 },
+    OCH_1: { name: 'OCH-1', order: -1 },
+    OCH_2: { name: 'OCH-2', order: -1 },
+    OCH_3: { name: 'OCH-3', order: -1 },
+    SARE: { name: 'SARE', order: -1 },
+    SARE_1: { name: 'SARE-1', order: -1 },
+    SARE_2: { name: 'SARE-2', order: -1 },
+    SARE_3: { name: 'SARE-3', order: -1 },
+    CM: { name: 'CM', order: -1 },
 };
 
-export const Flow = [
+export const flow = [
     {
-        id: 'OHI', label: 'Identify Hazards', children: [
+        id: flowSteps.OHI, label: 'Identify Hazards', children: [
             {
-                id: 'OHI-1', label: 'Modelling', children: [
-                    { id: 'SDF-1', label: 'Step 1', helpText: 'Identify the <i>kind</i> and <i>role</i> objects explicitly presented in the system description.' },
-                    { id: 'SDF-2', label: 'Step 2', helpText: 'For each <i>kind</i> object obtained in SDF-Step&nbsp;1, identify all the roles it can play, considering the system description.' },
-                    { id: 'SDF-3', label: 'Step 3', helpText: 'For each <i>role</i> object obtained in SDF-Step&nbsp;1 and SDF-Step&nbsp;2, identify the relator that connects this role, and specify all the other roles connected by the identified relator, considering the system description and the analysts&apos; expertise.' },
-                    { id: 'SDF-4', label: 'Step 4', helpText: 'For each <i>role</i> object obtained in SDF-Step&nbsp;1, SDF-Step&nbsp;2 and SDF-Step&nbsp;3, identify all the <i>kind</i> objects that can play the role, considering the system description.' },
+                id: flowSteps.OHI_1, label: 'Modelling', children: [
+                    { id: flowSteps.SDF_1, label: 'Step 1', helpText: 'Identify the <i>kind</i> and <i>role</i> objects explicitly presented in the system description.' },
+                    { id: flowSteps.SDF_2, label: 'Step 2', helpText: 'For each <i>kind</i> object obtained in SDF-Step&nbsp;1, identify all the roles it can play, considering the system description.' },
+                    { id: flowSteps.SDF_3, label: 'Step 3', helpText: 'For each <i>role</i> object obtained in SDF-Step&nbsp;1 and SDF-Step&nbsp;2, identify the relator that connects this role, and specify all the other roles connected by the identified relator, considering the system description and the analysts&apos; expertise.' },
+                    { id: flowSteps.SDF_4, label: 'Step 4', helpText: 'For each <i>role</i> object obtained in SDF-Step&nbsp;1, SDF-Step&nbsp;2 and SDF-Step&nbsp;3, identify all the <i>kind</i> objects that can play the role, considering the system description.' },
                 ]
             },
-            { id: 'OHI-2', label: 'Identify Victims', children: [] },
-            { id: 'OHI-3', label: 'Identify Hazards', children: [] },
+            {
+                id: flowSteps.OHI_2, label: 'Identify Victims', children: []
+            },
+            {
+                id: flowSteps.OHI_3, label: 'Identify Hazards', children: []
+            },
         ]
     },
     {
-        id: 'OCH', label: 'Identify Causes', children: [
-            { id: 'OCH-1', label: 'Categorize', children: [] },
-            { id: 'OCH-2', label: 'Expand', children: [] },
-            { id: 'OCH-3', label: 'Identify Causes', children: [] },
+        id: flowSteps.OCH, label: 'Identify Causes', children: [
+            {
+                id: flowSteps.OCH_1, label: 'Categorize', children: []
+            },
+            {
+                id: flowSteps.OCH_2, label: 'Expand', children: []
+            },
+            {
+                id: flowSteps.OCH_3, label: 'Identify Causes', children: []
+            },
         ]
     },
     {
-        id: 'SARE', label: 'Safety Requirements', children: [
-            { id: 'SARE-1', label: 'Evaluate Severity', children: [] },
-            { id: 'SARE-2', label: 'Evaluate Probability', children: [] },
-            { id: 'SARE-3', label: 'Safety Requirements', children: [] },
+        id: flowSteps.SARE, label: 'Safety Requirements', children: [
+            {
+                id: flowSteps.SARE_1, label: 'Evaluate Severity', children: []
+            },
+            {
+                id: flowSteps.SARE_2, label: 'Evaluate Probability', children: []
+            },
+            {
+                id: flowSteps.SARE_3, label: 'Safety Requirements', children: []
+            },
         ]
     },
-    { id: '4', label: 'Control Mitigation', children: [] }
+    {
+        id: flowSteps.CM, label: 'Control Mitigation', children: []
+    }
 ];
 
 export function getFirstStepId() {
-    return Object.keys(stepsOrder).find(e => stepsOrder[e] === 1) as string;
+    return flowSteps.SDF_1;
 };
-
-export function getStepIndex(key: string) {
-    return stepsOrder[key];
-}

@@ -5,11 +5,12 @@ import Graph from './graph';
 import { SystemDescriptionEntity } from '../../entities/system-description/system-description-entity';
 import Subsystem from '../../entities/system-description/subsystem';
 import { Grid } from '@material-ui/core';
+import { FlowStepId } from '../../entities/meny/flow-step';
 
 interface Props {
     entities: SystemDescriptionEntity[];
     entitiesChanged: (entities: SystemDescriptionEntity[]) => void;
-    currentStep: string;
+    currentStep: FlowStepId;
 }
 
 export default class SystemDescription extends React.Component<Props> {
@@ -25,7 +26,11 @@ export default class SystemDescription extends React.Component<Props> {
         return (
             <Grid container alignItems="stretch">
                 <Grid item xs={12}>
-                    <Toolbar currentStep={this.props.currentStep} entityAdded={this.addEntity} allEntities={this.props.entities}></Toolbar>
+                    <Toolbar
+                        currentStep={this.props.currentStep}
+                        entityAdded={this.addEntity}
+                        allEntities={this.props.entities}
+                    />
                     <Graph
                         entities={this.props.entities}
                         currentStep={this.props.currentStep}

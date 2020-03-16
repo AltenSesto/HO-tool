@@ -6,6 +6,8 @@ import { Edit, ExpandLess, ExpandMore, Delete } from "@material-ui/icons";
 import Subsystem from '../../../entities/system-description/subsystem';
 import ElementActions from '../../graph/element-actions';
 import { CollapseApi, getCollapseApi } from '../../../entities/graph/collapse-api';
+import { FlowStepId } from '../../../entities/meny/flow-step';
+import { flowSteps } from '../../../entities/meny/flow';
 
 interface Props {
     subsystem: Subsystem;
@@ -13,7 +15,7 @@ interface Props {
     subsystemDeleted: (nodeIds: string[]) => void;
     subsystemEditing: (subsystem: Subsystem) => void;
     subsystemUpdated: (subsystem: Subsystem) => void;
-    currentFlowStep: string;
+    currentFlowStep: FlowStepId;
 }
 
 export default class SubsystemActions extends React.Component<Props> {
@@ -38,7 +40,7 @@ export default class SubsystemActions extends React.Component<Props> {
 
     render() {
         let editCommands = <React.Fragment></React.Fragment>;
-        if (this.props.currentFlowStep === 'SDF-1') {
+        if (this.props.currentFlowStep === flowSteps.SDF_1) {
             editCommands = (
                 <React.Fragment>
                     <IconButton

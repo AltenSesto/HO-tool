@@ -7,11 +7,13 @@ import SystemObject from '../../../entities/system-description/system-object';
 import ElementActions from '../../graph/element-actions';
 import ObjectConnections from '../../../entities/system-description/object-connections';
 import { ObjectTypes } from '../../../entities/system-description/object-types';
+import { FlowStepId } from '../../../entities/meny/flow-step';
+import { flowSteps } from '../../../entities/meny/flow';
 
 interface Props {
     object: SystemObject,
     cy: Core,
-    currentFlowStep: string,
+    currentFlowStep: FlowStepId,
     isConnectionCreating: boolean,
     nodeDeleted: (nodeAndEdgesIds: string[]) => void,
     nodeEditing: (obj: SystemObject) => void,
@@ -103,12 +105,12 @@ export default class SystemObjectActions extends React.Component<Props> {
 
     private isConnectingAllowed() {
         switch (this.props.currentFlowStep) {
-            case 'SDF-1':
-            case 'SDF-2':
+            case flowSteps.SDF_1:
+            case flowSteps.SDF_2:
                 return this.props.object.type === ObjectTypes.kind;
-            case 'SDF-3':
+            case flowSteps.SDF_3:
                 return this.props.object.type === ObjectTypes.relator || this.props.object.type === ObjectTypes.role;
-            case 'SDF-4':
+            case flowSteps.SDF_4:
                 return this.props.object.type === ObjectTypes.role;
         }
         return false;
@@ -116,9 +118,9 @@ export default class SystemObjectActions extends React.Component<Props> {
 
     private isEditingAllowed() {
         switch (this.props.currentFlowStep) {
-            case 'SDF-1':
+            case flowSteps.SDF_1:
                 return this.props.object.type === ObjectTypes.kind || this.props.object.type === ObjectTypes.role;
-            case 'SDF-3':
+            case flowSteps.SDF_3:
                 return this.props.object.type === ObjectTypes.relator;
         }
         return false;

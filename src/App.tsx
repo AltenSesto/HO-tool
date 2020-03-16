@@ -11,7 +11,8 @@ import { SystemModel } from './entities/system-model';
 import Meny from './components/meny/meny';
 import { SystemDescriptionEntity } from './entities/system-description/system-description-entity';
 import ProgressSteps from './components/meny/progress-steps';
-import { getFirstStepId, getStepIndex } from './entities/meny/flow';
+import { getFirstStepId } from './entities/meny/flow';
+import { FlowStepId } from './entities/meny/flow-step';
 
 const drawerWidth = 240;
 
@@ -73,15 +74,15 @@ const App: React.FC = () => {
         setHasUnsaveChanges(true);
     };
 
-    const advanceFlow = (step: string) => {
+    const advanceFlow = (step: FlowStepId) => {
         let lastCompletedStep = step;
-        if (getStepIndex(systemModel.lastCompletedStep) > getStepIndex(step)) {
+        if (systemModel.lastCompletedStep.order > step.order) {
             lastCompletedStep = systemModel.lastCompletedStep;
         }
         setSystemModel({ ...systemModel, ...{ currentStep: step, lastCompletedStep } });
     }
 
-    const setFlowBack = (step: string) => {
+    const setFlowBack = (step: FlowStepId) => {
         setSystemModel({ ...systemModel, ...{ currentStep: step } });
     }
 
