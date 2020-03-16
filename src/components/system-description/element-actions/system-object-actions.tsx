@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { Core, Singular, NodeSingular, EventObjectNode } from 'cytoscape';
 import IconButton from '@material-ui/core/IconButton';
 import { Link, Edit, Delete } from '@material-ui/icons';
@@ -44,27 +44,34 @@ export default class SystemObjectActions extends React.Component<Props> {
     }
 
     render() {
-        let actionButtons = <React.Fragment></React.Fragment>;
+
+        let actionButtons: ReactElement | undefined = undefined;
+        let linkLabel: ReactElement | undefined = undefined;
         if (!this.props.isConnectionCreating) {
             actionButtons = (
-                <React.Fragment>
+                <div style={{ position: 'relative', top: '-5px', left: '-5px' }}>
                     {this.isConnectingAllowed() ? (
-                        <IconButton title="Connect" onClick={this.startCreateConnection}>
+                        <IconButton size='small' title="Connect" onClick={this.startCreateConnection}>
                             <Link />
                         </IconButton>
                     ) : null}
                     {this.isEditingAllowed() ? (
                         <React.Fragment>
-                            <IconButton title="Edit" onClick={() => this.props.nodeEditing(this.props.object)}>
+                            <IconButton size='small' title="Edit" onClick={() => this.props.nodeEditing(this.props.object)}>
                                 <Edit />
                             </IconButton>
-                            <IconButton title="Delete" onClick={this.deleteNodeWithEdges}>
+                            <IconButton size='small' title="Delete" onClick={this.deleteNodeWithEdges}>
                                 <Delete />
                             </IconButton>
                         </React.Fragment>
                     ) : null}
-                </React.Fragment>
+                </div>
             );
+        } else {
+            linkLabel = (
+                <div style={{ position: 'relative', top: '23px' }}>
+                    <Link />
+                </div>);
         }
 
         return (
@@ -76,8 +83,9 @@ export default class SystemObjectActions extends React.Component<Props> {
                 mouseEntered={this.mouseEntered}
                 mouseLeft={this.mouseLeft}
                 allowActionsVisible={this.isParentExpanded}
-                childrenStatic={this.props.isConnectionCreating ? <Link /> : undefined}
+                childrenStatic={linkLabel}
                 elementMoving={this.elementMoved}
+                actionsPlacement='top-start'
             >
                 {actionButtons}
             </ElementActions>

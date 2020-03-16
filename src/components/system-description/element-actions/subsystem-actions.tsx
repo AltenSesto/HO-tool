@@ -41,10 +41,18 @@ export default class SubsystemActions extends React.Component<Props> {
         if (this.props.currentFlowStep === 'SDF-1') {
             editCommands = (
                 <React.Fragment>
-                    <IconButton title="Edit" onClick={() => this.props.subsystemEditing(this.props.subsystem)}>
+                    <IconButton
+                        title='Edit'
+                        onClick={() => this.props.subsystemEditing(this.props.subsystem)}
+                        size='small'
+                    >
                         <Edit />
                     </IconButton>
-                    <IconButton title="Delete" onClick={this.deleteWithChildren}>
+                    <IconButton
+                        title='Delete'
+                        onClick={this.deleteWithChildren}
+                        size='small'
+                    >
                         <Delete />
                     </IconButton>
                 </React.Fragment>
@@ -56,15 +64,18 @@ export default class SubsystemActions extends React.Component<Props> {
             cy={this.props.cy}
             elementDeleted={this.deleteWithChildren}
             popperInitialized={this.initPopper}
-            actionsPlacement="bottom"
+            actionsPlacement='bottom-start'
         >
-            <IconButton
-                title={this.props.subsystem.isCollapsed ? 'Expand' : 'Collapse'}
-                onClick={this.toggleCollapsedState}
-            >
-                {this.props.subsystem.isCollapsed ? <ExpandMore /> : <ExpandLess />}
-            </IconButton>
-            {editCommands}
+            <div style={{ position: 'relative', top: '5px', left: '-5px' }}>
+                <IconButton
+                    title={this.props.subsystem.isCollapsed ? 'Expand' : 'Collapse'}
+                    onClick={this.toggleCollapsedState}
+                    size='small'
+                >
+                    {this.props.subsystem.isCollapsed ? <ExpandMore /> : <ExpandLess />}
+                </IconButton>
+                {editCommands}
+            </div>
         </ElementActions>;
     }
 

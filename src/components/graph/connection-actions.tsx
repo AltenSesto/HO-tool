@@ -33,7 +33,11 @@ export default class ConnectionActions extends React.Component<Props> {
                 allowActionsVisible={this.areNotBothEndsCollapsed}
                 popperInitialized={this.initPopper}
             >
-                <IconButton title="Delete" onClick={() => this.props.elementDeleted(this.props.id)}>
+                <IconButton
+                    title='Delete'
+                    onClick={() => this.props.elementDeleted(this.props.id)}
+                    size='small'
+                >
                     <Delete />
                 </IconButton>
             </ElementActions>

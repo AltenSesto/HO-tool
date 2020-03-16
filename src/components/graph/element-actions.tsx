@@ -51,23 +51,12 @@ export default class ElementActions extends React.Component<Props, State> {
     }
 
     render() {
-        const visibility = this.state.areActionsVisible ? 'visible' : 'hidden';
-
-        let childrenStatic;
-        if (this.props.childrenStatic) {
-            childrenStatic = (
-                <div style={{padding: '12px'}}>
-                    {this.props.childrenStatic}
-                </div>
-            );
-        }
-
         return (
             <div ref={r => this.root = r} style={{ zIndex: 100 }}
                 onMouseEnter={() => this.setActionsVisible(true)}
                 onMouseLeave={() => this.setActionsVisible(false)}>
-                {childrenStatic}
-                <div style={{ visibility: visibility }}>
+                {this.props.childrenStatic}
+                <div style={{ visibility: this.state.areActionsVisible ? 'visible' : 'hidden' }}>
                     {this.props.children}
                 </div>
             </div>
