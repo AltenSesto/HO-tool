@@ -49,6 +49,7 @@ export default class SystemObjectActions extends React.Component<Props> {
 
         let actionButtons: ReactElement | undefined = undefined;
         let linkLabel: ReactElement | undefined = undefined;
+        const Style = { position: 'relative', top: '-5px', left: '-5px' };
         if (!this.props.isConnectionCreating) {
             actionButtons = (
                 <div style={{ position: 'relative', top: '-5px', left: '-5px' }}>
@@ -71,7 +72,7 @@ export default class SystemObjectActions extends React.Component<Props> {
             );
         } else {
             linkLabel = (
-                <div style={{ position: 'relative', top: '23px' }}>
+                <div style={{ position: 'relative', top: '-2px', left: '-2px' }}>
                     <Link />
                 </div>);
         }

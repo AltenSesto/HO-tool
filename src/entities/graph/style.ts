@@ -11,7 +11,7 @@ const graphStyle = [
             'shape': 'round-rectangle',
             'label': 'data(label)',
             'height': 'label',
-            'width': '110px',
+            'width': 'label',
             'text-valign': 'center',
             'text-halign': 'center',
             'text-wrap': 'wrap',

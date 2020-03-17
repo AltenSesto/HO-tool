@@ -340,7 +340,7 @@ export default class Graph extends React.Component<Props, State> {
                 group: 'nodes',
                 data: {
                     id: entity.id,
-                    label: `<<${entity.type.toString()}>>\n\n${entity.name}`,
+                    label: `<<${entity.type.toString()}>>\n${entity.name}`,
                     object: entity,
                     parent: entity.parent
                 },
