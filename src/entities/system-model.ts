@@ -1,8 +1,14 @@
-import { SystemDescriptionEntity } from "./system-description/system-description-entity";
 import { FlowStepId } from "./meny/flow-step";
+import SystemObject from "./system-description/system-object";
+import Connection from "./system-description/connection";
+import Subsystem from "./system-description/subsystem";
 
 export interface SystemModel {
     currentStep: FlowStepId;
     lastCompletedStep: FlowStepId;
-    systemDescription: SystemDescriptionEntity[];
+    kinds: SystemObject[];
+    roles: SystemObject[];
+    relators: SystemObject[];
+    systemObjectConnections: Connection[];
+    subsystems: Subsystem[];
 };

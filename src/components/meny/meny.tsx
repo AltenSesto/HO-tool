@@ -1,7 +1,8 @@
 import React from "react";
 import { SystemModel } from "../../entities/system-model";
 import { Button, Menu, MenuItem } from "@material-ui/core";
-import { SystemDescriptionEntity, isConnectionToCollapsed } from "../../entities/system-description/system-description-entity";
+import { isConnectionToCollapsed } from "../../entities/system-description/system-description-entity";
+import Connection from "../../entities/system-description/connection";
 
 interface Props {
     openFile: (model: SystemModel) => void;
@@ -96,12 +97,15 @@ export default class Meny extends React.Component<Props, State> {
 
     private prepareDataToDownload() {
         const data = this.props.saveFile();
-        return { ...data, ...{ systemDescription: this.patchCollapsedConnections(data.systemDescription) } };
+        return {
+            ...data,
+            ...{ systemObjectConnections: this.patchCollapsedConnections(data.systemObjectConnections) }
+        };
     }
 
-    private patchCollapsedConnections (systemDescription: SystemDescriptionEntity[]) {
+    private patchCollapsedConnections (connections: Connection[]) {
         // needed as cytoscape.js-expand-collapse modifies the model so that it brings circular references
-        return systemDescription.map(e => {
+        return connections.map(e => {
             if (isConnectionToCollapsed(e)) {
                 return {
                     id: e.id,

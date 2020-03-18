@@ -9,10 +9,14 @@ import SystemDescription from './components/system-description/system-descriptio
 import ErrorBoundary from './components/error-boundary';
 import { SystemModel } from './entities/system-model';
 import Meny from './components/meny/meny';
-import { SystemDescriptionEntity } from './entities/system-description/system-description-entity';
+import { SystemDescriptionEntity, isSystemObject, isConnection, isSubsystem } from './entities/system-description/system-description-entity';
 import ProgressSteps from './components/meny/progress-steps';
 import { getFirstStepId } from './entities/meny/flow';
 import { FlowStepId } from './entities/meny/flow-step';
+import { ObjectTypes } from './entities/system-description/object-types';
+import SystemObject from './entities/system-description/system-object';
+import Connection from './entities/system-description/connection';
+import Subsystem from './entities/system-description/subsystem';
 
 const drawerWidth = 240;
 
@@ -47,7 +51,11 @@ const App: React.FC = () => {
     const [systemModel, setSystemModel] = useState<SystemModel>({
         currentStep: getFirstStepId(),
         lastCompletedStep: getFirstStepId(),
-        systemDescription: []
+        kinds: [],
+        roles: [],
+        relators: [],
+        systemObjectConnections: [],
+        subsystems: [],
     });
     const [hasUnsavedChanges, setHasUnsaveChanges] = useState(false);
 
@@ -70,7 +78,15 @@ const App: React.FC = () => {
     };
 
     const updateSystemDescription = (entities: SystemDescriptionEntity[]) => {
-        setSystemModel({ ...systemModel, ...{ systemDescription: entities } });
+        setSystemModel({
+            ...systemModel, ...{
+                kinds: entities.filter(e => isSystemObject(e) && e.type === ObjectTypes.kind) as SystemObject[],
+                roles: entities.filter(e => isSystemObject(e) && e.type === ObjectTypes.role) as SystemObject[],
+                relators: entities.filter(e => isSystemObject(e) && e.type === ObjectTypes.relator) as SystemObject[],
+                systemObjectConnections: entities.filter(e => isConnection(e)) as Connection[],
+                subsystems: entities.filter(e => isSubsystem(e)) as Subsystem[]
+            }
+        });
         setHasUnsaveChanges(true);
     };
 
@@ -135,7 +151,11 @@ const App: React.FC = () => {
                     <div className={classes.toolbar} />
                     <SystemDescription
                         currentStep={systemModel.currentStep}
-                        entities={systemModel.systemDescription}
+                        entities={(systemModel.kinds as SystemDescriptionEntity[])
+                            .concat(systemModel.roles)
+                            .concat(systemModel.relators)
+                            .concat(systemModel.systemObjectConnections)
+                            .concat(systemModel.subsystems)}
                         entitiesChanged={updateSystemDescription}
                     />
                 </main>
