@@ -49,7 +49,6 @@ export default class SystemObjectActions extends React.Component<Props> {
 
         let actionButtons: ReactElement | undefined = undefined;
         let linkLabel: ReactElement | undefined = undefined;
-        const Style = { position: 'relative', top: '-5px', left: '-5px' };
         if (!this.props.isConnectionCreating) {
             actionButtons = (
                 <div style={{ position: 'relative', top: '-5px', left: '-5px' }}>
