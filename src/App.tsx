@@ -11,12 +11,13 @@ import { SystemModel } from './entities/system-model';
 import Meny from './components/meny/meny';
 import { SystemDescriptionEntity, isSystemObject, isConnection, isSubsystem } from './entities/system-description/system-description-entity';
 import ProgressSteps from './components/meny/progress-steps';
-import { getFirstStepId } from './entities/meny/flow';
+import { getFirstStepId, getPhase, flowSteps } from './entities/meny/flow';
 import { FlowStepId } from './entities/meny/flow-step';
 import { ObjectTypes } from './entities/system-description/object-types';
 import SystemObject from './entities/system-description/system-object';
 import Connection from './entities/system-description/connection';
 import Subsystem from './entities/system-description/subsystem';
+import MishapVictimIdentification from './components/mishap-victim-identification/mishap-victim-identification';
 
 const drawerWidth = 240;
 
@@ -104,6 +105,24 @@ const App: React.FC = () => {
 
     const classes = useStyles();
 
+    const getMainContent = () => {
+        const phase = getPhase(systemModel.currentStep);
+        switch (phase) {
+            case flowSteps.OHI_1:
+                return <SystemDescription
+                    currentStep={systemModel.currentStep}
+                    entities={(systemModel.kinds as SystemDescriptionEntity[])
+                        .concat(systemModel.roles)
+                        .concat(systemModel.relators)
+                        .concat(systemModel.systemObjectConnections)
+                        .concat(systemModel.subsystems)}
+                    entitiesChanged={updateSystemDescription}
+                />;
+            case flowSteps.OHI_2:
+                return <MishapVictimIdentification />;
+        }
+    };
+
     return (
         <ErrorBoundary>
             <CssBaseline />
@@ -149,15 +168,7 @@ const App: React.FC = () => {
 
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
-                    <SystemDescription
-                        currentStep={systemModel.currentStep}
-                        entities={(systemModel.kinds as SystemDescriptionEntity[])
-                            .concat(systemModel.roles)
-                            .concat(systemModel.relators)
-                            .concat(systemModel.systemObjectConnections)
-                            .concat(systemModel.subsystems)}
-                        entitiesChanged={updateSystemDescription}
-                    />
+                    {getMainContent()}
                 </main>
             </div>
         </ErrorBoundary>

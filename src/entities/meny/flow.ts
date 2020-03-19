@@ -1,21 +1,36 @@
+import { FlowStepId } from "./flow-step";
+
+export const OUT_OF_FLOW = -1;
+
 export const flowSteps = {
-    OHI: { name: 'OHI', order: -1 },
-    OHI_1: { name: 'OHI-1', order: -1 },
+    OHI: { name: 'OHI', order: OUT_OF_FLOW },
+    OHI_1: { name: 'OHI-1', order: OUT_OF_FLOW },
     SDF_1: { name: 'SDF-1', order: 1 },
     SDF_2: { name: 'SDF-2', order: 2 },
     SDF_3: { name: 'SDF-3', order: 3 },
     SDF_4: { name: 'SDF-4', order: 4 },
-    OHI_2: { name: 'OHI-2', order: -1 },
-    OHI_3: { name: 'OHI-3', order: -1 },
-    OCH: { name: 'OCH', order: -1 },
-    OCH_1: { name: 'OCH-1', order: -1 },
-    OCH_2: { name: 'OCH-2', order: -1 },
-    OCH_3: { name: 'OCH-3', order: -1 },
-    SARE: { name: 'SARE', order: -1 },
-    SARE_1: { name: 'SARE-1', order: -1 },
-    SARE_2: { name: 'SARE-2', order: -1 },
-    SARE_3: { name: 'SARE-3', order: -1 },
-    CM: { name: 'CM', order: -1 },
+    OHI_2: { name: 'OHI-2', order: 5 },
+    OHI_3: { name: 'OHI-3', order: OUT_OF_FLOW },
+    OCH: { name: 'OCH', order: OUT_OF_FLOW },
+    OCH_1: { name: 'OCH-1', order: OUT_OF_FLOW },
+    OCH_2: { name: 'OCH-2', order: OUT_OF_FLOW },
+    OCH_3: { name: 'OCH-3', order: OUT_OF_FLOW },
+    SARE: { name: 'SARE', order: OUT_OF_FLOW },
+    SARE_1: { name: 'SARE-1', order: OUT_OF_FLOW },
+    SARE_2: { name: 'SARE-2', order: OUT_OF_FLOW },
+    SARE_3: { name: 'SARE-3', order: OUT_OF_FLOW },
+    CM: { name: 'CM', order: OUT_OF_FLOW },
+};
+
+export function getPhase(step: FlowStepId) {
+    for (var stage of flow) {
+        for (var phase of stage.children) {
+            if (phase.id === step ||
+                (phase.children && phase.children.some(e => e.id === step))) {
+                return phase.id;
+            }
+        }
+    }
 };
 
 export const flow = [
@@ -30,7 +45,7 @@ export const flow = [
                 ]
             },
             {
-                id: flowSteps.OHI_2, label: 'Identify Victims', children: []
+                id: flowSteps.OHI_2, label: 'Identify Victims', helpText: 'Go through all the <i>roles</i> presented in the HO-style model and analyze if the roles are not supposed to but have the potential to encounter harms. Furthermore, the analysts continue with identifying possible harms that can affect the victims, including but not limited to, physical damages, chemical injuries, fatal illness, explosion, etc.'
             },
             {
                 id: flowSteps.OHI_3, label: 'Identify Hazards', children: []

@@ -1,7 +1,7 @@
 import React from 'react';
 import { List, ListItem, ListItemText, Chip, makeStyles, ListItemIcon, Divider, ListItemSecondaryAction } from '@material-ui/core';
 import { FlowStep, FlowStepId } from '../../entities/meny/flow-step';
-import { flow } from '../../entities/meny/flow';
+import { flow, OUT_OF_FLOW } from '../../entities/meny/flow';
 import HelpText from './help-text';
 
 
@@ -38,62 +38,46 @@ const ProgressSteps: React.FC<Props> = (props: Props) => {
         }
     };
 
-    const renderSteps = (steps: FlowStep[]) => (
+    const renderSteps = (steps: FlowStep[], paddingClass: string) => (
         <List disablePadding dense>
-            {steps.map(step => {
-                const isCurrent = step.id.order === props.currentStep.order;
-                const isActive = step.id.order <= props.lastCompletedStep.order + 1;
-                const helpText = step.helpText ? step.helpText : '';
-                const helpOpenedOnFirstVisit = step.id === props.currentStep && step.id === props.lastCompletedStep;
+            {steps.map((step: FlowStep) => {
+                const isInFlow = step.id.order !== OUT_OF_FLOW;
+                const isCurrent = isInFlow && step.id.order === props.currentStep.order;
+                const isEnabled = !isInFlow || step.id.order <= props.lastCompletedStep.order + 1;
+                const helpOpenedOnFirstVisit =
+                    step.id === props.currentStep && step.id === props.lastCompletedStep;
 
                 return (
-                    <ListItem
-                        className={classes.step}
-                        button
-                        key={step.id.name}
-                        disabled={!isActive}
-                        onClick={() => moveTo(step.id)}
-                    >
-                        <ListItemIcon>
-                            <Chip
-                                size="small"
-                                disabled={!isActive}
-                                label={step.id.name}
-                                color={isCurrent ? 'secondary' : 'primary'}
-                            />
-                        </ListItemIcon>
-                        <ListItemText primary={step.label} className={classes.label} />
-                        <ListItemSecondaryAction>
-                            <HelpText
-                                open={helpOpenedOnFirstVisit}
-                                highlighted={isCurrent}
-                                htmlContent={helpText}
-                            />
-                        </ListItemSecondaryAction>
-                    </ListItem>
-                );
-            })}
-        </List>
-    );
-
-    const renderPhases = (phases: FlowStep[]) => (
-        <List disablePadding dense>
-            {phases.map(phase => {
-                const steps = phase.children ? renderSteps(phase.children) : '';
-                return (
-                    <React.Fragment key={phase.id.name}>
-                        <ListItem className={classes.phase} >
+                    <React.Fragment>
+                        <ListItem
+                            className={paddingClass}
+                            button
+                            key={step.id.name}
+                            disabled={!isEnabled}
+                            onClick={() => isInFlow && moveTo(step.id)}
+                        >
                             <ListItemIcon>
                                 <Chip
-                                    label={phase.id.name}
-                                    size='small'
-                                    variant='outlined'
-                                    color='primary'
+                                    size="small"
+                                    disabled={!isEnabled}
+                                    label={step.id.name}
+                                    color={isCurrent ? 'secondary' : 'primary'}
+                                    variant={isInFlow ? 'default' : 'outlined'}
                                 />
                             </ListItemIcon>
-                            <ListItemText primary={phase.label} className={classes.label} />
+                            <ListItemText primary={step.label} className={classes.label} />
+                            {step.helpText ? (
+                                <ListItemSecondaryAction>
+                                    <HelpText
+                                        open={helpOpenedOnFirstVisit}
+                                        highlighted={isCurrent}
+                                        htmlContent={step.helpText}
+                                    />
+                                </ListItemSecondaryAction>)
+                                : ''
+                            }
                         </ListItem>
-                        {steps}
+                        {step.children ? renderSteps(step.children, classes.step) : ''}
                     </React.Fragment>
                 );
             })}
@@ -114,7 +98,7 @@ const ProgressSteps: React.FC<Props> = (props: Props) => {
                             className={`${classes.label} ${classes.bold}`}
                         />
                     </ListItem>
-                    {renderPhases(stage.children)}
+                    {renderSteps(stage.children, classes.phase)}
                     <Divider />
                 </React.Fragment>
             ))}
