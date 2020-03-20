@@ -14,6 +14,9 @@ interface State {
 }
 
 export default class Meny extends React.Component<Props, State> {
+
+    private _openFileRef: HTMLFormElement | null;
+
     constructor(props: Props) {
         super(props);
 
@@ -29,12 +32,18 @@ export default class Meny extends React.Component<Props, State> {
         this.state = {
             anchorEl: null
         };
+        this._openFileRef = null;
     }
 
     render() {
         let openFile;
         if (window.FileReader && window.FileList) {
-            openFile = <input type="file" onChange={(ev) => this.readFile(ev.target.files)} accept=".json" />;
+            openFile = <form ref={(ref) => this._openFileRef = ref}>
+                <input
+                    type="file"
+                    onChange={(ev) => this.readFile(ev.target.files)}
+                    accept=".json" />
+            </form>;
         } else {
             openFile = <span>File API not supported</span>;
         }
@@ -103,7 +112,7 @@ export default class Meny extends React.Component<Props, State> {
         };
     }
 
-    private patchCollapsedConnections (connections: Connection[]) {
+    private patchCollapsedConnections(connections: Connection[]) {
         // needed as cytoscape.js-expand-collapse modifies the model so that it brings circular references
         return connections.map(e => {
             if (isConnectionToCollapsed(e)) {
@@ -136,7 +145,7 @@ export default class Meny extends React.Component<Props, State> {
 
         const data = ev.target.result as string;
         const model = JSON.parse(data);
-
+        this._openFileRef && this._openFileRef.reset();
         this.props.openFile(model);
     }
 };

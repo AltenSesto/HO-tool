@@ -26,7 +26,7 @@ export function getPhase(step: FlowStepId) {
     for (var stage of flow) {
         for (var phase of stage.children) {
             if (phase.id === step ||
-                (phase.children && phase.children.some(e => e.id === step))) {
+                (phase.children && phase.children.some(e => e.id.name === step.name))) {
                 return phase.id;
             }
         }
