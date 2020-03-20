@@ -12,7 +12,7 @@ export default interface Element {
         parent?: string,
         object?: SystemObject,
         subsystem?: Subsystem,
-        updateRequired?: boolean
+        updateRequired?: boolean,
     };
 
     position?: {
@@ -21,7 +21,7 @@ export default interface Element {
     };
 
     classes?: string[];
-
+    grabbable?: boolean,
     pannable?: boolean;
 }
 

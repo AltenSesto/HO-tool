@@ -6,6 +6,7 @@ import style from '../../entities/graph/style';
 import Element from '../../entities/graph/element';
 import { SystemDescriptionEntity, isSystemObject, isConnection, isSubsystem } from '../../entities/system-description/system-description-entity';
 import MishapVictim from '../../entities/mishap-victim-identification/mishap-victim';
+import { ObjectTypes } from '../../entities/system-description/object-types';
 
 interface Props {
     systemDescription: SystemDescriptionEntity[];
@@ -67,6 +68,10 @@ export default class Graph extends React.Component<Props, State> {
 
     private static createElement(entity: SystemDescriptionEntity): Element {
         if (isSystemObject(entity)) {
+            const classes = [entity.type.toString()];
+            if (entity.type !== ObjectTypes.role) {
+                classes.push('faded');
+            }
             return {
                 group: 'nodes',
                 data: {
@@ -78,15 +83,20 @@ export default class Graph extends React.Component<Props, State> {
                 position: {
                     x: entity.posX, y: entity.posY
                 },
-                classes: [entity.type.toString()]
+                classes: classes,
+                grabbable: false
             };
         }
         if (isConnection(entity)) {
+            const classes = ['faded'];
+            if (entity.isOriented) {
+                classes.push('arrow-edge');
+            }
             return {
                 group: "edges",
                 data: entity,
                 pannable: true,
-                classes: entity.isOriented ? ['arrow-edge'] : []
+                classes: classes
             }
         }
         if (isSubsystem(entity)) {

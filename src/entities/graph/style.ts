@@ -62,6 +62,12 @@ const graphStyle = [
         style: {
             'target-arrow-shape': 'triangle'
         }
+    },
+    {
+        selector: `.faded`,
+        style: {
+            'opacity': 0.7
+        }
     }
 ];
 
