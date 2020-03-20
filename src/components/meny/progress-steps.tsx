@@ -48,11 +48,10 @@ const ProgressSteps: React.FC<Props> = (props: Props) => {
                     step.id === props.currentStep && step.id === props.lastCompletedStep;
 
                 return (
-                    <React.Fragment>
+                    <React.Fragment key={step.id.name}>
                         <ListItem
                             className={paddingClass}
                             button
-                            key={step.id.name}
                             disabled={!isEnabled}
                             onClick={() => isInFlow && moveTo(step.id)}
                         >

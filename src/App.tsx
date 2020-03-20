@@ -18,6 +18,7 @@ import SystemObject from './entities/system-description/system-object';
 import Connection from './entities/system-description/connection';
 import Subsystem from './entities/system-description/subsystem';
 import MishapVictimIdentification from './components/mishap-victim-identification/mishap-victim-identification';
+import MishapVictim from './entities/mishap-victim-identification/mishap-victim';
 
 const drawerWidth = 240;
 
@@ -57,6 +58,7 @@ const App: React.FC = () => {
         relators: [],
         systemObjectConnections: [],
         subsystems: [],
+        mishapVictims: [],
     });
     const [hasUnsavedChanges, setHasUnsaveChanges] = useState(false);
 
@@ -91,6 +93,13 @@ const App: React.FC = () => {
         setHasUnsaveChanges(true);
     };
 
+    const addMishapVictim = (item: MishapVictim) => {
+        setSystemModel({
+            ...systemModel,
+            ...{ mishapVictims: systemModel.mishapVictims.concat(item) }
+        });
+    };
+
     const advanceFlow = (step: FlowStepId) => {
         let lastCompletedStep = step;
         if (systemModel.lastCompletedStep.order > step.order) {
@@ -119,7 +128,15 @@ const App: React.FC = () => {
                     entitiesChanged={updateSystemDescription}
                 />;
             case flowSteps.OHI_2:
-                return <MishapVictimIdentification />;
+                return <MishapVictimIdentification
+                    kinds={systemModel.kinds}
+                    mishapVictimCreated={addMishapVictim}
+                    mishapVictims={systemModel.mishapVictims}
+                    relators={systemModel.relators}
+                    roles={systemModel.roles}
+                    subsystems={systemModel.subsystems}
+                    systemObjectConnections={systemModel.systemObjectConnections}
+                />;
         }
     };
 
