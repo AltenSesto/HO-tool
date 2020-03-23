@@ -7,26 +7,31 @@ import Graph from './graph';
 import { SystemDescriptionEntity } from '../../entities/system-description/system-description-entity';
 
 interface Props {
-    kinds: SystemObject[];
-    roles: SystemObject[];
-    relators: SystemObject[];
-    systemObjectConnections: Connection[];
-    subsystems: Subsystem[];
-    mishapVictims: MishapVictim[];
-    mishapVictimCreated: (item: MishapVictim) => void;
+    system: {
+        kinds: SystemObject[];
+        roles: SystemObject[];
+        relators: SystemObject[];
+        systemObjectConnections: Connection[];
+        subsystems: Subsystem[];
+        mishapVictims: MishapVictim[];
+    };
+    mishapVictimsUpdated: (items: { mishapVictims: MishapVictim[] }) => void;
 }
 
 export default class MishapVictimIdentification extends React.Component<Props> {
 
     render() {
         return <Graph
-            systemDescription={(this.props.kinds as SystemDescriptionEntity[])
-                .concat(this.props.roles)
-                .concat(this.props.relators)
-                .concat(this.props.systemObjectConnections)
-                .concat(this.props.subsystems)}
-            mishapVictims={this.props.mishapVictims}
-            mishapVictimCreated={this.props.mishapVictimCreated}
+            systemDescription={(this.props.system.kinds as SystemDescriptionEntity[])
+                .concat(this.props.system.roles)
+                .concat(this.props.system.relators)
+                .concat(this.props.system.systemObjectConnections)
+                .concat(this.props.system.subsystems)}
+            mishapVictims={this.props.system.mishapVictims}
+            mishapVictimCreated={
+                (item) => this.props.mishapVictimsUpdated(
+                    { mishapVictims: this.props.system.mishapVictims.concat(item) }
+                )}
         />;
     }
 }

@@ -66,7 +66,7 @@ const graphStyle = [
     {
         selector: `.faded`,
         style: {
-            'opacity': 0.7
+            'opacity': 0.6
         }
     }
 ];

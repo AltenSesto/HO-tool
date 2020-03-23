@@ -12,13 +12,11 @@ import Meny from './components/meny/meny';
 import { SystemDescriptionEntity, isSystemObject, isConnection, isSubsystem } from './entities/system-description/system-description-entity';
 import ProgressSteps from './components/meny/progress-steps';
 import { getFirstStepId, getPhase, flowSteps } from './entities/meny/flow';
-import { FlowStepId } from './entities/meny/flow-step';
 import { ObjectTypes } from './entities/system-description/object-types';
 import SystemObject from './entities/system-description/system-object';
 import Connection from './entities/system-description/connection';
 import Subsystem from './entities/system-description/subsystem';
 import MishapVictimIdentification from './components/mishap-victim-identification/mishap-victim-identification';
-import MishapVictim from './entities/mishap-victim-identification/mishap-victim';
 
 const drawerWidth = 240;
 
@@ -93,24 +91,12 @@ const App: React.FC = () => {
         setHasUnsaveChanges(true);
     };
 
-    const addMishapVictim = (item: MishapVictim) => {
-        setSystemModel({
-            ...systemModel,
-            ...{ mishapVictims: systemModel.mishapVictims.concat(item) }
-        });
-    };
-
-    const advanceFlow = (step: FlowStepId) => {
-        let lastCompletedStep = step;
-        if (systemModel.lastCompletedStep.order > step.order) {
-            lastCompletedStep = systemModel.lastCompletedStep;
+    const updateSystemModel = <T extends {}>(model: T, needsSaving: boolean = true) => {
+        if (needsSaving) {
+            setHasUnsaveChanges(true);
         }
-        setSystemModel({ ...systemModel, ...{ currentStep: step, lastCompletedStep } });
-    }
-
-    const setFlowBack = (step: FlowStepId) => {
-        setSystemModel({ ...systemModel, ...{ currentStep: step } });
-    }
+        setSystemModel({...systemModel, ...model});
+    };
 
     const classes = useStyles();
 
@@ -129,13 +115,8 @@ const App: React.FC = () => {
                 />;
             case flowSteps.OHI_2:
                 return <MishapVictimIdentification
-                    kinds={systemModel.kinds}
-                    mishapVictimCreated={addMishapVictim}
-                    mishapVictims={systemModel.mishapVictims}
-                    relators={systemModel.relators}
-                    roles={systemModel.roles}
-                    subsystems={systemModel.subsystems}
-                    systemObjectConnections={systemModel.systemObjectConnections}
+                    system={systemModel}
+                    mishapVictimsUpdated={updateSystemModel}
                 />;
         }
     };
@@ -176,10 +157,8 @@ const App: React.FC = () => {
                     <div className={classes.toolbar}></div>
 
                     <ProgressSteps
-                        currentStep={systemModel.currentStep}
-                        lastCompletedStep={systemModel.lastCompletedStep}
-                        movedForward={advanceFlow}
-                        movedBack={setFlowBack}
+                        progress={systemModel}
+                        progressUpdated={updateSystemModel}
                     />
                 </Drawer>
 
