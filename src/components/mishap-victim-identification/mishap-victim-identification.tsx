@@ -28,10 +28,7 @@ export default class MishapVictimIdentification extends React.Component<Props> {
                 .concat(this.props.system.systemObjectConnections)
                 .concat(this.props.system.subsystems)}
             mishapVictims={this.props.system.mishapVictims}
-            mishapVictimCreated={
-                (item) => this.props.mishapVictimsUpdated(
-                    { mishapVictims: this.props.system.mishapVictims.concat(item) }
-                )}
+            mishapVictimsUpdated={(items) => this.props.mishapVictimsUpdated({ mishapVictims: items })}
         />;
     }
 }
