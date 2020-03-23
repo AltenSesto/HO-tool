@@ -3,8 +3,8 @@ import SystemObject from '../../entities/system-description/system-object';
 import Connection from '../../entities/system-description/connection';
 import Subsystem from '../../entities/system-description/subsystem';
 import MishapVictim from '../../entities/mishap-victim-identification/mishap-victim';
-import Graph from './graph';
 import { SystemDescriptionEntity } from '../../entities/system-description/system-description-entity';
+import GraphView from './graph-view';
 
 interface Props {
     system: {
@@ -21,7 +21,7 @@ interface Props {
 export default class MishapVictimIdentification extends React.Component<Props> {
 
     render() {
-        return <Graph
+        return <GraphView
             systemDescription={(this.props.system.kinds as SystemDescriptionEntity[])
                 .concat(this.props.system.roles)
                 .concat(this.props.system.relators)
