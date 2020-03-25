@@ -2,13 +2,13 @@ import React from 'react';
 import { makeStyles, Card, CardContent, Typography, ListItem, ListItemText, ListItemSecondaryAction, IconButton, TextField, List } from '@material-ui/core';
 
 import SystemObject from '../../entities/system-description/system-object';
-import MishapVictim from '../../entities/mishap-victim-identification/mishap-victim';
+import PossibleHarm from '../../entities/mishap-victim-identification/possible-harm';
 import { Delete, Add } from '@material-ui/icons';
 
 interface Props {
     selectedRole: SystemObject | null;
-    mishapVictims: MishapVictim[];
-    mishapVictimsUpdated: (items: MishapVictim[]) => void;
+    possibleHarms: PossibleHarm[];
+    possibleHarmsUpdated: (items: PossibleHarm[]) => void;
 };
 
 const useStyles = makeStyles(theme => ({
@@ -36,34 +36,34 @@ const VictimHazards: React.FC<Props> = (props: Props) => {
                 roleId: props.selectedRole.id,
                 harm: harm
             };
-            props.mishapVictimsUpdated(props.mishapVictims.concat(mishapVictim));
+            props.possibleHarmsUpdated(props.possibleHarms.concat(mishapVictim));
         }
     };
 
-    const deleteMishapVictim = (item: MishapVictim) => {
-        props.mishapVictimsUpdated(props.mishapVictims.filter(e => e !== item));
+    const deletePossibleHarm = (item: PossibleHarm) => {
+        props.possibleHarmsUpdated(props.possibleHarms.filter(e => e !== item));
     };
 
     const emptyContent = (
         <CardContent>
-            <Typography color="textSecondary" gutterBottom>
+            <Typography>
                 Click on a role to see or add possible harms
             </Typography>
         </CardContent>);
 
     const renderHarms = () => {
-        return props.mishapVictims
+        return props.possibleHarms
             .filter(e => props.selectedRole && e.roleId === props.selectedRole.id)
             .sort((a, b) => a.harm.localeCompare(b.harm))
             .map(e => renderHarmItem(e))
             .concat(renderAddItem());
     };
 
-    const renderHarmItem = (item: MishapVictim) => (
+    const renderHarmItem = (item: PossibleHarm) => (
         <ListItem key={item.id}>
             <ListItemText primary={item.harm} />
             <ListItemSecondaryAction>
-                <IconButton edge="end" title="Delete" onClick={() => deleteMishapVictim(item)}>
+                <IconButton edge="end" title="Delete" onClick={() => deletePossibleHarm(item)}>
                     <Delete />
                 </IconButton>
             </ListItemSecondaryAction>

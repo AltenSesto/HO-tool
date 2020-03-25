@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import SystemObject from '../../entities/system-description/system-object';
 import Connection from '../../entities/system-description/connection';
 import Subsystem from '../../entities/system-description/subsystem';
-import MishapVictim from '../../entities/mishap-victim-identification/mishap-victim';
+import PossibleHarm from '../../entities/mishap-victim-identification/possible-harm';
 import { SystemDescriptionEntity } from '../../entities/system-description/system-description-entity';
 import GraphView from './graph-view';
 import { makeStyles, Fab } from '@material-ui/core';
@@ -16,9 +16,9 @@ interface Props {
         relators: SystemObject[];
         systemObjectConnections: Connection[];
         subsystems: Subsystem[];
-        mishapVictims: MishapVictim[];
+        possibleHarms: PossibleHarm[];
     };
-    mishapVictimsUpdated: (items: { mishapVictims: MishapVictim[] }) => void;
+    possibleHarmsUpdated: (items: { possibleHarms: PossibleHarm[] }) => void;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -52,8 +52,8 @@ const MishapVictimIdentification: React.FC<Props> = (props: Props) => {
                         .concat(props.system.relators)
                         .concat(props.system.systemObjectConnections)
                         .concat(props.system.subsystems)}
-                    mishapVictims={props.system.mishapVictims}
-                    mishapVictimsUpdated={(items) => props.mishapVictimsUpdated({ mishapVictims: items })}
+                    possibleHarms={props.system.possibleHarms}
+                    possibleHarmsUpdated={(items) => props.possibleHarmsUpdated({ possibleHarms: items })}
                 />
             </React.Fragment>
         );
@@ -71,8 +71,8 @@ const MishapVictimIdentification: React.FC<Props> = (props: Props) => {
             </Fab>
             <TableView
                 roles={props.system.roles}
-                mishapVictims={props.system.mishapVictims}
-                mishapVictimsUpdated={(items) => props.mishapVictimsUpdated({ mishapVictims: items })}
+                possibleHarms={props.system.possibleHarms}
+                possibleHarmsUpdated={(items) => props.possibleHarmsUpdated({ possibleHarms: items })}
             />
         </React.Fragment>
     );

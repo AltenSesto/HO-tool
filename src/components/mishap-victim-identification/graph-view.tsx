@@ -3,7 +3,7 @@ import { EventObject, Singular } from 'cytoscape';
 
 import Element from '../../entities/graph/element';
 import { SystemDescriptionEntity, isSystemObject, isConnection, isSubsystem } from '../../entities/system-description/system-description-entity';
-import MishapVictim from '../../entities/mishap-victim-identification/mishap-victim';
+import PossibleHarm from '../../entities/mishap-victim-identification/possible-harm';
 import { ObjectTypes } from '../../entities/system-description/object-types';
 import VictimHazards from './victim-hazards';
 import SystemObject from '../../entities/system-description/system-object';
@@ -11,8 +11,8 @@ import Graph from './graph';
 
 interface Props {
     systemDescription: SystemDescriptionEntity[];
-    mishapVictims: MishapVictim[];
-    mishapVictimsUpdated: (items: MishapVictim[]) => void;
+    possibleHarms: PossibleHarm[];
+    possibleHarmsUpdated: (items: PossibleHarm[]) => void;
 }
 
 interface State {
@@ -51,8 +51,8 @@ export default class GraphView extends React.Component<Props, State> {
                 />
                 <VictimHazards
                     selectedRole={this.state.selectedRole}
-                    mishapVictims={this.props.mishapVictims}
-                    mishapVictimsUpdated={this.props.mishapVictimsUpdated}
+                    possibleHarms={this.props.possibleHarms}
+                    possibleHarmsUpdated={this.props.possibleHarmsUpdated}
                 />
             </React.Fragment>
         );

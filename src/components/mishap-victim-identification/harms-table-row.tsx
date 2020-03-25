@@ -2,14 +2,14 @@ import React from 'react';
 import { TableRow, TableCell, Chip, TextField, IconButton, makeStyles } from '@material-ui/core';
 
 import SystemObject from '../../entities/system-description/system-object';
-import MishapVictim from '../../entities/mishap-victim-identification/mishap-victim';
+import PossibleHarm from '../../entities/mishap-victim-identification/possible-harm';
 import { Add } from '@material-ui/icons';
 
 interface Props {
     role: SystemObject;
-    harms: MishapVictim[];
-    harmAdded: (item: MishapVictim) => void;
-    harmDeleted: (item: MishapVictim) => void;
+    harms: PossibleHarm[];
+    harmAdded: (item: PossibleHarm) => void;
+    harmDeleted: (item: PossibleHarm) => void;
 }
 
 const useStyles = makeStyles(theme => ({

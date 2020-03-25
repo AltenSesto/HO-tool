@@ -1,4 +1,4 @@
-export default interface MishapVictim {
+export default interface PossibleHarm {
     id: string;
     roleId: string;
     harm: string;

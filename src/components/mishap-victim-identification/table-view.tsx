@@ -2,20 +2,20 @@ import React from 'react';
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@material-ui/core';
 
 import SystemObject from '../../entities/system-description/system-object';
-import MishapVictim from '../../entities/mishap-victim-identification/mishap-victim';
+import PossibleHarm from '../../entities/mishap-victim-identification/possible-harm';
 import HarmsTableRow from './harms-table-row';
 
 interface Props {
     roles: SystemObject[];
-    mishapVictims: MishapVictim[];
-    mishapVictimsUpdated: (items: MishapVictim[]) => void;
+    possibleHarms: PossibleHarm[];
+    possibleHarmsUpdated: (items: PossibleHarm[]) => void;
 }
 
 const TableView: React.FC<Props> = (props: Props) => {
-    const addHarm = (item: MishapVictim) =>
-        props.mishapVictimsUpdated(props.mishapVictims.concat(item));
-    const deleteHarm = (item: MishapVictim) =>
-        props.mishapVictimsUpdated(props.mishapVictims.filter(e => e !== item));
+    const addHarm = (item: PossibleHarm) =>
+        props.possibleHarmsUpdated(props.possibleHarms.concat(item));
+    const deleteHarm = (item: PossibleHarm) =>
+        props.possibleHarmsUpdated(props.possibleHarms.filter(e => e !== item));
 
     return (
         <TableContainer>
@@ -34,7 +34,7 @@ const TableView: React.FC<Props> = (props: Props) => {
                             <HarmsTableRow
                                 key={role.id}
                                 role={role}
-                                harms={props.mishapVictims.filter(e => e.roleId === role.id)}
+                                harms={props.possibleHarms.filter(e => e.roleId === role.id)}
                                 harmAdded={addHarm}
                                 harmDeleted={deleteHarm}
                             />

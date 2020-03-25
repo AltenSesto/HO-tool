@@ -56,7 +56,7 @@ const App: React.FC = () => {
         relators: [],
         systemObjectConnections: [],
         subsystems: [],
-        mishapVictims: [],
+        possibleHarms: [],
     });
     const [hasUnsavedChanges, setHasUnsaveChanges] = useState(false);
 
@@ -116,7 +116,7 @@ const App: React.FC = () => {
             case flowSteps.OHI_2:
                 return <MishapVictimIdentification
                     system={systemModel}
-                    mishapVictimsUpdated={updateSystemModel}
+                    possibleHarmsUpdated={updateSystemModel}
                 />;
         }
     };
