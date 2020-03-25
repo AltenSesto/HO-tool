@@ -99,7 +99,7 @@ export default class SubsystemActions extends React.Component<Props> {
         } else {
             this.ele && this.collapseAPI.expand(this.ele);
         }
-
+        this.props.cy.zoom(1.1); // collapsing tool makes zoom out for some reason
         this.props.subsystemUpdated({ ...this.props.subsystem, ...{ isCollapsed: newStateCollapsed } });
     }
 

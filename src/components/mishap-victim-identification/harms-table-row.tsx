@@ -53,7 +53,7 @@ const HarmsTableRow: React.FC<Props> = (props: Props) => {
                         />)}
             </TableCell>
             <TableCell align='right'>
-                <form onSubmit={createMishapVictim}>
+                <form action='#' onSubmit={createMishapVictim}>
                     <TextField
                         required
                         autoFocus

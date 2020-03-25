@@ -72,7 +72,7 @@ const VictimHazards: React.FC<Props> = (props: Props) => {
 
     const renderAddItem = () => (
         <ListItem key="-1">
-            <form onSubmit={createMishapVictim}>
+            <form action='#' onSubmit={createMishapVictim}>
                 <TextField
                     required
                     autoFocus
