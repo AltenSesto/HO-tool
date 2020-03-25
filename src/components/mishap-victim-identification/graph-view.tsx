@@ -30,6 +30,7 @@ export default class GraphView extends React.Component<Props, State> {
         this.mouseLeft = this.mouseLeft.bind(this);
         this.selectRole = this.selectRole.bind(this);
         this.clearRoleSelection = this.clearRoleSelection.bind(this);
+        this.createElement = this.createElement.bind(this);
 
         this.state = {
             selectedRole: null,
@@ -94,10 +95,15 @@ export default class GraphView extends React.Component<Props, State> {
 
     private createElement(entity: SystemDescriptionEntity): Element {
         if (isSystemObject(entity)) {
-            const classes = [entity.type.toString()];
+            let classes;
             if (entity.type !== ObjectTypes.role) {
-                classes.push('faded');
+                classes = [entity.type.toString(), 'faded'];
+            } else if (this.props.possibleHarms.some(e => e.roleId === entity.id)) {
+                classes = ['mishap-victim'];
+            } else {
+                classes = [ObjectTypes.role.toString()];
             }
+
             return {
                 group: 'nodes',
                 data: {

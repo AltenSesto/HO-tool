@@ -33,7 +33,8 @@ const graphStyle = [
         selector: '.subsystem',
         style: {
             'shape': 'rectangle',
-            'text-valign': 'top'
+            'text-valign': 'top',
+            'text-max-width': '300px'
         }
     },
     {
@@ -58,15 +59,22 @@ const graphStyle = [
         }
     },
     {
-        selector: `.arrow-edge`,
+        selector: '.arrow-edge',
         style: {
             'target-arrow-shape': 'triangle'
         }
     },
     {
-        selector: `.faded`,
+        selector: '.faded',
         style: {
             'opacity': 0.6
+        }
+    },
+    {
+        selector: '.mishap-victim',
+        style: {
+            'background-color': '#ff0',
+            'color': '#000'
         }
     }
 ];
