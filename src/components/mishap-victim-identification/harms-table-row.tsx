@@ -60,7 +60,7 @@ const HarmsTableRow: React.FC<Props> = (props: Props) => {
                         margin='dense'
                         type='text'
                         name='harm'
-                        placeholder='Add New'
+                        placeholder='Add Harm'
                         autoComplete='off'
                     />
                     <IconButton size='small' type='submit' edge='end' title='Add'>
