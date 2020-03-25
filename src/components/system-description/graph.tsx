@@ -287,7 +287,7 @@ export default class Graph extends React.Component<Props, State> {
                 return;
         }
 
-        let label: string | undefined;
+        let label = '';
         let isOriented = false;
         if (connectionSource.type === ObjectTypes.kind) {
             isOriented = true;
