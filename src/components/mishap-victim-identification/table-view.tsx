@@ -45,12 +45,9 @@ const TableView: React.FC<Props> = (props: Props) => {
         .map(r => ({ role: r, harms: props.possibleHarms.filter(h => h.roleId === r.id) }));
     const mishapVictims = existingMishapVictims.concat(newlyAddedMishapVictims);
 
-    let rolesToSelect: SystemObject[] = [];
-    if (isSelectingRole) {
-        rolesToSelect = props.roles.filter(r =>
+    const rolesToSelect = props.roles.filter(r =>
             !existingMishapVictims.some(e => e.role.id === r.id) &&
             !newlyAddedMishapVictims.some(e => e.role.id === r.id));
-    }
 
     return (
         <React.Fragment>
@@ -92,8 +89,11 @@ const TableView: React.FC<Props> = (props: Props) => {
                 variant='contained'
                 color='primary'
                 onClick={() => { !isSelectingRole && setIsSelectingRole(true) }}
+                disabled={rolesToSelect.length === 0}
             >
-                Add new mishap victim
+                {rolesToSelect.length === 0 ?
+                    'All mishap victims have been identified' :
+                    'Add new mishap victim'}
             </Button>
         </React.Fragment>
     );

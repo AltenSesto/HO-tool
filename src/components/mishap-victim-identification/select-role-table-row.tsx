@@ -30,6 +30,7 @@ const SelectRoleTableRow: React.FC<Props> = (props: Props) => {
                     <Select
                         labelId='label-select-role'
                         onChange={handleChange}
+                        value=''
                     >
                         {
                             props.roles
