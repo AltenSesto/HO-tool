@@ -7,7 +7,7 @@ import PossibleHarm from '../../entities/mishap-victim-identification/possible-h
 import { ObjectTypes } from '../../entities/system-description/object-types';
 import VictimHazards from './victim-hazards';
 import SystemObject from '../../entities/system-description/system-object';
-import Graph from './graph';
+import Graph from '../graph/graph';
 
 interface Props {
     systemDescription: SystemDescriptionEntity[];

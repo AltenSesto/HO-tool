@@ -23,6 +23,8 @@ export const flowSteps = {
 };
 
 export function getPhase(step: FlowStepId) {
+    if (step.name === flowSteps.SDF_1.name) return flowSteps.SDF_1;
+
     for (var stage of flow) {
         for (var phase of stage.children) {
             if (phase.id.name === step.name ||

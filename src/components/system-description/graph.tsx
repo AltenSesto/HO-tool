@@ -151,7 +151,7 @@ export default class Graph extends React.Component<Props, State> {
         let nodeEditor;
         if (this.state.nodeEditing) {
             nodeEditor = <NodeEditor
-                allEntities={this.props.entities}
+                subsystemsAvailable={this.props.entities.filter(e => isSubsystem(e)) as Subsystem[]}
                 entity={this.state.nodeEditing}
                 entityUpdated={this.completeEditNode}
                 editCancelled={() => this.setState({ ...this.state, ...{ nodeEditing: null } })}>

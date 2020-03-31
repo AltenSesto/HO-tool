@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
 import { Dialog, Backdrop, DialogActions, Button, TextField, DialogContent, FormControl, InputLabel, Select, MenuItem, makeStyles } from '@material-ui/core';
 
-import { SystemDescriptionEntity, isSubsystem, isSystemObject } from '../../entities/system-description/system-description-entity';
+import { isSystemObject } from '../../entities/system-description/system-description-entity';
 import Subsystem from '../../entities/system-description/subsystem';
 import SystemObject from '../../entities/system-description/system-object';
 
-type EditableEntity = SystemObject | Subsystem;
-
 interface Props {
-    entity: EditableEntity;
-    allEntities: SystemDescriptionEntity[];
-    entityUpdated: (entity: EditableEntity) => void;
+    entity: SystemObject | Subsystem;
+    subsystemsAvailable: Subsystem[];
+    entityUpdated: (entity: SystemObject | Subsystem) => void;
     editCancelled: () => void;
 }
 
@@ -33,9 +31,7 @@ const NodeEditor: React.FC<Props> = (props: Props) => {
 
     let parentEditor;
     if (isSystemObject(entity)) {
-        const subsystems = props.allEntities
-            .filter(e => isSubsystem(e))
-            .map(e => e as Subsystem)
+        const subsystems = props.subsystemsAvailable
             .sort((a, b) => a.name.localeCompare(b.name))
             .map(e => <MenuItem key={e.id} value={e.id}>{e.name}</MenuItem>);
 

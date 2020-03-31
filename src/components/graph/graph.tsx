@@ -1,21 +1,29 @@
 import React from 'react';
-import { Core, EventObject, Singular, NodeSingular } from 'cytoscape';
+import cytoscape, { Core, EventObject, Singular, NodeSingular } from 'cytoscape';
 import CytoscapeComponent from 'react-cytoscapejs';
+import expandCollapse from 'cytoscape-expand-collapse';
 
 import style from '../../entities/graph/style';
 import Element from '../../entities/graph/element';
+import { GraphElement, isSubsystemData } from '../../entities/graph/graph-element';
+import { initCollapseApi, CollapseApi, getCollapseApi } from '../../entities/graph/collapse-api';
+
+//expandCollapse(cytoscape);
 
 interface Props {
-    elements: Element[];
+    elements: Element[] | GraphElement<any>[];
     cursorStyle: string;
+    useCollapseApi?: boolean;
     mouseEnteredNode: (ev: EventObject) => void;
     mouseLeftNode: (ev: EventObject) => void;
     nodeClicked: (ev: EventObject) => void;
     graphClicked: (ev: EventObject) => void;
+    nodeMoved?: (ev: EventObject) => void;
 }
 
 interface State {
     cy: Core | null;
+    collapseApi: CollapseApi | null;
     maxX: number;
     maxY: number;
 }
@@ -34,11 +42,13 @@ export default class Graph extends React.Component<Props, State> {
         this.addEventListeners = this.addEventListeners.bind(this);
         this.checkCanvasSizeToFitNode = this.checkCanvasSizeToFitNode.bind(this);
         this.resizeCanvas = this.resizeCanvas.bind(this);
+        this.handleNodeMoved = this.handleNodeMoved.bind(this);
 
         this.newMaxX = 1500;
         this.newMaxY = 900;
         this.state = {
             cy: null,
+            collapseApi: null,
             maxX: this.newMaxX,
             maxY: this.newMaxY
         };
@@ -60,6 +70,7 @@ export default class Graph extends React.Component<Props, State> {
                 style={graphContainerStyle}
                 stylesheet={style}
                 userZoomingEnabled={false}
+                userPanningEnabled={false}
                 cy={this.initCytoscape} />
         );
     }
@@ -85,11 +96,23 @@ export default class Graph extends React.Component<Props, State> {
         }
     }
 
+    private handleNodeMoved(event: EventObject) {
+        if (this.props.nodeMoved) {
+            this.props.nodeMoved(event);
+        }
+    }
+
     private addEventListeners(event: EventObject) {
         const ele: Singular = event.target.element();
         if (ele.isNode()) {
             ele.on('position', this.checkCanvasSizeToFitNode);
             ele.trigger('position');
+            ele.on('dragfree', this.handleNodeMoved);
+
+            const data = ele.data();
+            if (this.state.collapseApi && isSubsystemData(data) && data.subsystem.isCollapsed) {
+                this.state.collapseApi.collapse(ele);
+            }
         }
         ele.on('mouseover', this.props.mouseEnteredNode);
         ele.on('mouseout', this.props.mouseLeftNode);
@@ -106,6 +129,12 @@ export default class Graph extends React.Component<Props, State> {
         cy.on('click', this.props.graphClicked);
         cy.on('render', this.resizeCanvas);
 
-        this.setState({ ...this.state, ...{ cy: cy } });
+        let collapseApi = null;
+        if (this.props.useCollapseApi) {
+            initCollapseApi(cy);
+            collapseApi = getCollapseApi(cy);
+        }
+
+        this.setState({ ...this.state, ...{ cy, collapseApi } });
     }
 }

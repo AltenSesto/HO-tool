@@ -109,7 +109,7 @@ const Toolbar: React.FC<Props> = (props: Props) => {
     let editor;
     if (entityEditing) {
         editor = <NodeEditor
-            allEntities={props.allEntities}
+            subsystemsAvailable={props.allEntities.filter(e => isSubsystem(e)) as Subsystem[]}
             entity={entityEditing}
             entityUpdated={completeCreatingEntity}
             editCancelled={cancelCreatingEntity}>
