@@ -3,6 +3,8 @@ import { SystemModel } from "../../entities/system-model";
 import { Button, Menu, MenuItem } from "@material-ui/core";
 import { isConnectionToCollapsed } from "../../entities/system-description/system-description-entity";
 import Connection from "../../entities/system-description/connection";
+import { FlowStepId } from "../../entities/meny/flow-step";
+import { flowSteps } from "../../entities/meny/flow";
 
 interface Props {
     openFile: (model: SystemModel) => void;
@@ -108,7 +110,21 @@ export default class Meny extends React.Component<Props, State> {
         const data = this.props.saveFile();
         return {
             ...data,
-            ...{ systemObjectConnections: this.patchCollapsedConnections(data.systemObjectConnections) }
+            ...{
+                systemObjectConnections: this.patchCollapsedConnections(data.systemObjectConnections),
+                currentStep: this.serializeStepId(data.currentStep),
+                lastCompletedStep: this.serializeStepId(data.lastCompletedStep)
+            }
+        };
+    }
+
+    private prepareReadData(data: any) {
+        return {
+            ...data,
+            ...{
+                currentStep: this.deserializeStepId(data.currentStep),
+                lastCompletedStep: this.deserializeStepId(data.lastCompletedStep)
+            }
         };
     }
 
@@ -124,6 +140,19 @@ export default class Meny extends React.Component<Props, State> {
             }
             return e;
         });
+    }
+
+    private serializeStepId(step: FlowStepId) {
+        return step.name;
+    }
+
+    private deserializeStepId(name: string) {
+        for (var key in flowSteps) {
+            if (flowSteps[key].name === name) {
+                return flowSteps[key];
+            }
+        }
+        throw new Error(`Unknown flow step id - ${name}`);
     }
 
     private reportError(message: string) {
@@ -144,7 +173,7 @@ export default class Meny extends React.Component<Props, State> {
         }
 
         const data = ev.target.result as string;
-        const model = JSON.parse(data);
+        const model = this.prepareReadData(JSON.parse(data));
         this._openFileRef && this._openFileRef.reset();
         this.props.openFile(model);
     }

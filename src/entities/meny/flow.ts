@@ -2,7 +2,7 @@ import { FlowStepId } from "./flow-step";
 
 export const OUT_OF_FLOW = -1;
 
-export const flowSteps = {
+export const flowSteps: {[key: string]: FlowStepId} = {
     OHI: { name: 'OHI', order: OUT_OF_FLOW },
     OHI_1: { name: 'OHI-1', order: OUT_OF_FLOW },
     SDF_1: { name: 'SDF-1', order: 1 },
