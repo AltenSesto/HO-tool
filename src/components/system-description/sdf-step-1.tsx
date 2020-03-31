@@ -24,7 +24,6 @@ interface Props {
 
 interface State {
     objectEditing: SystemObject | Subsystem | null;
-    isNewObjectEditing: boolean;
     nodeConnecting: NodeSingular | null;
     isConnectionValid: boolean;
     elementDisplayPopper: Singular | null;
@@ -55,7 +54,6 @@ export default class SdfStep1 extends React.Component<Props, State> {
             nodeConnecting: null,
             objectEditing: null,
             elementDisplayPopper: null,
-            isNewObjectEditing: false,
             isConnectionValid: false
         };
     }
@@ -138,7 +136,7 @@ export default class SdfStep1 extends React.Component<Props, State> {
                             entityUpdated={this.completeEditEntity}
                             editCancelled={() => this.setState({
                                 ...this.state,
-                                ...{ objectEditing: null, isNewObjectEditing: false }
+                                ...{ objectEditing: null }
                             })}
                         />
                         :
@@ -272,7 +270,7 @@ export default class SdfStep1 extends React.Component<Props, State> {
         }
         this.setState({
             ...this.state,
-            ...{ objectEditing: objectEditing, elementDisplayPopper: null, isNewObjectEditing: false }
+            ...{ objectEditing: objectEditing, elementDisplayPopper: null }
         });
     }
 
@@ -322,7 +320,7 @@ export default class SdfStep1 extends React.Component<Props, State> {
                 posX: 0,
                 posY: 0
             };
-            this.setState({ ...this.state, ...{ objectEditing: obj, isNewObjectEditing: true } });
+            this.setState({ ...this.state, ...{ objectEditing: obj } });
         }
     };
 
@@ -368,7 +366,7 @@ export default class SdfStep1 extends React.Component<Props, State> {
 
             this.modifySystemDescription(entity, (list, item) => list.concat(item));
         }
-        this.setState({ ...this.state, ...{ objectEditing: null, isNewObjectEditing: false } });
+        this.setState({ ...this.state, ...{ objectEditing: null } });
     };
 
     private startCreatingSubsystem() {
@@ -380,7 +378,7 @@ export default class SdfStep1 extends React.Component<Props, State> {
                 posY: 0,
                 isCollapsed: false
             };
-            this.setState({ ...this.state, ...{ objectEditing: subsystem, isNewObjectEditing: true } });
+            this.setState({ ...this.state, ...{ objectEditing: subsystem } });
         }
     };
 
