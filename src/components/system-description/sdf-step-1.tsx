@@ -1,32 +1,21 @@
 import React from 'react';
-import { NodeSingular, Singular, EdgeSingular } from 'cytoscape';
+import { NodeSingular, EdgeSingular } from 'cytoscape';
 import { IconButton } from '@material-ui/core';
 import { Add, Edit, Link } from '@material-ui/icons';
 
 import SystemObject from '../../entities/system-description/system-object';
 import Subsystem from '../../entities/system-description/subsystem';
-import { SystemDescription, createObjectId } from '../../entities/system-model';
+import { createObjectId } from '../../entities/system-model';
 import ToolbarButtons from './toolbar-buttons';
 import { ObjectTypes } from '../../entities/system-description/object-types';
 import { isSystemObjectData, isSubsystemData } from '../../entities/graph/graph-element';
-import SdfStepBase from './sdf-step-base';
+import SdfStepBase, { StepProps, StepState } from './sdf-step-base';
 import DeleteElementButton from './delete-element-button';
 import SubsystemCollapseButton from './subsystem-collapse-button';
 
-interface Props {
-    system: SystemDescription;
-    systemUpdated: (system: SystemDescription) => void;
-}
+export default class SdfStep1 extends React.Component<StepProps, StepState> {
 
-interface State {
-    objectEditing: SystemObject | Subsystem | null;
-    nodeConnecting: NodeSingular | null;
-    elementDisplayPopper: Singular | null;
-}
-
-export default class SdfStep1 extends React.Component<Props, State> {
-
-    constructor(props: Props) {
+    constructor(props: StepProps) {
         super(props);
 
         this.tryCreateConnection = this.tryCreateConnection.bind(this);
@@ -63,26 +52,10 @@ export default class SdfStep1 extends React.Component<Props, State> {
             },
         ]} />;
 
-        let nodeActions = <React.Fragment></React.Fragment>;
-        const actionElement = this.state.elementDisplayPopper;
-        if (actionElement) {
-            if (actionElement.isEdge()) {
-                nodeActions = this.renderConnectionActions(actionElement);
-            } else if (actionElement.isNode()) {
-                const data = actionElement.data();
-                if (isSystemObjectData(data)) {
-                    nodeActions = this.renderSystemObjectActions(data.systemObject, actionElement);
-                } else if (isSubsystemData(data)) {
-                    nodeActions = this.renderSubsystemActions(data.subsystem, actionElement);
-                }
-            }
-        }
-
         return (
             <SdfStepBase
                 system={this.props.system}
                 systemUpdated={this.props.systemUpdated}
-                elementActions={nodeActions}
                 elementDisplayPopper={this.state.elementDisplayPopper}
                 elementDisplayPopperChanged={(ele) => this.setState({
                     ...this.state, ...{ elementDisplayPopper: ele }
@@ -93,6 +66,9 @@ export default class SdfStep1 extends React.Component<Props, State> {
                 objectEditingDone={() => this.setState({ ...this.state, ...{ objectEditing: null } })}
                 toolbarButtons={toolbarButtons}
                 tryCreateConnection={this.tryCreateConnection}
+                renderConnectionActions={this.renderConnectionActions}
+                renderSubsystemActions={this.renderSubsystemActions}
+                renderSystemObjectActions={this.renderSystemObjectActions}
             />
         );
     }

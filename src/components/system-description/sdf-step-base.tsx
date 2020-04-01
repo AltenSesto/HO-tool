@@ -1,6 +1,6 @@
 import React from 'react';
 import Popper from 'popper.js';
-import { NodeSingular, EventObject, Singular } from 'cytoscape';
+import { NodeSingular, EventObject, Singular, EdgeSingular } from 'cytoscape';
 
 import SystemObject from '../../entities/system-description/system-object';
 import Subsystem from '../../entities/system-description/subsystem';
@@ -24,13 +24,26 @@ interface Props {
     nodeConnectingDone: () => void;
     tryCreateConnection: (source: NodeSingular, target: NodeSingular) => Connection | null;
     toolbarButtons?: JSX.Element;
-    elementActions: JSX.Element;
     elementDisplayPopper: Singular | null;
     elementDisplayPopperChanged: (element: Singular | null) => void;
+    renderConnectionActions: (element: EdgeSingular) => JSX.Element;
+    renderSystemObjectActions: (object: SystemObject, element: NodeSingular) => JSX.Element;
+    renderSubsystemActions: (subsystem: Subsystem, element: NodeSingular) => JSX.Element;
 }
 
 interface State {
     isConnectionValid: boolean;
+}
+
+export interface StepProps {
+    system: SystemDescription;
+    systemUpdated: (system: SystemDescription) => void;
+}
+
+export interface StepState {
+    objectEditing: SystemObject | Subsystem | null;
+    nodeConnecting: NodeSingular | null;
+    elementDisplayPopper: Singular | null;
 }
 
 export default class SdfStepBase extends React.Component<Props, State> {
@@ -76,6 +89,21 @@ export default class SdfStepBase extends React.Component<Props, State> {
             }
         }
 
+        let elementActions = <React.Fragment></React.Fragment>;
+        const actionElement = this.props.elementDisplayPopper;
+        if (actionElement) {
+            if (actionElement.isEdge()) {
+                elementActions = this.props.renderConnectionActions(actionElement);
+            } else if (actionElement.isNode()) {
+                const data = actionElement.data();
+                if (isSystemObjectData(data)) {
+                    elementActions = this.props.renderSystemObjectActions(data.systemObject, actionElement);
+                } else if (isSubsystemData(data)) {
+                    elementActions = this.props.renderSubsystemActions(data.subsystem, actionElement);
+                }
+            }
+        }
+
         return (
             <React.Fragment>
                 <Graph
@@ -95,7 +123,7 @@ export default class SdfStepBase extends React.Component<Props, State> {
                             element={this.props.elementDisplayPopper}
                             placement={actionButtonsPlacement}
                         >
-                            {this.props.elementActions}
+                            {elementActions}
                         </NodePopper>
                         :
                         undefined
