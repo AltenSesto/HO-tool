@@ -4,11 +4,13 @@ import Subsystem from '../../entities/system-description/subsystem';
 import { IconButton } from '@material-ui/core';
 import { ExpandMore, ExpandLess } from '@material-ui/icons';
 import { getCollapseApi } from '../../entities/graph/collapse-api';
+import { SystemDescription } from '../../entities/system-model';
 
 interface Props {
     node: NodeSingular;
     subsystem: Subsystem;
-    collapsedStateChanged: (isCollapsed: boolean) => void;
+    system: SystemDescription;
+    systemUpdated: (system: SystemDescription) => void;
 }
 
 const SubsystemCollapseButton: React.FC<Props> = (props) => {
@@ -23,8 +25,11 @@ const SubsystemCollapseButton: React.FC<Props> = (props) => {
             collapseApi.expand(props.node);
         }
         cy.zoom(1.1); // collapsing tool messes up graph positioning
-        cy.pan({x: 0, y: 0});
-        props.collapsedStateChanged(newStateCollapsed);
+        cy.pan({ x: 0, y: 0 });
+
+        const updatedSubsystems = props.system.subsystems
+            .map(e => e.id !== props.subsystem.id ? e : { ...props.subsystem, ...{ isCollapsed: newStateCollapsed } });
+        props.systemUpdated({ ...props.system, ...{ subsystems: updatedSubsystems } });
     };
 
     return (
