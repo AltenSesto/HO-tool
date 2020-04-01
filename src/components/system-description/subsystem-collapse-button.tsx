@@ -24,7 +24,9 @@ const SubsystemCollapseButton: React.FC<Props> = (props) => {
         } else {
             collapseApi.expand(props.node);
         }
-        cy.zoom(1.1); // collapsing tool messes up graph positioning
+        // collapsing tool messes up everything
+        cy.json(cy.json()); // force redraw
+        cy.zoom(1.1); // restore position
         cy.pan({ x: 0, y: 0 });
 
         const updatedSubsystems = props.system.subsystems
