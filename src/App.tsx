@@ -18,6 +18,7 @@ import Connection from './entities/system-description/connection';
 import Subsystem from './entities/system-description/subsystem';
 import MishapVictimIdentification from './components/mishap-victim-identification/mishap-victim-identification';
 import SdfStep1 from './components/system-description/sdf-step-1';
+import SdfStep2 from './components/system-description/sdf-step-2';
 
 const drawerWidth = 240;
 
@@ -106,6 +107,11 @@ const App: React.FC = () => {
         switch (phase) {
             case flowSteps.SDF_1:
                 return <SdfStep1
+                    system={systemModel}
+                    systemUpdated={updateSystemModel}
+                />
+            case flowSteps.SDF_2:
+                return <SdfStep2
                     system={systemModel}
                     systemUpdated={updateSystemModel}
                 />

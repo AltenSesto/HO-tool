@@ -33,7 +33,6 @@ export default class SdfStep1 extends React.Component<Props, State> {
         this.startCreatingObject = this.startCreatingObject.bind(this);
         this.startCreatingSubsystem = this.startCreatingSubsystem.bind(this);
         this.editNode = this.editNode.bind(this);
-        this.startCreatingConnection = this.startCreatingConnection.bind(this);
         this.renderSystemObjectActions = this.renderSystemObjectActions.bind(this);
         this.renderConnectionActions = this.renderConnectionActions.bind(this);
         this.renderSubsystemActions = this.renderSubsystemActions.bind(this);
@@ -170,12 +169,6 @@ export default class SdfStep1 extends React.Component<Props, State> {
             system={this.props.system}
             systemUpdated={this.props.systemUpdated}
         />;
-    }
-
-    private startCreatingConnection() {
-        if (this.state.elementDisplayPopper && this.state.elementDisplayPopper.isNode()) {
-            this.setState({ ...this.state, ...{ nodeConnecting: this.state.elementDisplayPopper } })
-        }
     }
 
     private tryCreateConnection(source: NodeSingular, target: NodeSingular) {
