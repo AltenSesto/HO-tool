@@ -1,5 +1,5 @@
 import React from 'react';
-import { NodeSingular } from 'cytoscape';
+import { NodeSingular, EdgeSingular } from 'cytoscape';
 import { IconButton } from '@material-ui/core';
 import { Link } from '@material-ui/icons';
 
@@ -10,8 +10,9 @@ import { ObjectTypes } from '../../entities/system-description/object-types';
 import { isSystemObjectData } from '../../entities/graph/graph-element';
 import SdfStepBase, { StepProps, StepState } from './sdf-step-base';
 import SubsystemCollapseButton from './subsystem-collapse-button';
+import DeleteElementButton from './delete-element-button';
 
-export default class SdfStep2 extends React.Component<StepProps, StepState> {
+export default class SdfStep4 extends React.Component<StepProps, StepState> {
 
     constructor(props: StepProps) {
         super(props);
@@ -19,6 +20,7 @@ export default class SdfStep2 extends React.Component<StepProps, StepState> {
         this.tryCreateConnection = this.tryCreateConnection.bind(this);
         this.renderSystemObjectActions = this.renderSystemObjectActions.bind(this);
         this.renderSubsystemActions = this.renderSubsystemActions.bind(this);
+        this.renderConnectionActions = this.renderConnectionActions.bind(this);
 
         this.state = {
             nodeConnecting: null,
@@ -41,19 +43,20 @@ export default class SdfStep2 extends React.Component<StepProps, StepState> {
                 tryCreateConnection={this.tryCreateConnection}
                 renderSubsystemActions={this.renderSubsystemActions}
                 renderSystemObjectActions={this.renderSystemObjectActions}
+                renderConnectionActions={this.renderConnectionActions}
             />
         );
     }
 
     private renderSystemObjectActions(object: SystemObject, element: NodeSingular) {
-        if (object.type !== ObjectTypes.kind) {
+        if (object.type !== ObjectTypes.role) {
             return <React.Fragment></React.Fragment>;
         }
 
         return (<div style={{ position: 'relative', top: '-5px', left: '-5px' }}>
             <IconButton
                 size='small'
-                title='Connect to role'
+                title='Connect to kind'
                 onClick={() => this.setState({ ...this.state, ...{ nodeConnecting: element } })}
             >
                 <Link />
@@ -72,16 +75,29 @@ export default class SdfStep2 extends React.Component<StepProps, StepState> {
         </div>;
     }
 
+    private renderConnectionActions(element: EdgeSingular) {
+        // swap ends
+        if (!this.tryCreateConnection(element.target(), element.source())) {
+            return <React.Fragment></React.Fragment>;
+        }
+
+        return <DeleteElementButton
+            element={element}
+            system={this.props.system}
+            systemUpdated={this.props.systemUpdated}
+        />;
+    }
+
     private tryCreateConnection(source: NodeSingular, target: NodeSingular) {
-        const sourceData = source.data();
-        const targetData = target.data();
-        if (isSystemObjectData(sourceData) && sourceData.systemObject.type === ObjectTypes.kind &&
-            isSystemObjectData(targetData) && targetData.systemObject.type === ObjectTypes.role
+        const roleData = source.data();
+        const kindData = target.data();
+        if (isSystemObjectData(roleData) && roleData.systemObject.type === ObjectTypes.role &&
+            isSystemObjectData(kindData) && kindData.systemObject.type === ObjectTypes.kind
         ) {
             return {
                 id: createObjectId('connection'),
-                source: sourceData.systemObject.id,
-                target: targetData.systemObject.id,
+                source: kindData.systemObject.id,
+                target: roleData.systemObject.id,
                 label: 'play',
                 isOriented: true
             };

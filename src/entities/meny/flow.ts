@@ -22,20 +22,6 @@ export const flowSteps: {[key: string]: FlowStepId} = {
     CM: { name: 'CM', order: OUT_OF_FLOW },
 };
 
-export function getPhase(step: FlowStepId) {
-    if (step.name === flowSteps.SDF_1.name) return flowSteps.SDF_1;
-    if (step.name === flowSteps.SDF_2.name) return flowSteps.SDF_2;
-
-    for (var stage of flow) {
-        for (var phase of stage.children) {
-            if (phase.id.name === step.name ||
-                (phase.children && phase.children.some(e => e.id.name === step.name))) {
-                return phase.id;
-            }
-        }
-    }
-};
-
 export const flow = [
     {
         id: flowSteps.OHI, label: 'Identify Hazards', children: [

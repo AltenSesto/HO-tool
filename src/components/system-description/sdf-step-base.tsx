@@ -14,6 +14,7 @@ import { isSystemObject, isSubsystem, SystemDescriptionEntity, isConnection } fr
 import { isSystemObjectData, isSubsystemData, GraphElementPosition } from '../../entities/graph/graph-element';
 import NodePopper from './node-popper';
 import Connection from '../../entities/system-description/connection';
+import DeleteElementButton from './delete-element-button';
 
 interface Props {
     system: SystemDescription;
@@ -26,9 +27,9 @@ interface Props {
     toolbarButtons?: JSX.Element;
     elementDisplayPopper: Singular | null;
     elementDisplayPopperChanged: (element: Singular | null) => void;
-    renderConnectionActions: (element: EdgeSingular) => JSX.Element;
     renderSystemObjectActions: (object: SystemObject, element: NodeSingular) => JSX.Element;
     renderSubsystemActions: (subsystem: Subsystem, element: NodeSingular) => JSX.Element;
+    renderConnectionActions?: (element: EdgeSingular) => JSX.Element;
 }
 
 interface State {
@@ -61,6 +62,7 @@ export default class SdfStepBase extends React.Component<Props, State> {
         this.validateConnection = this.validateConnection.bind(this);
         this.preventOverlap = this.preventOverlap.bind(this);
         this.cancelEditEntity = this.cancelEditEntity.bind(this);
+        this.renderConnectionActions = this.renderConnectionActions.bind(this);
 
         this.state = {
             isConnectionValid: false
@@ -93,7 +95,11 @@ export default class SdfStepBase extends React.Component<Props, State> {
         const actionElement = this.props.elementDisplayPopper;
         if (actionElement) {
             if (actionElement.isEdge()) {
-                elementActions = this.props.renderConnectionActions(actionElement);
+                if (this.props.renderConnectionActions) {
+                    elementActions = this.props.renderConnectionActions(actionElement);
+                } else {
+                    elementActions = this.renderConnectionActions(actionElement);
+                }
             } else if (actionElement.isNode()) {
                 const data = actionElement.data();
                 if (isSystemObjectData(data)) {
@@ -141,6 +147,18 @@ export default class SdfStepBase extends React.Component<Props, State> {
                 }
             </React.Fragment>
         );
+    }
+
+    private renderConnectionActions(element: EdgeSingular) {
+        if (!this.props.tryCreateConnection(element.source(), element.target())) {
+            return <React.Fragment></React.Fragment>;
+        }
+
+        return <DeleteElementButton
+            element={element}
+            system={this.props.system}
+            systemUpdated={this.props.systemUpdated}
+        />;
     }
 
     private showNodeActions(event: EventObject) {

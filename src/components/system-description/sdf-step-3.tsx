@@ -13,14 +13,13 @@ import SdfStepBase, { StepProps, StepState } from './sdf-step-base';
 import DeleteElementButton from './delete-element-button';
 import SubsystemCollapseButton from './subsystem-collapse-button';
 
-export default class SdfStep1 extends React.Component<StepProps, StepState> {
+export default class SdfStep3 extends React.Component<StepProps, StepState> {
 
     constructor(props: StepProps) {
         super(props);
 
         this.tryCreateConnection = this.tryCreateConnection.bind(this);
-        this.startCreatingObject = this.startCreatingObject.bind(this);
-        this.startCreatingSubsystem = this.startCreatingSubsystem.bind(this);
+        this.startCreatingRelator = this.startCreatingRelator.bind(this);
         this.renderSystemObjectActions = this.renderSystemObjectActions.bind(this);
         this.renderSubsystemActions = this.renderSubsystemActions.bind(this);
 
@@ -35,20 +34,9 @@ export default class SdfStep1 extends React.Component<StepProps, StepState> {
         const toolbarButtons = <ToolbarButtons buttons={[
             {
                 icon: <Add />,
-                text: 'Kind',
-                action: () => this.startCreatingObject(ObjectTypes.kind)
-            },
-            {
-                icon: <Add />,
-                text: 'Role',
-                action: () => this.startCreatingObject(ObjectTypes.role)
-            },
-            {
-                icon: <Add />,
-                text: 'Subsystem',
-                action: this.startCreatingSubsystem
-            },
-        ]} />;
+                text: 'Relator',
+                action: this.startCreatingRelator
+            }]} />;
 
         return (
             <SdfStepBase
@@ -71,11 +59,11 @@ export default class SdfStep1 extends React.Component<StepProps, StepState> {
     }
 
     private renderSystemObjectActions(object: SystemObject, element: NodeSingular) {
-        if (object.type === ObjectTypes.kind) {
+        if (object.type === ObjectTypes.relator) {
             return (<div style={{ position: 'relative', top: '-5px', left: '-5px' }}>
                 <IconButton
                     size='small'
-                    title='Connect to containing kind'
+                    title='Connect to role'
                     onClick={() => this.setState({ ...this.state, ...{ nodeConnecting: element } })}
                 >
                     <Link />
@@ -100,18 +88,11 @@ export default class SdfStep1 extends React.Component<StepProps, StepState> {
             return (<div style={{ position: 'relative', top: '-5px', left: '-5px' }}>
                 <IconButton
                     size='small'
-                    title='Edit'
-                    onClick={() => this.setState({
-                        ...this.state, ...{ objectEditing: object, elementDisplayPopper: null }
-                    })}
+                    title='Connect to relator'
+                    onClick={() => this.setState({ ...this.state, ...{ nodeConnecting: element } })}
                 >
-                    <Edit />
+                    <Link />
                 </IconButton>
-                <DeleteElementButton
-                    element={element}
-                    system={this.props.system}
-                    systemUpdated={this.props.systemUpdated}
-                />
             </div>);
         }
         return <React.Fragment></React.Fragment>;
@@ -125,20 +106,6 @@ export default class SdfStep1 extends React.Component<StepProps, StepState> {
                 system={this.props.system}
                 systemUpdated={this.props.systemUpdated}
             />
-            <IconButton
-                size='small'
-                title='Edit'
-                onClick={() => this.setState({
-                    ...this.state, ...{ objectEditing: subsystem, elementDisplayPopper: null }
-                })}
-            >
-                <Edit />
-            </IconButton>
-            <DeleteElementButton
-                element={element}
-                system={this.props.system}
-                systemUpdated={this.props.systemUpdated}
-            />
         </div>;
     }
 
@@ -146,43 +113,30 @@ export default class SdfStep1 extends React.Component<StepProps, StepState> {
         const sourceData = source.data();
         const targetData = target.data();
         if (isSystemObjectData(sourceData) && isSystemObjectData(targetData) &&
-            sourceData.systemObject.type === ObjectTypes.kind &&
-            targetData.systemObject.type === ObjectTypes.kind
-        ) {
+            ((sourceData.systemObject.type === ObjectTypes.role && targetData.systemObject.type === ObjectTypes.relator) ||
+            (sourceData.systemObject.type === ObjectTypes.relator && targetData.systemObject.type === ObjectTypes.role))
+            ) {
             return {
                 id: createObjectId('connection'),
                 source: sourceData.systemObject.id,
                 target: targetData.systemObject.id,
-                label: 'ispartof',
-                isOriented: true
+                label: '',
+                isOriented: false
             };
         }
         return null;
     }
 
-    private startCreatingObject(type: ObjectTypes) {
+    private startCreatingRelator() {
         if (!this.state.objectEditing) {
             const obj = {
-                id: createObjectId(type.toString()),
+                id: createObjectId(ObjectTypes.relator.toString()),
                 name: "",
-                type,
+                type: ObjectTypes.relator,
                 posX: 0,
                 posY: 0
             };
             this.setState({ ...this.state, ...{ objectEditing: obj } });
-        }
-    };
-
-    private startCreatingSubsystem() {
-        if (!this.state.objectEditing) {
-            const subsystem = {
-                id: createObjectId('subsystem'),
-                name: "",
-                posX: 0,
-                posY: 0,
-                isCollapsed: false
-            };
-            this.setState({ ...this.state, ...{ objectEditing: subsystem } });
         }
     };
 }

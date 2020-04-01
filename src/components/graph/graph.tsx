@@ -2,13 +2,15 @@ import React from 'react';
 import cytoscape, { Core, EventObject, Singular, NodeSingular } from 'cytoscape';
 import CytoscapeComponent from 'react-cytoscapejs';
 import expandCollapse from 'cytoscape-expand-collapse';
+import popper from 'cytoscape-popper';
 
 import style from '../../entities/graph/style';
 import Element from '../../entities/graph/element';
 import { GraphElement, isSubsystemData } from '../../entities/graph/graph-element';
 import { initCollapseApi, CollapseApi, getCollapseApi } from '../../entities/graph/collapse-api';
 
-//expandCollapse(cytoscape);
+cytoscape.use(popper);
+expandCollapse(cytoscape);
 
 interface Props {
     elements: Element[] | GraphElement<any>[];

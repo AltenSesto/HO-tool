@@ -5,20 +5,16 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Toolbar, AppBar, Grid, Drawer } from '@material-ui/core';
 
-import SystemDescription from './components/system-description/system-description';
 import ErrorBoundary from './components/error-boundary';
 import { SystemModel } from './entities/system-model';
 import Meny from './components/meny/meny';
-import { SystemDescriptionEntity, isSystemObject, isConnection, isSubsystem } from './entities/system-description/system-description-entity';
 import ProgressSteps from './components/meny/progress-steps';
-import { getFirstStepId, getPhase, flowSteps } from './entities/meny/flow';
-import { ObjectTypes } from './entities/system-description/object-types';
-import SystemObject from './entities/system-description/system-object';
-import Connection from './entities/system-description/connection';
-import Subsystem from './entities/system-description/subsystem';
+import { getFirstStepId, flowSteps } from './entities/meny/flow';
 import MishapVictimIdentification from './components/mishap-victim-identification/mishap-victim-identification';
 import SdfStep1 from './components/system-description/sdf-step-1';
 import SdfStep2 from './components/system-description/sdf-step-2';
+import SdfStep3 from './components/system-description/sdf-step-3';
+import SdfStep4 from './components/system-description/sdf-step-4';
 
 const drawerWidth = 240;
 
@@ -80,19 +76,6 @@ const App: React.FC = () => {
         return systemModel;
     };
 
-    const updateSystemDescription = (entities: SystemDescriptionEntity[]) => {
-        setSystemModel({
-            ...systemModel, ...{
-                kinds: entities.filter(e => isSystemObject(e) && e.type === ObjectTypes.kind) as SystemObject[],
-                roles: entities.filter(e => isSystemObject(e) && e.type === ObjectTypes.role) as SystemObject[],
-                relators: entities.filter(e => isSystemObject(e) && e.type === ObjectTypes.relator) as SystemObject[],
-                systemObjectConnections: entities.filter(e => isConnection(e)) as Connection[],
-                subsystems: entities.filter(e => isSubsystem(e)) as Subsystem[]
-            }
-        });
-        setHasUnsaveChanges(true);
-    };
-
     const updateSystemModel = <T extends {}>(model: T, needsSaving: boolean = true) => {
         if (needsSaving) {
             setHasUnsaveChanges(true);
@@ -103,8 +86,7 @@ const App: React.FC = () => {
     const classes = useStyles();
 
     const getMainContent = () => {
-        const phase = getPhase(systemModel.currentStep);
-        switch (phase) {
+        switch (systemModel.currentStep) {
             case flowSteps.SDF_1:
                 return <SdfStep1
                     system={systemModel}
@@ -115,16 +97,16 @@ const App: React.FC = () => {
                     system={systemModel}
                     systemUpdated={updateSystemModel}
                 />
-            case flowSteps.OHI_1:
-                return <SystemDescription
-                    currentStep={systemModel.currentStep}
-                    entities={(systemModel.kinds as SystemDescriptionEntity[])
-                        .concat(systemModel.roles)
-                        .concat(systemModel.relators)
-                        .concat(systemModel.systemObjectConnections)
-                        .concat(systemModel.subsystems)}
-                    entitiesChanged={updateSystemDescription}
-                />;
+            case flowSteps.SDF_3:
+                return <SdfStep3
+                    system={systemModel}
+                    systemUpdated={updateSystemModel}
+                />
+            case flowSteps.SDF_4:
+                return <SdfStep4
+                    system={systemModel}
+                    systemUpdated={updateSystemModel}
+                />
             case flowSteps.OHI_2:
                 return <MishapVictimIdentification
                     system={systemModel}
