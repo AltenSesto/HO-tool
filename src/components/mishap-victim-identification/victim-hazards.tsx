@@ -5,7 +5,7 @@ import { Delete, Add } from '@material-ui/icons';
 import Role from '../../entities/system-description/role';
 
 interface Props {
-    selectedRole: Role | null;
+    selectedRole: Role | undefined;
     possibleHarmsUpdated: (role: Role) => void;
 };
 

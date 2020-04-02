@@ -14,7 +14,7 @@ interface Props {
 }
 
 interface State {
-    selectedRole: Role | null;
+    selectedRoleId: string;
     isMouseOverRole: boolean;
 }
 
@@ -30,7 +30,7 @@ export default class GraphView extends React.Component<Props, State> {
         this.clearRoleSelection = this.clearRoleSelection.bind(this);
 
         this.state = {
-            selectedRole: null,
+            selectedRoleId: '',
             isMouseOverRole: false
         };
     }
@@ -50,7 +50,8 @@ export default class GraphView extends React.Component<Props, State> {
                     nodeClicked={this.selectRole}
                 />
                 <VictimHazards
-                    selectedRole={this.state.selectedRole}
+                    selectedRole={this.props.systemDescription.roles
+                        .find(e => e.id === this.state.selectedRoleId)}
                     possibleHarmsUpdated={this.props.possibleHarmsUpdated}
                 />
             </React.Fragment>
@@ -81,13 +82,13 @@ export default class GraphView extends React.Component<Props, State> {
         const role = this.getRoleFromEvent(event);
         if (role) {
             event.preventDefault();
-            this.setState({ ...this.state, ...{ selectedRole: role } });
+            this.setState({ ...this.state, ...{ selectedRoleId: role.id } });
         }
     }
 
     private clearRoleSelection(event: EventObject) {
         if (!event.isDefaultPrevented()) {
-            this.setState({ ...this.state, ...{ selectedRole: null } });
+            this.setState({ ...this.state, ...{ selectedRoleId: '' } });
         }
     }
 }
