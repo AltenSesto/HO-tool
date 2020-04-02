@@ -1,5 +1,5 @@
 import GraphElementsFactory from "./graph-elements-factory";
-import { GraphElement, SystemObjectData, ConnectionData } from "./graph-element";
+import { GraphElement, SystemObjectData, ConnectionData, SubsystemData } from "./graph-element";
 import { isRole } from "../system-description/role";
 
 export default class GraphElementsFactoryMishapVictims extends GraphElementsFactory {
@@ -10,6 +10,7 @@ export default class GraphElementsFactoryMishapVictims extends GraphElementsFact
         } else if (element.data.systemObject.possibleHarms.length > 0) {
             element.classes = ['mishap-victim'];
         }
+        element.grabbable = false;
         return element;
     }
 
@@ -19,6 +20,11 @@ export default class GraphElementsFactoryMishapVictims extends GraphElementsFact
             classes.push('arrow-edge');
         }
         element.classes = classes;
+        return element;
+    }
+
+    hookSubsystem(element: GraphElement<SubsystemData>) {
+        element.grabbable = false;
         return element;
     }
 }

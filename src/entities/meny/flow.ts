@@ -10,7 +10,7 @@ export const flowSteps: {[key: string]: FlowStepId} = {
     SDF_3: { name: 'SDF-3', order: 3 },
     SDF_4: { name: 'SDF-4', order: 4 },
     OHI_2: { name: 'OHI-2', order: 5 },
-    OHI_3: { name: 'OHI-3', order: OUT_OF_FLOW },
+    OHI_3: { name: 'OHI-3', order: 6 },
     OCH: { name: 'OCH', order: OUT_OF_FLOW },
     OCH_1: { name: 'OCH-1', order: OUT_OF_FLOW },
     OCH_2: { name: 'OCH-2', order: OUT_OF_FLOW },
@@ -37,7 +37,7 @@ export const flow = [
                 id: flowSteps.OHI_2, label: 'Identify Victims', helpText: 'Go through all the <i>roles</i> presented in the HO-style model and analyze if the roles are not supposed to but have the potential to encounter harms. Furthermore, the analysts continue with identifying possible harms that can affect the victims, including but not limited to, physical damages, chemical injuries, fatal illness, explosion, etc.'
             },
             {
-                id: flowSteps.OHI_3, label: 'Identify Hazards', children: []
+                id: flowSteps.OHI_3, label: 'Identify Hazards', helpText: 'Identify the hazardous situations that are likely to harm the identified mishap victims. Occurrence of a mishap is the manifestation of the <i>harm truthmaker</i> dispositions that characterize the <i>hazard element</i> roles in a hazardous situation. '
             },
         ]
     },

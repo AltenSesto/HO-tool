@@ -15,6 +15,7 @@ import SdfStep1 from './components/system-description/sdf-step-1';
 import SdfStep2 from './components/system-description/sdf-step-2';
 import SdfStep3 from './components/system-description/sdf-step-3';
 import SdfStep4 from './components/system-description/sdf-step-4';
+import HazardPopulation from './components/hazard-population/hazard-population';
 
 const drawerWidth = 240;
 
@@ -110,6 +111,11 @@ const App: React.FC = () => {
                 return <MishapVictimIdentification
                     system={systemModel}
                     possibleHarmsUpdated={updateSystemModel}
+                />;
+            case flowSteps.OHI_3:
+                return <HazardPopulation
+                    system={systemModel}
+                    systemUpdated={updateSystemModel}
                 />;
         }
     };
