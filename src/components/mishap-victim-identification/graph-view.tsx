@@ -1,19 +1,18 @@
 import React from 'react';
 import { EventObject, Singular } from 'cytoscape';
 
-import { SystemDescriptionEntity } from '../../entities/system-description/system-description-entity';
-import PossibleHarm from '../../entities/mishap-victim-identification/possible-harm';
 import { ObjectTypes } from '../../entities/system-description/object-types';
 import VictimHazards from './victim-hazards';
 import SystemObject from '../../entities/system-description/system-object';
 import Graph from '../graph/graph';
 import GraphElementsFactoryMishapVictims from '../../entities/graph/graph-elements-factory-mishap-victims';
 import { isSystemObjectData } from '../../entities/graph/graph-element';
+import { SystemDescription } from '../../entities/system-model';
+import Role from '../../entities/system-description/role';
 
 interface Props {
-    systemDescription: SystemDescriptionEntity[];
-    possibleHarms: PossibleHarm[];
-    possibleHarmsUpdated: (items: PossibleHarm[]) => void;
+    systemDescription: SystemDescription;
+    possibleHarmsUpdated: (role: Role) => void;
 }
 
 interface State {
@@ -39,8 +38,8 @@ export default class GraphView extends React.Component<Props, State> {
     }
 
     render() {
-        const elementsFactory = new GraphElementsFactoryMishapVictims(this.props.possibleHarms);
-        const elements = elementsFactory.mapSystemDescriptionEntities(this.props.systemDescription);
+        const elementsFactory = new GraphElementsFactoryMishapVictims();
+        const elements = elementsFactory.mapSystemDescription(this.props.systemDescription);
 
         return (
             <React.Fragment>
@@ -54,7 +53,6 @@ export default class GraphView extends React.Component<Props, State> {
                 />
                 <VictimHazards
                     selectedRole={this.state.selectedRole}
-                    possibleHarms={this.props.possibleHarms}
                     possibleHarmsUpdated={this.props.possibleHarmsUpdated}
                 />
             </React.Fragment>

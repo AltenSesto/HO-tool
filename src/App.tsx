@@ -53,8 +53,7 @@ const App: React.FC = () => {
         roles: [],
         relators: [],
         systemObjectConnections: [],
-        subsystems: [],
-        possibleHarms: [],
+        subsystems: []
     });
     const [hasUnsavedChanges, setHasUnsaveChanges] = useState(false);
 

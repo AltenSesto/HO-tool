@@ -1,15 +1,12 @@
 import React from 'react';
 import { TableRow, TableCell, Chip, TextField, IconButton, makeStyles } from '@material-ui/core';
 
-import SystemObject from '../../entities/system-description/system-object';
-import PossibleHarm from '../../entities/mishap-victim-identification/possible-harm';
 import { Add } from '@material-ui/icons';
+import Role from '../../entities/system-description/role';
 
 interface Props {
-    role: SystemObject;
-    harms: PossibleHarm[];
-    harmAdded: (item: PossibleHarm) => void;
-    harmDeleted: (item: PossibleHarm) => void;
+    role: Role;
+    harmsUpdated: (role: Role) => void;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -21,39 +18,46 @@ const useStyles = makeStyles(theme => ({
 const HarmsTableRow: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
 
-    const createMishapVictim = (ev: React.FormEvent<HTMLFormElement>) => {
+    const addHarm = (ev: React.FormEvent<HTMLFormElement>) => {
         const form = ev.currentTarget;
         const harm = (form.elements.namedItem("harm") as HTMLInputElement).value;
         form.reset();
         ev.preventDefault();
 
-        const mishapVictim = {
-            id: `mishap-victim-${new Date().getTime()}`,
-            roleId: props.role.id,
-            harm: harm
-        };
-        props.harmAdded(mishapVictim);
+        let updatedHarms = [harm];
+        if (props.role.possibleHarms) {
+            updatedHarms = updatedHarms.concat(props.role.possibleHarms);
+        }
+        props.harmsUpdated({ ...props.role, ...{ possibleHarms: updatedHarms } });
     };
 
+    const deleteHarm = (harm: string) => {
+        if (!props.role.possibleHarms) {
+            return;
+        }
+        const updatedHarms = props.role.possibleHarms.filter(e => e !== harm);
+        props.harmsUpdated({ ...props.role, ...{ possibleHarms: updatedHarms } });
+    };
+
+    const harms = props.role.possibleHarms ? props.role.possibleHarms : [];
     return (
         <TableRow>
             <TableCell component='th' scope='row'>
                 {props.role.name}
             </TableCell>
             <TableCell align='left'>
-                {props.harms
-                    .sort((a, b) => a.harm.localeCompare(b.harm))
-                    .map(e =>
+                {harms.sort((a, b) => a.localeCompare(b))
+                    .map((harm, index) =>
                         <Chip
                             className={classes.chip}
-                            key={e.id}
-                            label={e.harm}
+                            key={index}
+                            label={harm}
                             variant='outlined'
-                            onDelete={() => props.harmDeleted(e)}
+                            onDelete={() => deleteHarm(harm)}
                         />)}
             </TableCell>
             <TableCell align='right'>
-                <form action='#' onSubmit={createMishapVictim}>
+                <form action='#' onSubmit={addHarm}>
                     <TextField
                         required
                         autoFocus

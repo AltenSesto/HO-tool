@@ -2,14 +2,13 @@ import React, { useState } from 'react';
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Button, makeStyles } from '@material-ui/core';
 
 import SystemObject from '../../entities/system-description/system-object';
-import PossibleHarm from '../../entities/mishap-victim-identification/possible-harm';
 import HarmsTableRow from './harms-table-row';
 import SelectRoleTableRow from './select-role-table-row';
+import Role from '../../entities/system-description/role';
 
 interface Props {
-    roles: SystemObject[];
-    possibleHarms: PossibleHarm[];
-    possibleHarmsUpdated: (items: PossibleHarm[]) => void;
+    roles: Role[];
+    possibleHarmsUpdated: (role: Role) => void;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -23,13 +22,8 @@ const useStyles = makeStyles(theme => ({
 const TableView: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
 
-    const [newlyAdded, setNewlyAdded] = useState<SystemObject[]>([]);
+    const [newlyAdded, setNewlyAdded] = useState<Role[]>([]);
     const [isSelectingRole, setIsSelectingRole] = useState(false);
-
-    const addHarm = (item: PossibleHarm) =>
-        props.possibleHarmsUpdated(props.possibleHarms.concat(item));
-    const deleteHarm = (item: PossibleHarm) =>
-        props.possibleHarmsUpdated(props.possibleHarms.filter(e => e !== item));
 
     const addNewRole = (role: SystemObject) => {
         setNewlyAdded(newlyAdded.concat(role));
@@ -37,17 +31,11 @@ const TableView: React.FC<Props> = (props: Props) => {
     };
 
     const existingMishapVictims = props.roles
-        .filter(e => newlyAdded.indexOf(e) < 0)
-        .map(r => ({ role: r, harms: props.possibleHarms.filter(h => h.roleId === r.id) }))
-        .filter(e => e.harms.length > 0)
-        .sort((a, b) => a.role.name.localeCompare(b.role.name));
-    const newlyAddedMishapVictims = newlyAdded
-        .map(r => ({ role: r, harms: props.possibleHarms.filter(h => h.roleId === r.id) }));
-    const mishapVictims = existingMishapVictims.concat(newlyAddedMishapVictims);
+        .filter(e => e.possibleHarms && e.possibleHarms.length > 0)
+        .sort((a, b) => a.name.localeCompare(b.name));
+    const mishapVictims = existingMishapVictims.concat(newlyAdded);
 
-    const rolesToSelect = props.roles.filter(r =>
-            !existingMishapVictims.some(e => e.role.id === r.id) &&
-            !newlyAddedMishapVictims.some(e => e.role.id === r.id));
+    const rolesToSelect = props.roles.filter(r => !mishapVictims.some(e => e.id === r.id));
 
     return (
         <React.Fragment>
@@ -70,11 +58,9 @@ const TableView: React.FC<Props> = (props: Props) => {
                             :
                             mishapVictims.map(e => (
                                 <HarmsTableRow
-                                    key={e.role.id}
-                                    role={e.role}
-                                    harms={e.harms}
-                                    harmAdded={addHarm}
-                                    harmDeleted={deleteHarm}
+                                    key={e.id}
+                                    role={e}
+                                    harmsUpdated={props.possibleHarmsUpdated}
                                 />
                             ))}
                         {isSelectingRole ?

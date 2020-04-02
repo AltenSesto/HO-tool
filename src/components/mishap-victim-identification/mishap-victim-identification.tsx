@@ -1,24 +1,14 @@
 import React, { useState } from 'react';
-import SystemObject from '../../entities/system-description/system-object';
-import Connection from '../../entities/system-description/connection';
-import Subsystem from '../../entities/system-description/subsystem';
-import PossibleHarm from '../../entities/mishap-victim-identification/possible-harm';
-import { SystemDescriptionEntity } from '../../entities/system-description/system-description-entity';
 import GraphView from './graph-view';
 import { makeStyles, Fab } from '@material-ui/core';
 import { TableChart, BubbleChart } from '@material-ui/icons';
 import TableView from './table-view';
+import { SystemDescription } from '../../entities/system-model';
+import Role from '../../entities/system-description/role';
 
 interface Props {
-    system: {
-        kinds: SystemObject[];
-        roles: SystemObject[];
-        relators: SystemObject[];
-        systemObjectConnections: Connection[];
-        subsystems: Subsystem[];
-        possibleHarms: PossibleHarm[];
-    };
-    possibleHarmsUpdated: (items: { possibleHarms: PossibleHarm[] }) => void;
+    system: SystemDescription;
+    possibleHarmsUpdated: (roles: { roles: Role[] }) => void;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -35,6 +25,11 @@ const MishapVictimIdentification: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
     const [isGraphView, setIsGraphView] = useState(true);
 
+    const updateHarms = (role: Role) => {
+        const updatedRoles = props.system.roles.map(e => e.id === role.id ? role : e);
+        props.possibleHarmsUpdated({ roles: updatedRoles });
+    };
+
     if (isGraphView) {
         return (
             <React.Fragment>
@@ -47,13 +42,8 @@ const MishapVictimIdentification: React.FC<Props> = (props: Props) => {
                     Table View
                 </Fab>
                 <GraphView
-                    systemDescription={(props.system.kinds as SystemDescriptionEntity[])
-                        .concat(props.system.roles)
-                        .concat(props.system.relators)
-                        .concat(props.system.systemObjectConnections)
-                        .concat(props.system.subsystems)}
-                    possibleHarms={props.system.possibleHarms}
-                    possibleHarmsUpdated={(items) => props.possibleHarmsUpdated({ possibleHarms: items })}
+                    systemDescription={props.system}
+                    possibleHarmsUpdated={updateHarms}
                 />
             </React.Fragment>
         );
@@ -71,8 +61,7 @@ const MishapVictimIdentification: React.FC<Props> = (props: Props) => {
             </Fab>
             <TableView
                 roles={props.system.roles}
-                possibleHarms={props.system.possibleHarms}
-                possibleHarmsUpdated={(items) => props.possibleHarmsUpdated({ possibleHarms: items })}
+                possibleHarmsUpdated={updateHarms}
             />
         </React.Fragment>
     );

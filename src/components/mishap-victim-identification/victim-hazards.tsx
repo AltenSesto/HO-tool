@@ -1,14 +1,12 @@
 import React from 'react';
 import { makeStyles, Card, CardContent, Typography, ListItem, ListItemText, ListItemSecondaryAction, IconButton, TextField, List } from '@material-ui/core';
 
-import SystemObject from '../../entities/system-description/system-object';
-import PossibleHarm from '../../entities/mishap-victim-identification/possible-harm';
 import { Delete, Add } from '@material-ui/icons';
+import Role from '../../entities/system-description/role';
 
 interface Props {
-    selectedRole: SystemObject | null;
-    possibleHarms: PossibleHarm[];
-    possibleHarmsUpdated: (items: PossibleHarm[]) => void;
+    selectedRole: Role | null;
+    possibleHarmsUpdated: (role: Role) => void;
 };
 
 const useStyles = makeStyles(theme => ({
@@ -24,24 +22,25 @@ const useStyles = makeStyles(theme => ({
 const VictimHazards: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
 
-    const createMishapVictim = (ev: React.FormEvent<HTMLFormElement>) => {
+    const createMishapVictim = (ev: React.FormEvent<HTMLFormElement>, role: Role) => {
         const form = ev.currentTarget;
         const harm = (form.elements.namedItem("harm") as HTMLInputElement).value;
         form.reset();
         ev.preventDefault();
 
-        if (props.selectedRole) {
-            const mishapVictim = {
-                id: `mishap-victim-${new Date().getTime()}`,
-                roleId: props.selectedRole.id,
-                harm: harm
-            };
-            props.possibleHarmsUpdated(props.possibleHarms.concat(mishapVictim));
+        let updatedHarms = [harm];
+        if (role.possibleHarms) {
+            updatedHarms = updatedHarms.concat(role.possibleHarms);
         }
+        props.possibleHarmsUpdated({ ...role, ...{ possibleHarms: updatedHarms } });
     };
 
-    const deletePossibleHarm = (item: PossibleHarm) => {
-        props.possibleHarmsUpdated(props.possibleHarms.filter(e => e !== item));
+    const deletePossibleHarm = (role: Role, harm: string) => {
+        if (!role.possibleHarms) {
+            return;
+        }
+        const updatedHarms = role.possibleHarms.filter(e => e !== harm);
+        props.possibleHarmsUpdated({ ...role, ...{ possibleHarms: updatedHarms } });
     };
 
     const emptyContent = (
@@ -51,28 +50,30 @@ const VictimHazards: React.FC<Props> = (props: Props) => {
             </Typography>
         </CardContent>);
 
-    const renderHarms = () => {
-        return props.possibleHarms
-            .filter(e => props.selectedRole && e.roleId === props.selectedRole.id)
-            .sort((a, b) => a.harm.localeCompare(b.harm))
-            .map(e => renderHarmItem(e))
-            .concat(renderAddItem());
+    const renderHarms = (role: Role) => {
+        if (!role.possibleHarms) {
+            return [renderAddItem(role)];
+        }
+        return role.possibleHarms
+            .sort((a, b) => a.localeCompare(b))
+            .map((harm, index) => renderHarmItem(harm, index, role))
+            .concat(renderAddItem(role));
     };
 
-    const renderHarmItem = (item: PossibleHarm) => (
-        <ListItem key={item.id}>
-            <ListItemText primary={item.harm} />
+    const renderHarmItem = (item: string, index: number, role: Role) => (
+        <ListItem key={index}>
+            <ListItemText primary={item} />
             <ListItemSecondaryAction>
-                <IconButton edge="end" title="Delete" onClick={() => deletePossibleHarm(item)}>
+                <IconButton edge="end" title="Delete" onClick={() => deletePossibleHarm(role, item)}>
                     <Delete />
                 </IconButton>
             </ListItemSecondaryAction>
         </ListItem>
     );
 
-    const renderAddItem = () => (
+    const renderAddItem = (role: Role) => (
         <ListItem key="-1">
-            <form action='#' onSubmit={createMishapVictim}>
+            <form action='#' onSubmit={(ev) => createMishapVictim(ev, role)}>
                 <TextField
                     required
                     autoFocus
@@ -108,7 +109,7 @@ const VictimHazards: React.FC<Props> = (props: Props) => {
                     Possible Harms
                 </Typography>
                 <List dense>
-                    {renderHarms()}
+                    {renderHarms(props.selectedRole)}
                 </List>
             </CardContent>
         );
