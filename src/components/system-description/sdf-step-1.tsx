@@ -19,7 +19,8 @@ export default class SdfStep1 extends React.Component<StepProps, StepState> {
         super(props);
 
         this.tryCreateConnection = this.tryCreateConnection.bind(this);
-        this.startCreatingObject = this.startCreatingObject.bind(this);
+        this.startCreatingKind = this.startCreatingKind.bind(this);
+        this.startCreatingRole = this.startCreatingRole.bind(this);
         this.startCreatingSubsystem = this.startCreatingSubsystem.bind(this);
         this.renderSystemObjectActions = this.renderSystemObjectActions.bind(this);
         this.renderSubsystemActions = this.renderSubsystemActions.bind(this);
@@ -36,12 +37,12 @@ export default class SdfStep1 extends React.Component<StepProps, StepState> {
             {
                 icon: <Add />,
                 text: 'Kind',
-                action: () => this.startCreatingObject(ObjectTypes.kind)
+                action: this.startCreatingKind
             },
             {
                 icon: <Add />,
                 text: 'Role',
-                action: () => this.startCreatingObject(ObjectTypes.role)
+                action: this.startCreatingRole
             },
             {
                 icon: <Add />,
@@ -160,14 +161,28 @@ export default class SdfStep1 extends React.Component<StepProps, StepState> {
         return null;
     }
 
-    private startCreatingObject(type: ObjectTypes) {
+    private startCreatingKind() {
         if (!this.state.objectEditing) {
             const obj = {
-                id: createObjectId(type.toString()),
+                id: createObjectId('kind'),
                 name: "",
-                type,
+                type: ObjectTypes.kind,
                 posX: 0,
                 posY: 0
+            };
+            this.setState({ ...this.state, ...{ objectEditing: obj } });
+        }
+    };
+
+    private startCreatingRole() {
+        if (!this.state.objectEditing) {
+            const obj = {
+                id: createObjectId('role'),
+                name: "",
+                type: ObjectTypes.role,
+                posX: 0,
+                posY: 0,
+                possibleHarms: []
             };
             this.setState({ ...this.state, ...{ objectEditing: obj } });
         }

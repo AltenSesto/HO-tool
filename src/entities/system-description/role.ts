@@ -2,7 +2,7 @@ import SystemObject from "./system-object";
 import { ObjectTypes } from "./object-types";
 
 interface Role extends SystemObject {
-    possibleHarms?: string[]
+    possibleHarms: string[]
 }
 
 export function isRole(obj: SystemObject): obj is Role {

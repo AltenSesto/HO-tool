@@ -1,10 +1,10 @@
 import React from 'react';
-import SystemObject from '../../entities/system-description/system-object';
 import { TableRow, TableCell, FormControl, InputLabel, Select, MenuItem, makeStyles } from '@material-ui/core';
+import Role from '../../entities/system-description/role';
 
 interface Props {
-    roles: SystemObject[];
-    roleSelected: (role: SystemObject) => void;
+    roles: Role[];
+    roleSelected: (role: Role) => void;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -19,7 +19,7 @@ const SelectRoleTableRow: React.FC<Props> = (props: Props) => {
 
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         const roleId = event.target.value as string;
-        props.roleSelected(props.roles.find(e => e.id === roleId) as SystemObject);
+        props.roleSelected(props.roles.find(e => e.id === roleId) as Role);
     };
 
     return (

@@ -14,6 +14,7 @@ import { isSystemObjectData, isSubsystemData, GraphElementPosition } from '../..
 import NodePopper from '../graph/node-popper';
 import Connection from '../../entities/system-description/connection';
 import DeleteElementButton from './delete-element-button';
+import { isRole } from '../../entities/system-description/role';
 
 interface Props {
     system: SystemDescription;
@@ -258,18 +259,19 @@ export default class SdfStepBase extends React.Component<Props, State> {
         if (isSubsystem(entity)) {
             system.subsystems = action(system.subsystems, entity);
         } else if (isSystemObject(entity)) {
-            switch (entity.type) {
-                case ObjectTypes.kind:
-                    system.kinds = action(system.kinds, entity);
-                    break;
-                case ObjectTypes.relator:
-                    system.relators = action(system.relators, entity);
-                    break;
-                case ObjectTypes.role:
-                    system.roles = action(system.roles, entity);
-                    break;
-                default:
-                    throw new Error('Unknown entity type');
+            if (isRole(entity)) {
+                system.roles = action(system.roles, entity);
+            } else {
+                switch (entity.type) {
+                    case ObjectTypes.kind:
+                        system.kinds = action(system.kinds, entity);
+                        break;
+                    case ObjectTypes.relator:
+                        system.relators = action(system.relators, entity);
+                        break;
+                    default:
+                        throw new Error('Unknown entity type');
+                }
             }
         } else if (isConnection(entity)) {
             system.systemObjectConnections = action(system.systemObjectConnections, entity);

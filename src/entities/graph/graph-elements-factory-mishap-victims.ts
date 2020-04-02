@@ -7,9 +7,7 @@ export default class GraphElementsFactoryMishapVictims extends GraphElementsFact
     hookSystemObject(element: GraphElement<SystemObjectData>) {
         if (!isRole(element.data.systemObject)) {
             element.classes = [element.data.systemObject.type.toString(), 'faded'];
-        } else if (element.data.systemObject.possibleHarms &&
-            element.data.systemObject.possibleHarms.length > 0
-        ) {
+        } else if (element.data.systemObject.possibleHarms.length > 0) {
             element.classes = ['mishap-victim'];
         }
         return element;

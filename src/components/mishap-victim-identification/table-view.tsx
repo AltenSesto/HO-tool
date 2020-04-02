@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Button, makeStyles } from '@material-ui/core';
 
-import SystemObject from '../../entities/system-description/system-object';
 import HarmsTableRow from './harms-table-row';
 import SelectRoleTableRow from './select-role-table-row';
 import Role from '../../entities/system-description/role';
@@ -25,13 +24,13 @@ const TableView: React.FC<Props> = (props: Props) => {
     const [newlyAdded, setNewlyAdded] = useState<Role[]>([]);
     const [isSelectingRole, setIsSelectingRole] = useState(false);
 
-    const addNewRole = (role: SystemObject) => {
+    const addNewRole = (role: Role) => {
         setNewlyAdded(newlyAdded.concat(role));
         setIsSelectingRole(false);
     };
 
     const existingMishapVictims = props.roles
-        .filter(e => e.possibleHarms && e.possibleHarms.length > 0)
+        .filter(e => e.possibleHarms.length > 0)
         .sort((a, b) => a.name.localeCompare(b.name));
     const mishapVictims = existingMishapVictims.concat(newlyAdded);
 

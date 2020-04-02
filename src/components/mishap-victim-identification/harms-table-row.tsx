@@ -24,29 +24,23 @@ const HarmsTableRow: React.FC<Props> = (props: Props) => {
         form.reset();
         ev.preventDefault();
 
-        let updatedHarms = [harm];
-        if (props.role.possibleHarms) {
-            updatedHarms = updatedHarms.concat(props.role.possibleHarms);
-        }
+        const updatedHarms = props.role.possibleHarms.concat(harm);
         props.harmsUpdated({ ...props.role, ...{ possibleHarms: updatedHarms } });
     };
 
     const deleteHarm = (harm: string) => {
-        if (!props.role.possibleHarms) {
-            return;
-        }
         const updatedHarms = props.role.possibleHarms.filter(e => e !== harm);
         props.harmsUpdated({ ...props.role, ...{ possibleHarms: updatedHarms } });
     };
 
-    const harms = props.role.possibleHarms ? props.role.possibleHarms : [];
     return (
         <TableRow>
             <TableCell component='th' scope='row'>
                 {props.role.name}
             </TableCell>
             <TableCell align='left'>
-                {harms.sort((a, b) => a.localeCompare(b))
+                {props.role.possibleHarms
+                    .sort((a, b) => a.localeCompare(b))
                     .map((harm, index) =>
                         <Chip
                             className={classes.chip}

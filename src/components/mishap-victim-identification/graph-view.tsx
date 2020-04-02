@@ -1,14 +1,12 @@
 import React from 'react';
 import { EventObject, Singular } from 'cytoscape';
 
-import { ObjectTypes } from '../../entities/system-description/object-types';
 import VictimHazards from './victim-hazards';
-import SystemObject from '../../entities/system-description/system-object';
 import Graph from '../graph/graph';
 import GraphElementsFactoryMishapVictims from '../../entities/graph/graph-elements-factory-mishap-victims';
 import { isSystemObjectData } from '../../entities/graph/graph-element';
 import { SystemDescription } from '../../entities/system-model';
-import Role from '../../entities/system-description/role';
+import Role, { isRole } from '../../entities/system-description/role';
 
 interface Props {
     systemDescription: SystemDescription;
@@ -16,7 +14,7 @@ interface Props {
 }
 
 interface State {
-    selectedRole: SystemObject | null;
+    selectedRole: Role | null;
     isMouseOverRole: boolean;
 }
 
@@ -59,10 +57,10 @@ export default class GraphView extends React.Component<Props, State> {
         );
     }
 
-    private getRoleFromEvent(event: EventObject): SystemObject | undefined {
+    private getRoleFromEvent(event: EventObject): Role | undefined {
         const ele: Singular = event.target.element();
         const data = ele.data();
-        if (isSystemObjectData(data) && data.systemObject.type === ObjectTypes.role) {
+        if (isSystemObjectData(data) && isRole(data.systemObject)) {
             return data.systemObject;
         }
     }

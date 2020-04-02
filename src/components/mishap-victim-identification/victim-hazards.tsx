@@ -28,17 +28,11 @@ const VictimHazards: React.FC<Props> = (props: Props) => {
         form.reset();
         ev.preventDefault();
 
-        let updatedHarms = [harm];
-        if (role.possibleHarms) {
-            updatedHarms = updatedHarms.concat(role.possibleHarms);
-        }
+        const updatedHarms = role.possibleHarms.concat(harm);
         props.possibleHarmsUpdated({ ...role, ...{ possibleHarms: updatedHarms } });
     };
 
     const deletePossibleHarm = (role: Role, harm: string) => {
-        if (!role.possibleHarms) {
-            return;
-        }
         const updatedHarms = role.possibleHarms.filter(e => e !== harm);
         props.possibleHarmsUpdated({ ...role, ...{ possibleHarms: updatedHarms } });
     };
@@ -51,9 +45,6 @@ const VictimHazards: React.FC<Props> = (props: Props) => {
         </CardContent>);
 
     const renderHarms = (role: Role) => {
-        if (!role.possibleHarms) {
-            return [renderAddItem(role)];
-        }
         return role.possibleHarms
             .sort((a, b) => a.localeCompare(b))
             .map((harm, index) => renderHarmItem(harm, index, role))
