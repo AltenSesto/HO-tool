@@ -9,10 +9,9 @@ import GraphElementsFactory from '../../entities/graph/graph-elements-factory';
 import Graph from '../graph/graph';
 import NodeEditor from './node-editor';
 import { ObjectTypes } from '../../entities/system-description/object-types';
-import { defaultPosition } from '../../entities/graph/element';
 import { isSystemObject, isSubsystem, SystemDescriptionEntity, isConnection } from '../../entities/system-description/system-description-entity';
 import { isSystemObjectData, isSubsystemData, GraphElementPosition } from '../../entities/graph/graph-element';
-import NodePopper from './node-popper';
+import NodePopper from '../graph/node-popper';
 import Connection from '../../entities/system-description/connection';
 import DeleteElementButton from './delete-element-button';
 
@@ -46,6 +45,10 @@ export interface StepState {
     nodeConnecting: NodeSingular | null;
     elementDisplayPopper: Singular | null;
 }
+
+const DEFAULT_POSITION = {
+    x: 100, y: 50
+};
 
 export default class SdfStepBase extends React.Component<Props, State> {
 
@@ -293,7 +296,7 @@ export default class SdfStepBase extends React.Component<Props, State> {
                         parentId = parent.id;
                     }
                 } else if (!entity.parent && existingEntity.parent) {
-                    positionOverride = defaultPosition;
+                    positionOverride = DEFAULT_POSITION;
                 }
 
                 if (positionOverride) {
@@ -305,7 +308,7 @@ export default class SdfStepBase extends React.Component<Props, State> {
             this.updateEntity(entity);
 
         } else {
-            let nodePosition = defaultPosition;
+            let nodePosition = DEFAULT_POSITION;
             let parentId: string | undefined;
             if (isSystemObject(entity) && entity.parent) {
                 const parent = this.props.system.subsystems.find(e => e.id === entity.parent);
