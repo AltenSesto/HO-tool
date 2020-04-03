@@ -112,17 +112,30 @@ export default class SdfStep3 extends React.Component<StepProps, StepState> {
     private tryCreateConnection(source: NodeSingular, target: NodeSingular) {
         const sourceData = source.data();
         const targetData = target.data();
-        if (isSystemObjectData(sourceData) && isSystemObjectData(targetData) &&
-            ((sourceData.systemObject.type === ObjectTypes.role && targetData.systemObject.type === ObjectTypes.relator) ||
-            (sourceData.systemObject.type === ObjectTypes.relator && targetData.systemObject.type === ObjectTypes.role))
+        if (isSystemObjectData(sourceData) && isSystemObjectData(targetData)) {
+            // connection goes from role to relator, this is important for hazard population
+            if (sourceData.systemObject.type === ObjectTypes.role &&
+                targetData.systemObject.type === ObjectTypes.relator
             ) {
-            return {
-                id: createObjectId('connection'),
-                source: sourceData.systemObject.id,
-                target: targetData.systemObject.id,
-                label: '',
-                isOriented: false
-            };
+                return {
+                    id: createObjectId('connection'),
+                    source: sourceData.systemObject.id,
+                    target: targetData.systemObject.id,
+                    label: '',
+                    isOriented: false
+                };
+            }
+            // swap ends if ends are wrong
+            if (sourceData.systemObject.type === ObjectTypes.relator &&
+                targetData.systemObject.type === ObjectTypes.role) {
+                return {
+                    id: createObjectId('connection'),
+                    source: targetData.systemObject.id,
+                    target: sourceData.systemObject.id,
+                    label: '',
+                    isOriented: false
+                };
+            }
         }
         return null;
     }

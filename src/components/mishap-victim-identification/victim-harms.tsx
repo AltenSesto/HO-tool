@@ -1,26 +1,16 @@
 import React from 'react';
-import { makeStyles, Card, CardContent, Typography, ListItem, ListItemText, ListItemSecondaryAction, IconButton, TextField, List } from '@material-ui/core';
+import { Typography, ListItem, ListItemText, ListItemSecondaryAction, IconButton, TextField, List } from '@material-ui/core';
 
 import { Delete, Add } from '@material-ui/icons';
 import Role from '../../entities/system-description/role';
+import CornerCard from '../shared/corner-card';
 
 interface Props {
     selectedRole: Role | undefined;
     possibleHarmsUpdated: (role: Role) => void;
 };
 
-const useStyles = makeStyles(theme => ({
-    root: {
-        position: 'fixed',
-        bottom: theme.spacing(2),
-        right: theme.spacing(1),
-        zIndex: 110,
-        minWidth: 200,
-    }
-}));
-
-const VictimHazards: React.FC<Props> = (props: Props) => {
-    const classes = useStyles();
+const VictimHarms: React.FC<Props> = (props: Props) => {
 
     const createMishapVictim = (ev: React.FormEvent<HTMLFormElement>, role: Role) => {
         const form = ev.currentTarget;
@@ -38,11 +28,10 @@ const VictimHazards: React.FC<Props> = (props: Props) => {
     };
 
     const emptyContent = (
-        <CardContent>
             <Typography>
                 Click on a role to see or add possible harms
             </Typography>
-        </CardContent>);
+        );
 
     const renderHarms = (role: Role) => {
         return role.possibleHarms
@@ -89,7 +78,7 @@ const VictimHazards: React.FC<Props> = (props: Props) => {
             return emptyContent;
         }
         return (
-            <CardContent>
+            <React.Fragment>
                 <Typography variant="body2" color="textSecondary">
                     Mishap Victim
                 </Typography>
@@ -102,15 +91,15 @@ const VictimHazards: React.FC<Props> = (props: Props) => {
                 <List dense>
                     {renderHarms(props.selectedRole)}
                 </List>
-            </CardContent>
+            </React.Fragment>
         );
     };
 
     return (
-        <Card className={classes.root}>
+        <CornerCard>
             {renderContent()}
-        </Card>
+        </CornerCard>
     );
 };
 
-export default VictimHazards;
+export default VictimHarms;

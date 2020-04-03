@@ -1,7 +1,7 @@
 import React from 'react';
 import { EventObject, Singular } from 'cytoscape';
 
-import VictimHazards from './victim-hazards';
+import VictimHarms from './victim-harms';
 import Graph from '../graph/graph';
 import GraphElementsFactoryMishapVictims from '../../entities/graph/graph-elements-factory-mishap-victims';
 import { isSystemObjectData } from '../../entities/graph/graph-element';
@@ -49,7 +49,7 @@ export default class GraphView extends React.Component<Props, State> {
                     mouseLeftNode={this.mouseLeft}
                     nodeClicked={this.selectRole}
                 />
-                <VictimHazards
+                <VictimHarms
                     selectedRole={this.props.systemDescription.roles
                         .find(e => e.id === this.state.selectedRoleId)}
                     possibleHarmsUpdated={this.props.possibleHarmsUpdated}

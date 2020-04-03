@@ -3,7 +3,7 @@ import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Butto
 
 import HarmsTableRow from './harms-table-row';
 import SelectRoleTableRow from './select-role-table-row';
-import Role from '../../entities/system-description/role';
+import Role, { isMishapVictim } from '../../entities/system-description/role';
 
 interface Props {
     roles: Role[];
@@ -30,7 +30,7 @@ const TableView: React.FC<Props> = (props: Props) => {
     };
 
     const existingMishapVictims = props.roles
-        .filter(e => e.possibleHarms.length > 0)
+        .filter(e => isMishapVictim(e))
         .sort((a, b) => a.name.localeCompare(b.name));
     const mishapVictims = existingMishapVictims.concat(newlyAdded);
 
