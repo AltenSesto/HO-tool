@@ -21,18 +21,20 @@ const useStyles = makeStyles(theme => ({
 const TableView: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
 
-    const [newlyAdded, setNewlyAdded] = useState<Role[]>([]);
+    const [newlyAdded, setNewlyAdded] = useState<string[]>([]);
     const [isSelectingRole, setIsSelectingRole] = useState(false);
 
     const addNewRole = (role: Role) => {
-        setNewlyAdded(newlyAdded.concat(role));
+        setNewlyAdded(newlyAdded.concat(role.id));
         setIsSelectingRole(false);
     };
 
     const existingMishapVictims = props.roles
-        .filter(e => isMishapVictim(e))
+        .filter(e => isMishapVictim(e) && !newlyAdded.some(n => n === e.id))
         .sort((a, b) => a.name.localeCompare(b.name));
-    const mishapVictims = existingMishapVictims.concat(newlyAdded);
+    // sorting - existing alphabeticaly, newly added in order of adding
+    const newlyAddedMishapVictims = props.roles.filter(e => newlyAdded.some(n => n === e.id));
+    const mishapVictims = existingMishapVictims.concat(newlyAddedMishapVictims);
 
     const rolesToSelect = props.roles.filter(r => !mishapVictims.some(e => e.id === r.id));
 
