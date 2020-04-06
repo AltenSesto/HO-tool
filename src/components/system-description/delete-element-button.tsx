@@ -19,8 +19,18 @@ interface Props {
 const DeleteElementButton: React.FC<Props> = (props) => {
 
     const removeConnection = (connection: Connection, system: SystemDescription) => {
-        const updated = system.systemObjectConnections.filter(e => e.id !== connection.id);
-        return { ...system, ...{ systemObjectConnections: updated } };
+        const updatedConnections = system.systemObjectConnections
+            .filter(e => e.id !== connection.id)
+            .map(e => ({
+                ...e,
+                ...{ hazardIds: e.hazardIds.filter(h => connection.hazardIds.indexOf(h) === -1) }
+            }));
+        const updatedRoles = system.roles
+            .map(e => ({
+                ...e,
+                ...{hazards: e.hazards.filter(h => connection.hazardIds.indexOf(h.id) === -1)}
+            }));
+        return { ...system, ...{ systemObjectConnections: updatedConnections, roles: updatedRoles } };
     };
 
     const removeSubsystem = (subsystem: Subsystem, system: SystemDescription) => {

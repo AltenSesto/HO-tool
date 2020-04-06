@@ -45,6 +45,17 @@ const VictimHazards: React.FC<Props> = (props) => {
         return updatedConnections;
     };
 
+    const unTagConnections = (hazardId: string, connectionIds: string[]) => {
+        const updatedConnections = props.connections
+            .map(e => {
+                if (connectionIds.every(id => id !== e.id)) {
+                    return e;
+                }
+                return { ...e, ...{ hazardIds: e.hazardIds.filter(e => e !== hazardId) } }
+            });
+        return updatedConnections;
+    };
+
     const addHazard = (hazard: Hazard) => {
         const updatdeRoles = props.roles
             .map(e => {
@@ -59,10 +70,25 @@ const VictimHazards: React.FC<Props> = (props) => {
             hazard.hazardElement.connection.id,
             hazard.mishapVictimEnvObj.connection.id
             ]);
-        props.systemUpdated({roles: updatdeRoles, systemObjectConnections: updatedConnections});
+        props.systemUpdated({ roles: updatdeRoles, systemObjectConnections: updatedConnections });
     };
 
-    const deleteHazard = (hazard: Hazard) => { };
+    const deleteHazard = (hazard: Hazard) => {
+        const updatdeRoles = props.roles
+            .map(e => {
+                if (e.id !== mishapVictim.id) {
+                    return e;
+                }
+                return { ...e, ...{ hazards: e.hazards.filter(e => e.id !== hazard.details.id) } };
+            });
+        const updatedConnections = unTagConnections(
+            hazard.details.id,
+            [hazard.exposure.connection.id,
+            hazard.hazardElement.connection.id,
+            hazard.mishapVictimEnvObj.connection.id
+            ]);
+        props.systemUpdated({ roles: updatdeRoles, systemObjectConnections: updatedConnections });
+    };
 
     const findPossibleHazards = (mishapVictim: MishapVictim) => {
         let result: PossibleHazard[] = [];

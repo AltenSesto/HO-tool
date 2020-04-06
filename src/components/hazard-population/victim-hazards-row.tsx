@@ -28,7 +28,7 @@ const VictimHazardsRow: React.FC<Props> = (props) => {
     const newHazardForm = (
         <TableRow key={'new_hazard'}>
             <TableCell>Add Hazard</TableCell>
-            <TableCell colSpan={3}>
+            <TableCell colSpan={4}>
                 <HazardCreate
                     template={props.hazardTemplate}
                     hazardCreated={props.hazardCreated}
@@ -41,6 +41,7 @@ const VictimHazardsRow: React.FC<Props> = (props) => {
         <HazardRow
             hazard={hazard}
             hazardUpdated={() => { }}
+            hazardDeleted={props.hazardDeleted}
             key={hazard.details.id}
         />
     )).concat(newHazardForm);
@@ -63,6 +64,7 @@ const VictimHazardsRow: React.FC<Props> = (props) => {
                                     <TableCell>Harm TruthMaker </TableCell>
                                     <TableCell>Hazard Description</TableCell>
                                     <TableCell>Hazard Element Env Obj</TableCell>
+                                    <TableCell></TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
