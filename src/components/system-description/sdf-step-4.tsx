@@ -99,7 +99,8 @@ export default class SdfStep4 extends React.Component<StepProps, StepState> {
                 source: kindData.systemObject.id,
                 target: roleData.systemObject.id,
                 label: 'play',
-                isOriented: true
+                isOriented: true,
+                hazardIds: []
             };
         }
         return null;

@@ -155,7 +155,8 @@ export default class SdfStep1 extends React.Component<StepProps, StepState> {
                 source: sourceData.systemObject.id,
                 target: targetData.systemObject.id,
                 label: 'ispartof',
-                isOriented: true
+                isOriented: true,
+                hazardIds: []
             };
         }
         return null;
@@ -182,7 +183,8 @@ export default class SdfStep1 extends React.Component<StepProps, StepState> {
                 type: ObjectTypes.role,
                 posX: 0,
                 posY: 0,
-                possibleHarms: []
+                possibleHarms: [],
+                hazards: []
             };
             this.setState({ ...this.state, ...{ objectEditing: obj } });
         }

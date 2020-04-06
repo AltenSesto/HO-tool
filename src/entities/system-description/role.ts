@@ -1,8 +1,10 @@
 import SystemObject from "./system-object";
 import { ObjectTypes } from "./object-types";
+import { HazardDetails } from "../hazard-population/hazard-details";
 
 interface Role extends SystemObject {
-    possibleHarms: string[]
+    possibleHarms: string[];
+    hazards: HazardDetails[];
 }
 
 export interface MishapVictim extends Role {

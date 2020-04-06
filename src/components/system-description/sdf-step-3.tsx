@@ -122,7 +122,8 @@ export default class SdfStep3 extends React.Component<StepProps, StepState> {
                     source: sourceData.systemObject.id,
                     target: targetData.systemObject.id,
                     label: '',
-                    isOriented: false
+                    isOriented: false,
+                    hazardIds: []
                 };
             }
             // swap ends if ends are wrong
@@ -133,7 +134,8 @@ export default class SdfStep3 extends React.Component<StepProps, StepState> {
                     source: targetData.systemObject.id,
                     target: sourceData.systemObject.id,
                     label: '',
-                    isOriented: false
+                    isOriented: false,
+                    hazardIds: []
                 };
             }
         }

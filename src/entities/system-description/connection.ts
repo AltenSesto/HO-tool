@@ -3,5 +3,6 @@ export default interface Connection {
     source: string,
     target: string,
     label?: string,
-    isOriented: boolean
+    isOriented: boolean,
+    hazardIds: string[]
 }

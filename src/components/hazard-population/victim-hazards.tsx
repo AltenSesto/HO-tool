@@ -1,12 +1,18 @@
 import React from 'react';
 import { TableCell, TableHead, TableRow, Table, TableContainer, TableBody, makeStyles, Button, Typography } from '@material-ui/core';
 import { NodeSingular, EdgeSingular, SingularElementReturnValue } from 'cytoscape';
-import { isMishapVictim, MishapVictim } from '../../entities/system-description/role';
+import Role, { isMishapVictim, MishapVictim } from '../../entities/system-description/role';
 import { getConnection, getRole, getSystemObject } from '../../entities/graph/element-utilities';
 import { PossibleHazard } from '../../entities/hazard-population/possible-hazard';
+import VictimHazardsRow from './victim-hazards-row';
+import Connection from '../../entities/system-description/connection';
+import { Hazard } from '../../entities/hazard-population/hazard';
 
 interface Props {
     node: NodeSingular;
+    roles: Role[];
+    connections: Connection[];
+    systemUpdated: (system: { roles: Role[], systemObjectConnections: Connection[] }) => void;
     close: () => void;
 }
 
@@ -23,6 +29,40 @@ const useStyles = makeStyles(theme => ({
 
 const VictimHazards: React.FC<Props> = (props) => {
     const classes = useStyles();
+    const mishapVictim = getRole(props.node);
+    if (!mishapVictim || !isMishapVictim(mishapVictim)) {
+        throw new Error('Enity passed is not a mishap victim');
+    }
+
+    const tagConnections = (hazardId: string, connectionIds: string[]) => {
+        const updatedConnections = props.connections
+            .map(e => {
+                if (connectionIds.every(id => id !== e.id)) {
+                    return e;
+                }
+                return { ...e, ...{ hazardIds: e.hazardIds.concat(hazardId) } }
+            });
+        return updatedConnections;
+    };
+
+    const addHazard = (hazard: Hazard) => {
+        const updatdeRoles = props.roles
+            .map(e => {
+                if (e.id !== mishapVictim.id) {
+                    return e;
+                }
+                return { ...e, ...{ hazards: e.hazards.concat(hazard.details) } };
+            });
+        const updatedConnections = tagConnections(
+            hazard.details.id,
+            [hazard.exposure.connection.id,
+            hazard.hazardElement.connection.id,
+            hazard.mishapVictimEnvObj.connection.id
+            ]);
+        props.systemUpdated({roles: updatdeRoles, systemObjectConnections: updatedConnections});
+    };
+
+    const deleteHazard = (hazard: Hazard) => { };
 
     const findPossibleHazards = (mishapVictim: MishapVictim) => {
         let result: PossibleHazard[] = [];
@@ -69,11 +109,11 @@ const VictimHazards: React.FC<Props> = (props) => {
         return null;
     }
 
-    const mishapVictim = getRole(props.node);
-    if (!mishapVictim || !isMishapVictim(mishapVictim)) {
-        throw new Error('Enity passed is not a mishap victim');
+    const possibleHazards = findPossibleHazards(mishapVictim);
+    const actualMishapVictim = props.roles.find(e => e.id === mishapVictim.id);
+    if (!actualMishapVictim) {
+        throw new Error('Mishap victim not found among the roles');
     }
-    const hazards = findPossibleHazards(mishapVictim);
 
     return (
         <React.Fragment>
@@ -99,19 +139,21 @@ const VictimHazards: React.FC<Props> = (props) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {hazards.length === 0 ?
+                        {possibleHazards.length === 0 ?
                             <TableRow>
                                 <TableCell align='center' colSpan={3}>
                                     No possible hazards identified
                                 </TableCell>
                             </TableRow>
                             :
-                            hazards.map(hazard => (
-                                <TableRow>
-                                    <TableCell>{hazard.mishapVictimEnvObj.object.name}</TableCell>
-                                    <TableCell>{hazard.exposure.object.name}</TableCell>
-                                    <TableCell>{hazard.hazardElement.object.name}</TableCell>
-                                </TableRow>
+                            possibleHazards.map((hazard, index) => (
+                                <VictimHazardsRow
+                                    key={index}
+                                    hazardTemplate={hazard}
+                                    hazardDetails={actualMishapVictim.hazards}
+                                    hazardCreated={addHazard}
+                                    hazardDeleted={deleteHazard}
+                                />
                             ))
                         }
                     </TableBody>
