@@ -1,12 +1,14 @@
 import React from 'react';
-import { TableCell, TableHead, TableRow, Table, TableContainer, TableBody, makeStyles, Button, Typography } from '@material-ui/core';
+import { TableCell, TableHead, TableRow, Table, TableContainer, TableBody, makeStyles, Typography } from '@material-ui/core';
 import { NodeSingular, EdgeSingular, SingularElementReturnValue } from 'cytoscape';
+
 import Role, { isMishapVictim, MishapVictim } from '../../entities/system-description/role';
 import { getConnection, getRole, getSystemObject } from '../../entities/graph/element-utilities';
 import { PossibleHazard } from '../../entities/hazard-population/possible-hazard';
 import VictimHazardsRow from './victim-hazards-row';
 import Connection from '../../entities/system-description/connection';
 import { Hazard } from '../../entities/hazard-population/hazard';
+import CornerButtonPrimary from '../shared/corner-button-primary';
 
 interface Props {
     node: NodeSingular;
@@ -17,11 +19,6 @@ interface Props {
 }
 
 const useStyles = makeStyles(theme => ({
-    buttonBack: {
-        marginLeft: theme.spacing(2),
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2) + 40
-    },
     header: {
         marginLeft: theme.spacing(2)
     }
@@ -185,14 +182,9 @@ const VictimHazards: React.FC<Props> = (props) => {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Button
-                className={classes.buttonBack}
-                variant='contained'
-                color='primary'
-                onClick={props.close}
-            >
+            <CornerButtonPrimary onClick={props.close} >
                 Back
-            </Button>
+            </CornerButtonPrimary>
         </React.Fragment>
     );
 };

@@ -1,25 +1,17 @@
 import React, { useState } from 'react';
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Button, makeStyles } from '@material-ui/core';
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@material-ui/core';
 
 import HarmsTableRow from './harms-table-row';
 import SelectRoleTableRow from './select-role-table-row';
 import Role, { isMishapVictim } from '../../entities/system-description/role';
+import CornerButtonPrimary from '../shared/corner-button-primary';
 
 interface Props {
     roles: Role[];
     possibleHarmsUpdated: (role: Role) => void;
 }
 
-const useStyles = makeStyles(theme => ({
-    buttonAdd: {
-        marginLeft: theme.spacing(2),
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2) + 40
-    }
-}));
-
 const TableView: React.FC<Props> = (props: Props) => {
-    const classes = useStyles();
 
     const [newlyAdded, setNewlyAdded] = useState<string[]>([]);
     const [isSelectingRole, setIsSelectingRole] = useState(false);
@@ -71,17 +63,14 @@ const TableView: React.FC<Props> = (props: Props) => {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Button
-                className={classes.buttonAdd}
-                variant='contained'
-                color='primary'
+            <CornerButtonPrimary
                 onClick={() => { !isSelectingRole && setIsSelectingRole(true) }}
                 disabled={rolesToSelect.length === 0}
             >
                 {rolesToSelect.length === 0 ?
                     'All mishap victims have been identified' :
                     'Add new mishap victim'}
-            </Button>
+            </CornerButtonPrimary>
         </React.Fragment>
     );
 };
