@@ -25,7 +25,7 @@ const Summary: React.FC<Props> = (props: Props) => {
                     </TableHead>
                     <TableBody>
                         <TableRow>
-                            <TableCell colSpan={6}>
+                            <TableCell colSpan={6} align='center'>
                                 No hazards identified
                             </TableCell>
                         </TableRow>
