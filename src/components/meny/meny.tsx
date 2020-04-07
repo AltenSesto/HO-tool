@@ -1,6 +1,8 @@
 import React from "react";
+import { IconButton } from "@material-ui/core";
+import { FolderOpen, SaveAlt } from "@material-ui/icons";
+
 import { SystemModel } from "../../entities/system-model";
-import { Button, Menu, MenuItem } from "@material-ui/core";
 import { isConnectionToCollapsed } from "../../entities/system-description/system-description-entity";
 import Connection from "../../entities/system-description/connection";
 import { FlowStepId } from "../../entities/meny/flow-step";
@@ -11,11 +13,7 @@ interface Props {
     saveFile: () => SystemModel;
 }
 
-interface State {
-    anchorEl: any;
-}
-
-export default class Meny extends React.Component<Props, State> {
+export default class Meny extends React.Component<Props> {
 
     private _openFileRef: HTMLFormElement | null;
 
@@ -27,52 +25,59 @@ export default class Meny extends React.Component<Props, State> {
         this.processResult = this.processResult.bind(this);
         this.handleFileError = this.handleFileError.bind(this);
         this.reportError = this.reportError.bind(this);
-        this.openMenu = this.openMenu.bind(this);
-        this.closeMenu = this.closeMenu.bind(this);
         this.prepareDataToDownload = this.prepareDataToDownload.bind(this);
 
-        this.state = {
-            anchorEl: null
-        };
         this._openFileRef = null;
     }
 
     render() {
         let openFile;
         if (window.FileReader && window.FileList) {
-            openFile = <form ref={(ref) => this._openFileRef = ref}>
-                <input
-                    type="file"
-                    onChange={(ev) => this.readFile(ev.target.files)}
-                    accept=".json" />
-            </form>;
+            openFile = (
+                <React.Fragment>
+                    <form
+                        ref={(ref) => this._openFileRef = ref}
+                        style={{display: 'inline-block'}}
+                    >
+                        <input
+                            style={{ display: 'none' }}
+                            type='file'
+                            onChange={(ev) => this.readFile(ev.target.files)}
+                            accept='.json'
+                            id='input-open-file'
+                        />
+                        <label htmlFor='input-open-file'>
+                            <IconButton title='Open File' size='small' color='inherit' component='span'>
+                                <FolderOpen />
+                            </IconButton>
+                        </label>
+                    </form>
+                </React.Fragment>
+            );
         } else {
-            openFile = <span>File API not supported</span>;
+            openFile = (
+                <div title='File API not supported' style={{display: 'inline-block'}}>
+                    <IconButton size='small' color='inherit' disabled={true}>
+                        <FolderOpen />
+                    </IconButton>
+                </div>
+            );
         }
 
         return (
             <React.Fragment>
-                <Button color="inherit" onClick={this.openMenu}>File</Button>
-                <Menu
-                    anchorEl={this.state.anchorEl}
-                    keepMounted
-                    open={Boolean(this.state.anchorEl)}
-                    onClose={this.closeMenu}
+                {openFile}
+                <IconButton
+                    size='small'
+                    title='Download'
+                    color='inherit'
+                    onClick={this.downloadFile}
                 >
-                    <MenuItem>{openFile}</MenuItem>
-                    <MenuItem onClick={this.downloadFile}>Download</MenuItem>
-                </Menu>
+                    <SaveAlt />
+                </IconButton>
             </React.Fragment>
         );
     }
-
-    private openMenu(event: any) {
-        this.setState({ anchorEl: event.currentTarget });
-    };
-
-    private closeMenu() {
-        this.setState({ anchorEl: null });
-    };
 
     private readFile(files: FileList | null) {
         if (files === null || files.length !== 1) {
@@ -87,8 +92,6 @@ export default class Meny extends React.Component<Props, State> {
         reader.onload = this.processResult;
         reader.onerror = this.handleFileError;
         reader.readAsText(file, 'utf-8');
-
-        this.closeMenu();
     }
 
     private downloadFile() {
@@ -102,8 +105,6 @@ export default class Meny extends React.Component<Props, State> {
 
         element.click();
         document.body.removeChild(element);
-
-        this.closeMenu();
     }
 
     private prepareDataToDownload() {
