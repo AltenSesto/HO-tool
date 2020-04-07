@@ -44,18 +44,19 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
+const defaultModel = {
+    currentStep: getFirstStepId(),
+    lastCompletedStep: getFirstStepId(),
+    kinds: [],
+    roles: [],
+    relators: [],
+    systemObjectConnections: [],
+    subsystems: []
+};
 
 const App: React.FC = () => {
 
-    const [systemModel, setSystemModel] = useState<SystemModel>({
-        currentStep: getFirstStepId(),
-        lastCompletedStep: getFirstStepId(),
-        kinds: [],
-        roles: [],
-        relators: [],
-        systemObjectConnections: [],
-        subsystems: []
-    });
+    const [systemModel, setSystemModel] = useState<SystemModel>(defaultModel);
     const [hasUnsavedChanges, setHasUnsaveChanges] = useState(false);
 
     useBeforeunload((ev) => {
@@ -66,6 +67,8 @@ const App: React.FC = () => {
 
     const openFile = (model: SystemModel) => {
         if (!hasUnsavedChanges || window.confirm('You have usaved thanges that will be lost. Continue?')) {
+            // reset state first to prevent collisions with opened model
+            setSystemModel(defaultModel);
             setSystemModel(model);
             setHasUnsaveChanges(false);
         }
