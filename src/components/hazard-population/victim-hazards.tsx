@@ -104,7 +104,7 @@ const VictimHazards: React.FC<Props> = (props) => {
                 }
                 for (var k = 0; k < hazardRoles.length; k++) {
                     const hazardElement = getEntityPair(hazardRoles[k], true);
-                    if (!hazardElement || hazardElement.object.id === mishapVictim.id) {
+                    if (!hazardElement) {
                         continue;
                     }
                     result.push({
