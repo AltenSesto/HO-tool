@@ -61,6 +61,9 @@ const GraphView: React.FC<Props> = (props) => {
                 <Typography>
                     Click on a mishap victim to populate hazards
                 </Typography>
+                <Typography variant='caption'>
+                    Mishap victims are marked yellow
+                </Typography>
             </CornerCard>
         </React.Fragment>
     );
