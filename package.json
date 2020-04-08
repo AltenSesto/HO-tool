@@ -1,0 +1,50 @@
+{
+  "name": "hazard-ontology-front-end",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@material-ui/core": "^4.9.5",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.45",
+    "@types/jest": "24.0.19",
+    "@types/node": "12.11.1",
+    "@types/react": "16.9.9",
+    "@types/react-dom": "16.9.2",
+    "cytoscape": "^3.14.0",
+    "cytoscape-expand-collapse": "^3.2.0",
+    "cytoscape-popper": "^1.0.6",
+    "react": "^16.10.2",
+    "react-beforeunload": "^2.1.0",
+    "react-cytoscapejs": "^1.2.1",
+    "react-dom": "^16.10.2",
+    "react-scripts": "3.2.0",
+    "typeface-roboto": "^0.0.75",
+    "typescript": "3.6.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "serve": "serve -s build"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/cytoscape": "^3.8.8",
+    "@types/react-beforeunload": "^2.1.0"
+  }
+}
