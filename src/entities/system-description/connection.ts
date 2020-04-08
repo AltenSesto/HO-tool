@@ -4,5 +4,4 @@ export default interface Connection {
     target: string,
     label?: string,
     isOriented: boolean,
-    hazardIds: string[]
 }

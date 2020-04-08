@@ -1,14 +1,13 @@
 import React from 'react';
 import { TableRow, TableCell, TableContainer, Table, TableBody, TableHead, withStyles, Theme, createStyles } from '@material-ui/core';
 import { PossibleHazard } from '../../entities/hazard-population/possible-hazard';
-import { Hazard } from '../../entities/hazard-population/hazard';
+import Hazard from '../../entities/hazard-population/hazard';
 import HazardCreate from './hazard-create';
 import HazardRow from './hazard-row';
-import { HazardDetails } from '../../entities/hazard-population/hazard-details';
 
 interface Props {
     hazardTemplate: PossibleHazard;
-    hazardDetails: HazardDetails[];
+    hazards: Hazard[];
     hazardCreated: (hazard: Hazard) => void;
     hazardDeleted: (hazard: Hazard) => void;
 }
@@ -22,8 +21,6 @@ const OuterTableCell = withStyles((theme: Theme) =>
 )(TableCell);
 
 const VictimHazardsRow: React.FC<Props> = (props) => {
-    const hazards = props.hazardDetails
-        .map(e => ({ ...props.hazardTemplate, ...{ details: e } }));
 
     const newHazardForm = (
         <TableRow key={'new_hazard'}>
@@ -37,12 +34,12 @@ const VictimHazardsRow: React.FC<Props> = (props) => {
         </TableRow>
     );
 
-    const hazardRows = hazards.map(hazard => (
+    const hazardRows = props.hazards.map(hazard => (
         <HazardRow
             hazard={hazard}
             hazardUpdated={() => { }}
             hazardDeleted={props.hazardDeleted}
-            key={hazard.details.id}
+            key={hazard.id}
         />
     )).concat(newHazardForm);
 

@@ -83,8 +83,7 @@ export default class SdfStep2 extends React.Component<StepProps, StepState> {
                 source: sourceData.systemObject.id,
                 target: targetData.systemObject.id,
                 label: 'play',
-                isOriented: true,
-                hazardIds: []
+                isOriented: true
             };
         }
         return null;

@@ -19,9 +19,8 @@ const HazardPopulation: React.FC<Props> = (props) => {
     if (selectedVictim) {
         return <VictimHazards
             node={selectedVictim}
-            roles={props.system.roles}
-            connections={props.system.systemObjectConnections}
-            systemUpdated={(up) => props.systemUpdated({ ...props.system, ...up })}
+            hazards={props.system.hazards}
+            hazardsUpdated={(hazards) => props.systemUpdated({ ...props.system, ...{ hazards } })}
             close={() => setSelectedVictim(null)}
         />;
     }

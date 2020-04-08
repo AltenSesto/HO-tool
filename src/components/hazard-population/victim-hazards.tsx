@@ -2,19 +2,17 @@ import React from 'react';
 import { TableCell, TableHead, TableRow, Table, TableContainer, TableBody, makeStyles, Typography } from '@material-ui/core';
 import { NodeSingular, EdgeSingular, SingularElementReturnValue } from 'cytoscape';
 
-import Role, { isMishapVictim, MishapVictim } from '../../entities/system-description/role';
+import { isMishapVictim, MishapVictim } from '../../entities/system-description/role';
 import { getConnection, getRole, getSystemObject } from '../../entities/graph/element-utilities';
-import { PossibleHazard } from '../../entities/hazard-population/possible-hazard';
+import { PossibleHazard, ConnectionToObject } from '../../entities/hazard-population/possible-hazard';
 import VictimHazardsRow from './victim-hazards-row';
-import Connection from '../../entities/system-description/connection';
-import { Hazard } from '../../entities/hazard-population/hazard';
+import Hazard from '../../entities/hazard-population/hazard';
 import CornerButtonPrimary from '../shared/corner-button-primary';
 
 interface Props {
     node: NodeSingular;
-    roles: Role[];
-    connections: Connection[];
-    systemUpdated: (system: { roles: Role[], systemObjectConnections: Connection[] }) => void;
+    hazards: Hazard[];
+    hazardsUpdated: (items: Hazard[]) => void;
     close: () => void;
 }
 
@@ -31,60 +29,12 @@ const VictimHazards: React.FC<Props> = (props) => {
         throw new Error('Enity passed is not a mishap victim');
     }
 
-    const tagConnections = (hazardId: string, connectionIds: string[]) => {
-        const updatedConnections = props.connections
-            .map(e => {
-                if (connectionIds.every(id => id !== e.id)) {
-                    return e;
-                }
-                return { ...e, ...{ hazardIds: e.hazardIds.concat(hazardId) } }
-            });
-        return updatedConnections;
-    };
-
-    const unTagConnections = (hazardId: string, connectionIds: string[]) => {
-        const updatedConnections = props.connections
-            .map(e => {
-                if (connectionIds.every(id => id !== e.id)) {
-                    return e;
-                }
-                return { ...e, ...{ hazardIds: e.hazardIds.filter(e => e !== hazardId) } }
-            });
-        return updatedConnections;
-    };
-
     const addHazard = (hazard: Hazard) => {
-        const updatdeRoles = props.roles
-            .map(e => {
-                if (e.id !== mishapVictim.id) {
-                    return e;
-                }
-                return { ...e, ...{ hazards: e.hazards.concat(hazard.details) } };
-            });
-        const updatedConnections = tagConnections(
-            hazard.details.id,
-            [hazard.exposure.connection.id,
-            hazard.hazardElement.connection.id,
-            hazard.mishapVictimEnvObj.connection.id
-            ]);
-        props.systemUpdated({ roles: updatdeRoles, systemObjectConnections: updatedConnections });
+        props.hazardsUpdated(props.hazards.concat(hazard));
     };
 
     const deleteHazard = (hazard: Hazard) => {
-        const updatdeRoles = props.roles
-            .map(e => {
-                if (e.id !== mishapVictim.id) {
-                    return e;
-                }
-                return { ...e, ...{ hazards: e.hazards.filter(e => e.id !== hazard.details.id) } };
-            });
-        const updatedConnections = unTagConnections(
-            hazard.details.id,
-            [hazard.exposure.connection.id,
-            hazard.hazardElement.connection.id,
-            hazard.mishapVictimEnvObj.connection.id
-            ]);
-        props.systemUpdated({ roles: updatdeRoles, systemObjectConnections: updatedConnections });
+        props.hazardsUpdated(props.hazards.filter(e => e.id !== hazard.id));
     };
 
     const findPossibleHazards = (mishapVictim: MishapVictim) => {
@@ -92,23 +42,38 @@ const VictimHazards: React.FC<Props> = (props) => {
         const victimKinds = props.node.incomers();
         const relators = props.node.outgoers();
         const hazardRoles = relators.incomers();
-        for (var i = 0; i < victimKinds.length; i++) {
+
+        const hazardElementsEnvObjs: ConnectionToObject[] = [];
+        const hazardKinds = hazardRoles.incomers();
+        for (let i = 0; i < hazardKinds.length; i++) {
+            const envObj = getEntityPair(hazardKinds[i], true);
+            if (envObj) {
+                hazardElementsEnvObjs.push(envObj);
+            }
+        }
+
+        for (let i = 0; i < victimKinds.length; i++) {
             const mishapVictimEnvObj = getEntityPair(victimKinds[i], true);
             if (!mishapVictimEnvObj) {
                 continue;
             }
-            for (var j = 0; j < relators.length; j++) {
+            for (let j = 0; j < relators.length; j++) {
                 const exposure = getEntityPair(relators[j], false);
                 if (!exposure) {
                     continue;
                 }
-                for (var k = 0; k < hazardRoles.length; k++) {
+                for (let k = 0; k < hazardRoles.length; k++) {
                     const hazardElement = getEntityPair(hazardRoles[k], true);
                     if (!hazardElement) {
                         continue;
                     }
                     result.push({
-                        mishapVictim, mishapVictimEnvObj, exposure, hazardElement
+                        mishapVictim,
+                        mishapVictimEnvObj,
+                        exposure,
+                        hazardElement,
+                        hazardElementEnvObjs: hazardElementsEnvObjs
+                            .filter(e => e.connection.target === hazardElement.object.id)
                     });
                 }
             }
@@ -133,10 +98,6 @@ const VictimHazards: React.FC<Props> = (props) => {
     }
 
     const possibleHazards = findPossibleHazards(mishapVictim);
-    const actualMishapVictim = props.roles.find(e => e.id === mishapVictim.id);
-    if (!actualMishapVictim) {
-        throw new Error('Mishap victim not found among the roles');
-    }
 
     return (
         <React.Fragment>
@@ -169,15 +130,19 @@ const VictimHazards: React.FC<Props> = (props) => {
                                 </TableCell>
                             </TableRow>
                             :
-                            possibleHazards.map((hazard, index) => (
-                                <VictimHazardsRow
+                            possibleHazards.map((hazard, index) => {
+                                const actualHazards = props.hazards.filter(e =>
+                                    e.exposureConn === hazard.exposure.connection.id &&
+                                    e.hazardElementConn === hazard.hazardElement.connection.id &&
+                                    e.mishapVictimEnvObjConn === hazard.mishapVictimEnvObj.connection.id);
+                                return <VictimHazardsRow
                                     key={index}
                                     hazardTemplate={hazard}
-                                    hazardDetails={actualMishapVictim.hazards}
+                                    hazards={actualHazards}
                                     hazardCreated={addHazard}
                                     hazardDeleted={deleteHazard}
                                 />
-                            ))
+                            })
                         }
                     </TableBody>
                 </Table>

@@ -3,6 +3,7 @@ import SystemObject from "./system-description/system-object";
 import Connection from "./system-description/connection";
 import Subsystem from "./system-description/subsystem";
 import Role from "./system-description/role";
+import Hazard from "./hazard-population/hazard";
 
 export interface SystemDescription {
     kinds: SystemObject[];
@@ -10,6 +11,7 @@ export interface SystemDescription {
     relators: SystemObject[];
     systemObjectConnections: Connection[];
     subsystems: Subsystem[];
+    hazards: Hazard[];
 }
 
 export interface SystemModel extends SystemDescription {

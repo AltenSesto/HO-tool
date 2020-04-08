@@ -3,7 +3,7 @@ import { TextField, IconButton, makeStyles } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 
 import { PossibleHazard } from '../../entities/hazard-population/possible-hazard';
-import { Hazard } from '../../entities/hazard-population/hazard';
+import Hazard from '../../entities/hazard-population/hazard';
 import { createObjectId } from '../../entities/system-model';
 
 interface Props {
@@ -27,10 +27,17 @@ const HazardCreate: React.FC<Props> = (props) => {
         form.reset();
         ev.preventDefault();
 
-        const hazardDetails = {
-            id: createObjectId('hazard'), harmTruthmaker, description
+        const hazard = {
+            id: createObjectId('hazard'),
+            harmTruthmaker,
+            description,
+            mishapVictim: props.template.mishapVictim.id,
+            mishapVictimEnvObjConn: props.template.mishapVictimEnvObj.connection.id,
+            exposureConn: props.template.exposure.connection.id,
+            hazardElementConn: props.template.hazardElement.connection.id,
+            hazardElementEnvObjConn: ''
         };
-        props.hazardCreated({ ...props.template, ...{ details: hazardDetails } });
+        props.hazardCreated(hazard);
     };
 
     return (

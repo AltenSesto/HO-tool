@@ -51,7 +51,8 @@ const defaultModel = {
     roles: [],
     relators: [],
     systemObjectConnections: [],
-    subsystems: []
+    subsystems: [],
+    hazards: []
 };
 
 const App: React.FC = () => {
