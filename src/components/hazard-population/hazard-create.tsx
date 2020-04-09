@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, IconButton, makeStyles, TableRow, TableCell, TableContainer, Table, TableHead, TableBody } from '@material-ui/core';
+import { TextField, IconButton, makeStyles, TableRow, TableCell, TableContainer, Table, TableHead, TableBody, Select, MenuItem, InputLabel, FormControl } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 
 import { PossibleHazard } from '../../entities/hazard-population/possible-hazard';
@@ -17,6 +17,9 @@ const useStyle = makeStyles((theme) => ({
     },
     selectable: {
         cursor: 'pointer'
+    },
+    select: {
+        width: '220px'
     }
 }));
 
@@ -26,15 +29,19 @@ const HazardCreate: React.FC<Props> = (props) => {
     const [template, setTemplate] = useState<PossibleHazard | null>(null);
 
     const createHazard = (ev: React.FormEvent<HTMLFormElement>) => {
+        const form = ev.currentTarget;
+        form.reset();
+        ev.preventDefault();
         if (!template) {
             return;
         }
 
-        const form = ev.currentTarget;
         const harmTruthmaker = (form.elements.namedItem('truthmaker') as HTMLInputElement).value;
         const description = (form.elements.namedItem('description') as HTMLInputElement).value;
-        form.reset();
-        ev.preventDefault();
+        const hazardElementEnvObj = (form.elements.namedItem('env-obj') as HTMLSelectElement).value;
+        if (!hazardElementEnvObj) {
+            return;
+        }
 
         const hazard = {
             id: createObjectId('hazard'),
@@ -44,7 +51,7 @@ const HazardCreate: React.FC<Props> = (props) => {
             mishapVictimEnvObjConn: template.mishapVictimEnvObj.connection.id,
             exposureConn: template.exposure.connection.id,
             hazardElementConn: template.hazardElement.connection.id,
-            hazardElementEnvObjConn: ''
+            hazardElementEnvObjConn: hazardElementEnvObj
         };
         props.hazardCreated(hazard);
     };
@@ -54,32 +61,63 @@ const HazardCreate: React.FC<Props> = (props) => {
             return <React.Fragment></React.Fragment>;
         }
 
+        let hazardElementEnvObj = '';
+        if (template.hazardElementEnvObjs.length === 1) {
+            hazardElementEnvObj = template.hazardElementEnvObjs[0].connection.id;
+        }
+        let selectOptions = template.hazardElementEnvObjs
+            .sort((a, b) => a.object.name.localeCompare(b.object.name))
+            .map((item, index) => (
+                <MenuItem key={index} value={item.connection.id}>
+                    {item.object.name}
+                </MenuItem>));
+        if (template.hazardElementEnvObjs.length === 0) {
+            selectOptions = [(<MenuItem key={-1} value='' disabled>Nothing found</MenuItem>)];
+        }
+
         return (
             <TableRow>
-                <TableCell>
+                <TableCell colSpan={3}>
                     <form action='#' onSubmit={createHazard}>
-                        <TextField
-                            className={classes.divide}
-                            required
-                            autoFocus
-                            margin='dense'
-                            type='text'
-                            name='truthmaker'
-                            label='Harm Truthmaker'
-                            autoComplete='off'
-                            multiline
-                            rowsMax={4}
-                        />
-                        <TextField
-                            required
-                            margin='dense'
-                            type='text'
-                            name='description'
-                            label='Hazard Description'
-                            autoComplete='off'
-                            multiline
-                            rowsMax={4}
-                        />
+                        <FormControl className={classes.divide}>
+                            <TextField
+                                required
+                                autoFocus
+                                margin='none'
+                                type='text'
+                                name='truthmaker'
+                                label='Harm Truthmaker'
+                                autoComplete='off'
+                                multiline
+                                rowsMax={4}
+                            />
+                        </FormControl>
+                        <FormControl className={classes.divide}>
+                            <TextField
+                                required
+                                margin='none'
+                                type='text'
+                                name='description'
+                                label='Hazard Description'
+                                autoComplete='off'
+                                multiline
+                                rowsMax={4}
+                            />
+                        </FormControl>
+                        <FormControl className={classes.select}>
+                            <InputLabel id='label-select-env-obj'>
+                                Hazard Evement Env Obj
+                            </InputLabel>
+                            <Select
+                                required
+                                margin='none'
+                                labelId='label-select-env-obj'
+                                defaultValue={hazardElementEnvObj}
+                                name='env-obj'
+                            >
+                                {selectOptions}
+                            </Select>
+                        </FormControl>
                         <IconButton type='submit' edge='end' title='Create'>
                             <Add />
                         </IconButton>

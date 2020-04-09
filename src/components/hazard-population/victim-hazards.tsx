@@ -111,7 +111,7 @@ const VictimHazards: React.FC<Props> = (props) => {
             <Typography variant="h6" color="textSecondary" className={classes.header}>
                 Possible Harms
             </Typography>
-            <Typography variant="body2" className={classes.header} gutterBottom>
+            <Typography variant="body1" className={classes.header} gutterBottom>
                 {mishapVictim.possibleHarms.join(', ')}
             </Typography>
             <Typography variant="h6" color="textSecondary" className={classes.header}>

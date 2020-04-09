@@ -17,17 +17,21 @@ const HazardsTable: React.FC<Props> = (props) => {
                 e.exposureConn === possibleHazard.exposure.connection.id &&
                 e.hazardElementConn === possibleHazard.hazardElement.connection.id &&
                 e.mishapVictimEnvObjConn === possibleHazard.mishapVictimEnvObj.connection.id)
-            .map(hazard => ({
-                id: hazard.id,
-                mishapVictim: possibleHazard.mishapVictim.name,
-                mishapVictimEnvObj: possibleHazard.mishapVictimEnvObj.object.name,
-                exposure: possibleHazard.exposure.object.name,
-                hazardElement: possibleHazard.hazardElement.object.name,
-                hazardElementEventObj: '-',
-                harmTruthmaker: hazard.harmTruthmaker,
-                description: hazard.description
-            })))
-        .reduce((carry, items) => carry.concat(items), [])
+            .map(hazard => {
+                const hazardElEnvObj = possibleHazard.hazardElementEnvObjs
+                    .find(e => e.connection.id === hazard.hazardElementEnvObjConn);
+                return {
+                    id: hazard.id,
+                    mishapVictim: possibleHazard.mishapVictim.name,
+                    mishapVictimEnvObj: possibleHazard.mishapVictimEnvObj.object.name,
+                    exposure: possibleHazard.exposure.object.name,
+                    hazardElement: possibleHazard.hazardElement.object.name,
+                    hazardElementEventObj: hazardElEnvObj ? hazardElEnvObj.object.name : '-',
+                    harmTruthmaker: hazard.harmTruthmaker,
+                    description: hazard.description
+                }
+            }))
+        .flat()
         .sort((a, b) => a.id.localeCompare(b.id));
 
     return (
