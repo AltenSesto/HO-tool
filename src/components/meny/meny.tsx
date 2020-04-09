@@ -9,6 +9,7 @@ import { FlowStepId } from "../../entities/meny/flow-step";
 import { flowSteps } from "../../entities/meny/flow";
 
 interface Props {
+    hasUnsavedChanges: boolean;
     openFile: (model: SystemModel) => void;
     saveFile: () => SystemModel;
 }
@@ -37,7 +38,7 @@ export default class Meny extends React.Component<Props> {
                 <React.Fragment>
                     <form
                         ref={(ref) => this._openFileRef = ref}
-                        style={{display: 'inline-block'}}
+                        style={{ display: 'inline-block' }}
                     >
                         <input
                             style={{ display: 'none' }}
@@ -56,7 +57,7 @@ export default class Meny extends React.Component<Props> {
             );
         } else {
             openFile = (
-                <div title='File API not supported' style={{display: 'inline-block'}}>
+                <div title='File API not supported' style={{ display: 'inline-block' }}>
                     <IconButton size='small' color='inherit' disabled={true}>
                         <FolderOpen />
                     </IconButton>
@@ -80,7 +81,9 @@ export default class Meny extends React.Component<Props> {
     }
 
     private readFile(files: FileList | null) {
-        if (files === null || files.length !== 1) {
+        if (files === null || files.length !== 1 ||
+            (this.props.hasUnsavedChanges && !window.confirm('You have usaved changes that will be lost. Continue?'))
+        ) {
             return;
         }
         const file = files[0];
@@ -95,11 +98,13 @@ export default class Meny extends React.Component<Props> {
     }
 
     private downloadFile() {
-        const data = JSON.stringify(this.prepareDataToDownload(), null, '\t');
+        const data = this.prepareDataToDownload();
+        const serialized = JSON.stringify(this.prepareDataToDownload(), null, '\t');
+        const fileName = `${data.projectName} ${new Date().toISOString().replace(/:/g, '_')}.json`;
 
         var element = document.createElement('a');
-        element.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(data));
-        element.setAttribute('download', 'HazardOntology.json');
+        element.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(serialized));
+        element.setAttribute('download', fileName);
         element.style.display = 'none';
         document.body.appendChild(element);
 

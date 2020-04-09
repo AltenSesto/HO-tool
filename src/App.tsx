@@ -3,7 +3,7 @@ import { useBeforeunload } from 'react-beforeunload';
 import 'typeface-roboto';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography, Toolbar, AppBar, Grid, Drawer } from '@material-ui/core';
+import { Toolbar, AppBar, Grid, Drawer } from '@material-ui/core';
 
 import ErrorBoundary from './components/error-boundary';
 import { SystemModel } from './entities/system-model';
@@ -16,6 +16,7 @@ import SdfStep2 from './components/system-description/sdf-step-2';
 import SdfStep3 from './components/system-description/sdf-step-3';
 import SdfStep4 from './components/system-description/sdf-step-4';
 import HazardPopulation from './components/hazard-population/hazard-population';
+import ProjectName from './components/project-name';
 
 const drawerWidth = 240;
 
@@ -45,6 +46,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const defaultModel = {
+    projectName: 'Hazard Ontology',
     currentStep: getFirstStepId(),
     lastCompletedStep: getFirstStepId(),
     kinds: [],
@@ -68,12 +70,9 @@ const App: React.FC = () => {
     });
 
     const openFile = (model: SystemModel) => {
-        if (!hasUnsavedChanges || window.confirm('You have usaved thanges that will be lost. Continue?')) {
-            // reset state first to prevent collisions with opened model
-            setSystemModel(defaultModel);
-            setSystemModel(model);
-            setHasUnsaveChanges(false);
-        }
+        setSystemModel(defaultModel); // reset state first to prevent collisions with opened model
+        setSystemModel(model);
+        setHasUnsaveChanges(false);
     };
 
     const saveFile = () => {
@@ -85,7 +84,7 @@ const App: React.FC = () => {
         if (needsSaving) {
             setHasUnsaveChanges(true);
         }
-        setSystemModel({...systemModel, ...model});
+        setSystemModel({ ...systemModel, ...model });
     };
 
     const classes = useStyles();
@@ -137,16 +136,21 @@ const App: React.FC = () => {
                     <Toolbar variant="dense">
                         <Grid container justify="space-evenly">
                             <Grid item xs>
-                                <Meny openFile={openFile} saveFile={saveFile}></Meny>
+                                <Meny
+                                    openFile={openFile}
+                                    saveFile={saveFile}
+                                    hasUnsavedChanges={hasUnsavedChanges}
+                                />
                             </Grid>
                             <Grid item xs={6} className={classes.appTitle}>
-                                <Typography variant="h6">
-                                    Hazard Ontology
-                            </Typography>
+                                <ProjectName
+                                    name={systemModel.projectName}
+                                    nameUpdated={(projectName) => updateSystemModel({ projectName })}
+                                />
                             </Grid>
                             <Grid item xs>
                                 &nbsp;
-                        </Grid>
+                            </Grid>
                         </Grid>
                     </Toolbar>
                 </AppBar>

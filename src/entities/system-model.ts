@@ -15,6 +15,7 @@ export interface SystemDescription {
 }
 
 export interface SystemModel extends SystemDescription {
+    projectName: string;
     currentStep: FlowStepId;
     lastCompletedStep: FlowStepId;
     nextHazardId: number;
