@@ -1,13 +1,14 @@
 import React from 'react';
-import { TableCell, TableHead, TableRow, Table, TableContainer, TableBody, makeStyles, Typography } from '@material-ui/core';
+import { makeStyles, Typography } from '@material-ui/core';
 import { NodeSingular, EdgeSingular, SingularElementReturnValue } from 'cytoscape';
 
 import { isMishapVictim, MishapVictim } from '../../entities/system-description/role';
 import { getConnection, getRole, getSystemObject } from '../../entities/graph/element-utilities';
 import { PossibleHazard, ConnectionToObject } from '../../entities/hazard-population/possible-hazard';
-import VictimHazardsRow from './victim-hazards-row';
 import Hazard from '../../entities/hazard-population/hazard';
-import CornerButtonPrimary from '../shared/corner-button-primary';
+import HazardsTable from './hazards-table';
+import HazardCreate from './hazard-create';
+import CornerFab from '../shared/corner-fab';
 
 interface Props {
     node: NodeSingular;
@@ -19,6 +20,12 @@ interface Props {
 const useStyles = makeStyles(theme => ({
     header: {
         marginLeft: theme.spacing(2)
+    },
+    tableGutter: {
+        marginBottom: theme.spacing(2)
+    },
+    fabSpace: {
+        marginBottom: theme.spacing(2) + 40
     }
 }));
 
@@ -33,8 +40,8 @@ const VictimHazards: React.FC<Props> = (props) => {
         props.hazardsUpdated(props.hazards.concat(hazard));
     };
 
-    const deleteHazard = (hazard: Hazard) => {
-        props.hazardsUpdated(props.hazards.filter(e => e.id !== hazard.id));
+    const deleteHazard = (id: string) => {
+        props.hazardsUpdated(props.hazards.filter(e => e.id !== id));
     };
 
     const findPossibleHazards = (mishapVictim: MishapVictim) => {
@@ -101,55 +108,35 @@ const VictimHazards: React.FC<Props> = (props) => {
 
     return (
         <React.Fragment>
-            <Typography variant="h5" className={classes.header}>
-                Mishap Victim - {mishapVictim.name}
-            </Typography>
             <Typography variant="h6" color="textSecondary" className={classes.header}>
                 Possible Harms
-                </Typography>
-            <Typography variant="body2" className={classes.header}>
+            </Typography>
+            <Typography variant="body2" className={classes.header} gutterBottom>
                 {mishapVictim.possibleHarms.join(', ')}
             </Typography>
-            <Typography variant="h6" color="textSecondary" className={classes.header} gutterBottom>
+            <Typography variant="h6" color="textSecondary" className={classes.header}>
                 Hazards
             </Typography>
-            <TableContainer>
-                <Table size='small'>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Environmental Object</TableCell>
-                            <TableCell>Exposure</TableCell>
-                            <TableCell>Hazard Element</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {possibleHazards.length === 0 ?
-                            <TableRow>
-                                <TableCell align='center' colSpan={3}>
-                                    No possible hazards identified
-                                </TableCell>
-                            </TableRow>
-                            :
-                            possibleHazards.map((hazard, index) => {
-                                const actualHazards = props.hazards.filter(e =>
-                                    e.exposureConn === hazard.exposure.connection.id &&
-                                    e.hazardElementConn === hazard.hazardElement.connection.id &&
-                                    e.mishapVictimEnvObjConn === hazard.mishapVictimEnvObj.connection.id);
-                                return <VictimHazardsRow
-                                    key={index}
-                                    hazardTemplate={hazard}
-                                    hazards={actualHazards}
-                                    hazardCreated={addHazard}
-                                    hazardDeleted={deleteHazard}
-                                />
-                            })
-                        }
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <CornerButtonPrimary onClick={props.close} >
+            <HazardsTable
+                possibleHazards={possibleHazards}
+                actualHazards={props.hazards}
+                hazardDeleted={deleteHazard}
+            />
+            <div className={classes.tableGutter}></div>
+            <Typography variant='h6' color='textSecondary' className={classes.header}>
+                Add New Hazard
+            </Typography>
+            <Typography variant='caption' className={classes.header}>
+                Select a table row to add
+            </Typography>
+            <HazardCreate
+                possibleHazards={possibleHazards}
+                hazardCreated={addHazard}
+            />
+            <div className={classes.fabSpace}></div>
+            <CornerFab onClick={props.close} >
                 Back
-            </CornerButtonPrimary>
+            </CornerFab>
         </React.Fragment>
     );
 };
