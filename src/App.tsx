@@ -52,7 +52,8 @@ const defaultModel = {
     relators: [],
     systemObjectConnections: [],
     subsystems: [],
-    hazards: []
+    hazards: [],
+    nextHazardId: 1
 };
 
 const App: React.FC = () => {

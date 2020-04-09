@@ -13,7 +13,9 @@ import CornerFab from '../shared/corner-fab';
 interface Props {
     node: NodeSingular;
     hazards: Hazard[];
-    hazardsUpdated: (items: Hazard[]) => void;
+    nextHazardId: number;
+    hazardCreated: (hazard: Hazard) => void;
+    hazardDeleted: (id: string) => void;
     close: () => void;
 }
 
@@ -35,14 +37,6 @@ const VictimHazards: React.FC<Props> = (props) => {
     if (!mishapVictim || !isMishapVictim(mishapVictim)) {
         throw new Error('Enity passed is not a mishap victim');
     }
-
-    const addHazard = (hazard: Hazard) => {
-        props.hazardsUpdated(props.hazards.concat(hazard));
-    };
-
-    const deleteHazard = (id: string) => {
-        props.hazardsUpdated(props.hazards.filter(e => e.id !== id));
-    };
 
     const findPossibleHazards = (mishapVictim: MishapVictim) => {
         let result: PossibleHazard[] = [];
@@ -120,7 +114,7 @@ const VictimHazards: React.FC<Props> = (props) => {
             <HazardsTable
                 possibleHazards={possibleHazards}
                 actualHazards={props.hazards}
-                hazardDeleted={deleteHazard}
+                hazardDeleted={props.hazardDeleted}
             />
             <div className={classes.tableGutter}></div>
             <Typography variant='h6' color='textSecondary' className={classes.header}>
@@ -131,7 +125,8 @@ const VictimHazards: React.FC<Props> = (props) => {
             </Typography>
             <HazardCreate
                 possibleHazards={possibleHazards}
-                hazardCreated={addHazard}
+                hazardCreated={props.hazardCreated}
+                nextHazardId={props.nextHazardId}
             />
             <div className={classes.fabSpace}></div>
             <CornerFab onClick={props.close} >

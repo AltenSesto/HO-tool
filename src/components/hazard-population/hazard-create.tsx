@@ -4,10 +4,10 @@ import { Add } from '@material-ui/icons';
 
 import { PossibleHazard } from '../../entities/hazard-population/possible-hazard';
 import Hazard from '../../entities/hazard-population/hazard';
-import { createObjectId } from '../../entities/system-model';
 
 interface Props {
     possibleHazards: PossibleHazard[];
+    nextHazardId: number;
     hazardCreated: (item: Hazard) => void;
 }
 
@@ -28,30 +28,31 @@ const HazardCreate: React.FC<Props> = (props) => {
 
     const [template, setTemplate] = useState<PossibleHazard | null>(null);
 
+    let hazardElementEnvObj = '';
+    if (template && template.hazardElementEnvObjs.length === 1) {
+        hazardElementEnvObj = template.hazardElementEnvObjs[0].connection.id;
+    }
+    const [envObj, setEnvObj] = useState(hazardElementEnvObj);
+    const [harmTruthmaker, setHarmTruthmaker] = useState('');
+    const [description, setDescription] = useState('');
+
     const createHazard = (ev: React.FormEvent<HTMLFormElement>) => {
         const form = ev.currentTarget;
         form.reset();
         ev.preventDefault();
-        if (!template) {
-            return;
-        }
-
-        const harmTruthmaker = (form.elements.namedItem('truthmaker') as HTMLInputElement).value;
-        const description = (form.elements.namedItem('description') as HTMLInputElement).value;
-        const hazardElementEnvObj = (form.elements.namedItem('env-obj') as HTMLSelectElement).value;
-        if (!hazardElementEnvObj) {
+        if (!template || !envObj) {
             return;
         }
 
         const hazard = {
-            id: createObjectId('hazard'),
+            id: `H${props.nextHazardId}`,
             harmTruthmaker,
             description,
             mishapVictim: template.mishapVictim.id,
             mishapVictimEnvObjConn: template.mishapVictimEnvObj.connection.id,
             exposureConn: template.exposure.connection.id,
             hazardElementConn: template.hazardElement.connection.id,
-            hazardElementEnvObjConn: hazardElementEnvObj
+            hazardElementEnvObjConn: envObj
         };
         props.hazardCreated(hazard);
     };
@@ -61,10 +62,6 @@ const HazardCreate: React.FC<Props> = (props) => {
             return <React.Fragment></React.Fragment>;
         }
 
-        let hazardElementEnvObj = '';
-        if (template.hazardElementEnvObjs.length === 1) {
-            hazardElementEnvObj = template.hazardElementEnvObjs[0].connection.id;
-        }
         let selectOptions = template.hazardElementEnvObjs
             .sort((a, b) => a.object.name.localeCompare(b.object.name))
             .map((item, index) => (
@@ -85,7 +82,7 @@ const HazardCreate: React.FC<Props> = (props) => {
                                 autoFocus
                                 margin='none'
                                 type='text'
-                                name='truthmaker'
+                                onChange={(ev)=>setHarmTruthmaker(ev.target.value)}
                                 label='Harm Truthmaker'
                                 autoComplete='off'
                                 multiline
@@ -97,7 +94,7 @@ const HazardCreate: React.FC<Props> = (props) => {
                                 required
                                 margin='none'
                                 type='text'
-                                name='description'
+                                onChange={(ev) => setDescription(ev.target.value)}
                                 label='Hazard Description'
                                 autoComplete='off'
                                 multiline
@@ -113,7 +110,7 @@ const HazardCreate: React.FC<Props> = (props) => {
                                 margin='none'
                                 labelId='label-select-env-obj'
                                 defaultValue={hazardElementEnvObj}
-                                name='env-obj'
+                                onChange={(ev) => setEnvObj(ev.target.value as string)}
                             >
                                 {selectOptions}
                             </Select>
