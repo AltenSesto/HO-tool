@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { EventObject, NodeSingular } from 'cytoscape';
-import { TableChart } from '@material-ui/icons';
 import { Typography } from '@material-ui/core';
 
 import { SystemDescription } from '../../entities/system-model';
@@ -9,12 +8,10 @@ import Graph from '../graph/graph';
 import { isMishapVictim } from '../../entities/system-description/role';
 import CornerCard from '../shared/corner-card';
 import { getRole } from '../../entities/graph/element-utilities';
-import CornerFab from '../shared/corner-fab';
 
 interface Props {
     system: SystemDescription;
     victimSelected: (node: NodeSingular) => void;
-    summaryClicked: () => void;
 }
 
 const GraphView: React.FC<Props> = (props) => {
@@ -53,10 +50,6 @@ const GraphView: React.FC<Props> = (props) => {
                 mouseLeftNode={checkVictimPointed}
                 nodeClicked={selectVictim}
             />
-            <CornerFab onClick={props.summaryClicked}>
-                <TableChart />
-                Summary
-            </CornerFab>
             <CornerCard>
                 <Typography>
                     Click on a mishap victim to populate hazards

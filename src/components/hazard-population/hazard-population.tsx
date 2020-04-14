@@ -4,9 +4,11 @@ import { NodeSingular } from 'cytoscape';
 import { SystemModel } from '../../entities/system-model';
 import VictimHazards from './victim-hazards';
 import GraphView from './graph-view';
-import Summary from './summary';
+import TableView from './table-view';
 import Hazard from '../../entities/hazard-population/hazard';
 import { getSystemObject } from '../../entities/graph/element-utilities';
+import CornerFab from '../shared/corner-fab';
+import { TableChart, BubbleChart } from '@material-ui/icons';
 
 interface Props {
     system: SystemModel;
@@ -47,14 +49,31 @@ const HazardPopulation: React.FC<Props> = (props) => {
     }
 
     if (isSummarySelected) {
-        return <Summary back={() => setIsSummarySelected(false)} />;
+        return (
+            <React.Fragment>
+                <TableView
+                    hazards={props.system.hazards}
+                />
+                <CornerFab onClick={() => setIsSummarySelected(false)}>
+                    <BubbleChart />
+                    Graph View
+                </CornerFab>
+            </React.Fragment>
+        );
     }
 
-    return <GraphView
-        system={props.system}
-        victimSelected={setSelectedVictim}
-        summaryClicked={() => setIsSummarySelected(true)}
-    />;
+    return (
+        <React.Fragment>
+            <GraphView
+                system={props.system}
+                victimSelected={setSelectedVictim}
+            />
+            <CornerFab onClick={() => setIsSummarySelected(true)}>
+                <TableChart />
+                Table View
+            </CornerFab>
+        </React.Fragment>
+    );
 };
 
 export default HazardPopulation;
