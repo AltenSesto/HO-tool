@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { makeStyles, TableRow, TableCell, TableContainer, Table, TableHead, TableBody } from '@material-ui/core';
+import { TableRow, TableCell, TableContainer, Table, TableHead, TableBody, withStyles, createStyles, Theme } from '@material-ui/core';
 
 import { PossibleHazard } from '../../entities/hazard-population/possible-hazard';
 import Hazard from '../../entities/hazard-population/hazard';
@@ -11,14 +11,16 @@ interface Props {
     hazardCreated: (item: Hazard) => void;
 }
 
-const useStyle = makeStyles(() => ({
-    selectable: {
-        cursor: 'pointer'
-    },
-}));
+const StyledTableRow = withStyles((theme: Theme) =>
+    createStyles({
+        root: {
+            backgroundColor: theme.palette.grey[200],
+            cursor: 'pointer'
+        }
+    })
+)(TableRow);
 
 const HazardCreate: React.FC<Props> = (props) => {
-    const classes = useStyle();
 
     const [template, setTemplate] = useState<PossibleHazard | null>(null);
 
@@ -51,15 +53,12 @@ const HazardCreate: React.FC<Props> = (props) => {
                         <TableRow>
                             <TableCell colSpan={3} align='center'>
                                 No possible hazards found
-                                </TableCell>
+                            </TableCell>
                         </TableRow>
                         :
                         props.possibleHazards.map((hazard, index) => (
                             <React.Fragment key={index}>
-                                <TableRow
-                                    onClick={() => setTemplate(hazard)}
-                                    className={classes.selectable}
-                                >
+                                <StyledTableRow onClick={() => setTemplate(hazard)} >
                                     <TableCell>
                                         {hazard.mishapVictim.name} ({hazard.mishapVictimEnvObj.object.name})
                                         </TableCell>
@@ -69,7 +68,7 @@ const HazardCreate: React.FC<Props> = (props) => {
                                     <TableCell>
                                         {hazard.hazardElement.object.name}
                                     </TableCell>
-                                </TableRow>
+                                </StyledTableRow>
                                 {renderDetailsForm(hazard)}
                             </React.Fragment>
                         ))

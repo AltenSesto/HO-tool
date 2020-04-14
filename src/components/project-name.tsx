@@ -9,8 +9,12 @@ interface Props {
 
 const useStyle = makeStyles(theme => ({
     input: {
-        color: theme.palette.common.white,
-        paddingRight: theme.spacing(1)
+        '& .MuiInput-input': {
+            color: theme.palette.common.white,
+        }
+    },
+    buttonGutter: {
+        paddingLeft: theme.spacing(1),
     }
 }));
 
@@ -42,10 +46,10 @@ const ProjectName: React.FC<Props> = (props) => {
                     onChange={(ev) => setName(ev.target.value)}
                     value={name}
                 />
-                <IconButton type='submit' size='small' title='Ok'>
+                <IconButton type='submit' size='small' className={classes.buttonGutter} >
                     <Done />
                 </IconButton>
-                <IconButton type='reset' size='small' title='Cancel'>
+                <IconButton type='reset' size='small' >
                     <Clear />
                 </IconButton>
             </form>
@@ -58,7 +62,8 @@ const ProjectName: React.FC<Props> = (props) => {
             <IconButton
                 size='small'
                 onClick={() => setIsEditing(true)}
-                title='Edit name'
+                title='Edit project name'
+                className={classes.buttonGutter}
             >
                 <Edit />
             </IconButton>
