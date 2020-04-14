@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Typography, IconButton, TextField, makeStyles } from '@material-ui/core';
 import { Edit, Done, Clear } from '@material-ui/icons';
 
@@ -24,16 +24,31 @@ const ProjectName: React.FC<Props> = (props) => {
     const [isEditing, setIsEditing] = useState(false);
     const [name, setName] = useState(props.name);
 
+    const inputRef = useRef<HTMLInputElement>();
+
+    useEffect(() => {
+        setName(props.name);
+    }, [props.name]);
+
     const cancelEdit = () => {
         setName(props.name);
         setIsEditing(false);
+        inputRef.current = undefined;
     };
 
     const confirmEdit = (ev: React.FormEvent<HTMLFormElement>) => {
         ev.preventDefault();
         setIsEditing(false);
         props.nameUpdated(name);
+        inputRef.current = undefined;
     };
+
+    const initInput = (input: HTMLInputElement | null) => {
+        if (input && !inputRef.current) {
+            input.select();
+            inputRef.current = input;
+        }
+    }
 
     if (isEditing) {
         return (
@@ -43,8 +58,9 @@ const ProjectName: React.FC<Props> = (props) => {
                     type='text'
                     required
                     autoFocus
-                    onChange={(ev) => setName(ev.target.value)}
+                    onChange={ev => setName(ev.target.value)}
                     value={name}
+                    inputRef={ref => initInput(ref)}
                 />
                 <IconButton type='submit' size='small' className={classes.buttonGutter} >
                     <Done />
