@@ -15,6 +15,7 @@ import NodePopper from '../graph/node-popper';
 import Connection from '../../entities/system-description/connection';
 import DeleteElementButton from './delete-element-button';
 import { isRole } from '../../entities/system-description/role';
+import Hazard from '../../entities/hazard-population/hazard';
 
 interface Props {
     system: SystemDescription;
@@ -67,6 +68,7 @@ export default class SdfStepBase extends React.Component<Props, State> {
         this.preventOverlap = this.preventOverlap.bind(this);
         this.cancelEditEntity = this.cancelEditEntity.bind(this);
         this.renderConnectionActions = this.renderConnectionActions.bind(this);
+        this.updateHazards = this.updateHazards.bind(this);
 
         this.state = {
             isConnectionValid: false
@@ -177,7 +179,7 @@ export default class SdfStepBase extends React.Component<Props, State> {
             isConnectionValid = !!this.validateConnection(ele);
         }
 
-        this.setState({...this.state, ...{ isConnectionValid: isConnectionValid } });
+        this.setState({ ...this.state, ...{ isConnectionValid: isConnectionValid } });
         this.props.elementDisplayPopperChanged(event.target);
     }
 
@@ -247,6 +249,60 @@ export default class SdfStepBase extends React.Component<Props, State> {
         }
     }
 
+    private updateHazards(entity: SystemObject) {
+        let transformHazard = (hazard: Hazard) => hazard;
+        switch (entity.type) {
+            case ObjectTypes.relator:
+                transformHazard = (hazard: Hazard) => {
+                    if (hazard.exposure.id !== entity.id) {
+                        return hazard;
+                    }
+                    return {
+                        ...hazard,
+                        ...{ exposure: { id: entity.id, name: entity.name } }
+                    };
+                };
+                break;
+            case ObjectTypes.role:
+                transformHazard = (hazard: Hazard) => {
+                    if (hazard.mishapVictim.id !== entity.id && hazard.hazardElement.id !== entity.id) {
+                        return hazard;
+                    }
+                    return {
+                        ...hazard,
+                        ...{
+                            mishapVictim: hazard.mishapVictim.id === entity.id ?
+                                { id: entity.id, name: entity.name } : hazard.mishapVictim,
+                            hazardElement: hazard.hazardElement.id === entity.id ?
+                                { id: entity.id, name: entity.name } : hazard.hazardElement,
+                        }
+                    };
+                };
+                break;
+            case ObjectTypes.kind:
+                transformHazard = (hazard: Hazard) => {
+                    if (hazard.mishapVictimEnvObj.id !== entity.id &&
+                        hazard.hazardElementEnvObj.id !== entity.id
+                    ) {
+                        return hazard;
+                    }
+                    return {
+                        ...hazard,
+                        ...{
+                            mishapVictimEnvObj: hazard.mishapVictimEnvObj.id === entity.id ?
+                                { id: entity.id, name: entity.name } : hazard.mishapVictimEnvObj,
+                            hazardElementEnvObj: hazard.hazardElementEnvObj.id === entity.id ?
+                                { id: entity.id, name: entity.name } : hazard.hazardElementEnvObj,
+                        }
+                    };
+                };
+                break;
+        }
+
+        const updatedHazards = this.props.system.hazards.map(transformHazard);
+        this.props.systemUpdated({ ...this.props.system, ...{ hazards: updatedHazards } });
+    }
+
     private updateEntity(entity: SystemObject | Subsystem) {
         this.modifySystemDescription(entity, (list, item) => list.map(e => e.id === item.id ? item : e));
     }
@@ -305,6 +361,10 @@ export default class SdfStepBase extends React.Component<Props, State> {
                     const adjustedPosition = this.preventOverlap(positionOverride, allNodes, parentId);
                     entity.posX = adjustedPosition.x;
                     entity.posY = adjustedPosition.y;
+                }
+
+                if (entity.name !== existingEntity.name) {
+                    this.updateHazards(entity);
                 }
             }
             this.updateEntity(entity);

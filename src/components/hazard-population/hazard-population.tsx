@@ -6,6 +6,7 @@ import VictimHazards from './victim-hazards';
 import GraphView from './graph-view';
 import Summary from './summary';
 import Hazard from '../../entities/hazard-population/hazard';
+import { getSystemObject } from '../../entities/graph/element-utilities';
 
 interface Props {
     system: SystemModel;
@@ -31,9 +32,13 @@ const HazardPopulation: React.FC<Props> = (props) => {
     });
 
     if (selectedVictim) {
+        const mishapVictim = getSystemObject(selectedVictim);
+        if (!mishapVictim) {
+            throw new Error('Selected node does not represent a mishap victim');
+        }
         return <VictimHazards
             node={selectedVictim}
-            hazards={props.system.hazards}
+            hazards={props.system.hazards.filter(e => e.mishapVictim.id === mishapVictim.id)}
             nextHazardId={props.system.nextHazardId}
             hazardCreated={addHazard}
             hazardDeleted={removeHazard}

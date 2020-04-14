@@ -22,10 +22,11 @@ const DeleteElementButton: React.FC<Props> = (props) => {
         const updatedConnections = system.systemObjectConnections
             .filter(e => e.id !== connection.id);
         const updatedHazards = system.hazards.filter(e =>
-                e.exposureConn !== connection.id &&
-                e.hazardElementConn !== connection.id &&
-                e.hazardElementEnvObjConn !== connection.id &&
-                e.mishapVictimEnvObjConn !== connection.id);
+                e.mishapVictim.id !== connection.target &&
+                e.exposure.id !== connection.target &&
+                e.hazardElement.id !== connection.target &&
+                e.hazardElementEnvObj.id !== connection.target &&
+                e.mishapVictimEnvObj.id !== connection.target);
         return { ...system, ...{ systemObjectConnections: updatedConnections, hazards: updatedHazards } };
     };
 

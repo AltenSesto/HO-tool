@@ -112,8 +112,7 @@ const VictimHazards: React.FC<Props> = (props) => {
                 Hazards
             </Typography>
             <HazardsTable
-                possibleHazards={possibleHazards}
-                actualHazards={props.hazards}
+                hazards={props.hazards}
                 hazardDeleted={props.hazardDeleted}
             />
             <div className={classes.tableGutter}></div>
