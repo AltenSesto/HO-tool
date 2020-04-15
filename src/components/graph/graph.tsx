@@ -18,8 +18,9 @@ interface Props {
     mouseEnteredNode: (ev: EventObject) => void;
     mouseLeftNode: (ev: EventObject) => void;
     nodeClicked: (ev: EventObject) => void;
-    graphClicked: (ev: EventObject) => void;
+    graphClicked?: (ev: EventObject) => void;
     nodeMoved?: (ev: EventObject) => void;
+    cy?: (cy: Core) => void;
 }
 
 interface State {
@@ -121,13 +122,17 @@ export default class Graph extends React.Component<Props, State> {
     }
 
     private initCytoscape(cy: Core) {
+        if (this.props.cy) {
+            this.props.cy(cy);
+        }
+
         // this method must run only once
         if (this.state.cy) {
             return;
         }
         cy.zoom(1.1); // hack to fix blurring
         cy.on('add', this.addEventListeners);
-        cy.on('click', this.props.graphClicked);
+        cy.on('click', (ev) => this.props.graphClicked && this.props.graphClicked(ev));
         cy.on('render', this.resizeCanvas);
 
         let collapseApi = null;
