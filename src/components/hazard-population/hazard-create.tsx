@@ -40,7 +40,7 @@ const HazardCreate: React.FC<Props> = (props) => {
     useEffect(() => {
         const mishapVictim = getRole(props.node);
         if (!mishapVictim || !isMishapVictim(mishapVictim)) {
-            throw new Error('Enity passed is not a mishap victim');
+            throw new Error('Entity passed is not a mishap victim');
         }
 
         const findPossibleHazards = (mishapVictim: MishapVictim) => {

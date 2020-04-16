@@ -13,7 +13,7 @@ interface Props {
     getNode: (id: string) => NodeSingular | null;
     nextHazardId: number;
     hazardCreated: (item: Hazard) => void;
-    hazardDeleted: (id: string) => void;
+    hazardDeleted: (id: number) => void;
 }
 
 const useStyles = makeStyles(theme => ({

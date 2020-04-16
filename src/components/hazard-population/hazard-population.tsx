@@ -39,7 +39,7 @@ const HazardPopulation: React.FC<Props> = (props) => {
         }
     });
 
-    const removeHazard = (id: string) => props.systemUpdated({
+    const removeHazard = (id: number) => props.systemUpdated({
         ...props.system,
         ...{ hazards: props.system.hazards.filter(e => e.id !== id) }
     });
