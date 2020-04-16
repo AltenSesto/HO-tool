@@ -35,7 +35,7 @@ const VictimHazards: React.FC<Props> = (props) => {
 
     const mishapVictim = getRole(props.node);
     if (!mishapVictim || !isMishapVictim(mishapVictim)) {
-        throw new Error('Enity passed is not a mishap victim');
+        throw new Error('Entity passed is not a mishap victim');
     }
 
     return (
