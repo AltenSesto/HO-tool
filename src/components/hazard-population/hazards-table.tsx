@@ -5,7 +5,7 @@ import Hazard from '../../entities/hazard-population/hazard';
 
 interface Props {
     hazards: Hazard[];
-    hazardDeleted: (id: string) => void;
+    hazardDeleted: (id: number) => void;
 }
 
 const StyledTableCell = withStyles(theme =>

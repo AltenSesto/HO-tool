@@ -4,7 +4,7 @@ interface NameIdPair {
 }
 
 export default interface Hazard {
-    id: string;
+    id: number;
     harmTruthmaker: string;
     description: string;
     mishapVictim: NameIdPair;

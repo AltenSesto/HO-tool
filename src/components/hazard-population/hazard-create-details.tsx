@@ -41,7 +41,7 @@ const HazardCreateDetails: React.FC<Props> = (props) => {
         }
 
         const hazard = {
-            id: `H${props.nextHazardId}`,
+            id: props.nextHazardId,
             harmTruthmaker,
             description,
             mishapVictim: {
