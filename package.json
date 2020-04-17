@@ -17,7 +17,9 @@
     "react-beforeunload": "^2.1.0",
     "react-cytoscapejs": "^1.2.1",
     "react-dom": "^16.10.2",
+    "react-redux": "^7.2.0",
     "react-scripts": "3.2.0",
+    "redux": "^4.0.5",
     "typeface-roboto": "^0.0.75",
     "typescript": "3.6.4"
   },
