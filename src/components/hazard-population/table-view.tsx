@@ -13,6 +13,7 @@ interface Props {
     getNode: (id: string) => NodeSingular | null;
     nextHazardId: number;
     hazardCreated: (item: Hazard) => void;
+    hazardEdited: (id: number, item: Hazard) => void;
     hazardDeleted: (id: number) => void;
 }
 
@@ -51,6 +52,7 @@ const TableView: React.FC<Props> = (props: Props) => {
             </Typography>
             <HazardsTable
                 hazards={props.hazards}
+                hazardEdited={props.hazardEdited}
                 hazardDeleted={props.hazardDeleted}
             />
             <div className={classes.tableGutter}></div>

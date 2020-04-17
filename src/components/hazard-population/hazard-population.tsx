@@ -38,6 +38,16 @@ const HazardPopulation: React.FC<Props> = (props) => {
             nextHazardId: props.system.nextHazardId + 1
         }
     });
+    
+    const editHazard = (id: number, hazard: Hazard) => props.systemUpdated({
+        ...props.system,
+        ...{ hazards: props.system.hazards.map(h => {
+            if(h.id === id) {
+                return hazard;
+            }
+            return h;
+        })}
+    });
 
     const removeHazard = (id: number) => props.systemUpdated({
         ...props.system,
@@ -65,6 +75,7 @@ const HazardPopulation: React.FC<Props> = (props) => {
             hazards={props.system.hazards.filter(e => e.mishapVictim.id === mishapVictim.id)}
             nextHazardId={props.system.nextHazardId}
             hazardCreated={addHazard}
+            hazardEdited={editHazard}
             hazardDeleted={removeHazard}
             close={() => setSelectedVictim(null)}
         />;
@@ -78,6 +89,7 @@ const HazardPopulation: React.FC<Props> = (props) => {
                     mishapVictims={props.system.roles.filter(e => isMishapVictim(e))}
                     getNode={findNode}
                     hazardCreated={addHazard}
+                    hazardEdited={editHazard}
                     hazardDeleted={removeHazard}
                     nextHazardId={props.system.nextHazardId}
                 />

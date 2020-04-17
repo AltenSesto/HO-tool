@@ -14,6 +14,7 @@ interface Props {
     hazards: Hazard[];
     nextHazardId: number;
     hazardCreated: (hazard: Hazard) => void;
+    hazardEdited: (id: number, hazard: Hazard) => void;
     hazardDeleted: (id: number) => void;
     close: () => void;
 }
@@ -51,6 +52,7 @@ const VictimHazards: React.FC<Props> = (props) => {
             </Typography>
             <HazardsTable
                 hazards={props.hazards}
+                hazardEdited={props.hazardEdited}
                 hazardDeleted={props.hazardDeleted}
             />
             <div className={classes.tableGutter}></div>
