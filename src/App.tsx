@@ -17,6 +17,7 @@ import SdfStep3 from './components/system-description/sdf-step-3';
 import SdfStep4 from './components/system-description/sdf-step-4';
 import HazardPopulation from './components/hazard-population/hazard-population';
 import ProjectName from './components/project-name';
+import OchStep1 from './components/hazard-description-categorization/och-step-1/och-step-1';
 
 const drawerWidth = 240;
 
@@ -119,6 +120,11 @@ const App: React.FC = () => {
             case flowSteps.OHI_3:
                 return <HazardPopulation
                     system={systemModel}
+                    systemUpdated={updateSystemModel}
+                />;
+            case flowSteps.OCH_1:
+                return <OchStep1
+                    hazards={systemModel.hazards}
                     systemUpdated={updateSystemModel}
                 />;
         }

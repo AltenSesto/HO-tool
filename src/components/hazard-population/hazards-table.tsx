@@ -2,6 +2,7 @@ import React from 'react';
 import { TableContainer, Table, TableRow, TableCell, TableBody, TableHead, IconButton, withStyles, createStyles, makeStyles } from '@material-ui/core';
 import { Delete } from '@material-ui/icons';
 import Hazard from '../../entities/hazard-population/hazard';
+import HazardId from './hazard-id';
 
 interface Props {
     hazards: Hazard[];
@@ -78,7 +79,7 @@ const HazardsTable: React.FC<Props> = (props) => {
                             .sort((a, b) => a.id - b.id)
                             .map((hazard, index) => (
                                 <TableRow key={index}>
-                                    <StyledTableCell>H{hazard.id}</StyledTableCell>
+                                    <StyledTableCell><HazardId hazard={hazard} /></StyledTableCell>
                                     <StyledTableCell>
                                         {hazard.mishapVictim.name}
                                         <br />

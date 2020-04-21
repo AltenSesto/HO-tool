@@ -1,3 +1,5 @@
+import { HazardCategory } from "../hazard-description-categorization/hazard-category";
+
 interface NameIdPair {
     id: string;
     name: string;
@@ -12,4 +14,5 @@ export default interface Hazard {
     exposure: NameIdPair;
     hazardElement: NameIdPair;
     hazardElementEnvObj: NameIdPair;
+    category?: HazardCategory;
 }
