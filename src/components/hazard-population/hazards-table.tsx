@@ -8,7 +8,7 @@ import HazardsRow from './hazard-row';
 
 interface Props {
     hazards: Hazard[];
-    hazardEdited: (id: number, item: Hazard) => void;
+    hazardEdited: (item: Hazard) => void;
     hazardDeleted: (id: number) => void;
 }
 

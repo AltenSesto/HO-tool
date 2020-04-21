@@ -13,7 +13,7 @@ interface Props {
     getNode: (id: string) => NodeSingular | null;
     nextHazardId: number;
     hazardCreated: (item: Hazard) => void;
-    hazardEdited: (id: number, item: Hazard) => void;
+    hazardEdited: (item: Hazard) => void;
     hazardDeleted: (id: number) => void;
 }
 

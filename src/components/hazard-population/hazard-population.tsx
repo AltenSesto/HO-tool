@@ -39,10 +39,10 @@ const HazardPopulation: React.FC<Props> = (props) => {
         }
     });
     
-    const editHazard = (id: number, hazard: Hazard) => props.systemUpdated({
+    const editHazard = (hazard: Hazard) => props.systemUpdated({
         ...props.system,
         ...{ hazards: props.system.hazards.map(h => {
-            if(h.id === id) {
+            if(h.id === hazard.id) {
                 return hazard;
             }
             return h;

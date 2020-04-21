@@ -7,7 +7,7 @@ import Hazard from '../../entities/hazard-population/hazard';
 interface Props {
     hazard: Hazard;
     index: number;
-    hazardEdited: (id: number, hazard: Hazard) => void;
+    hazardEdited: (hazard: Hazard) => void;
     hazardDeleted: (id: number) => void;
 }
 
@@ -34,7 +34,7 @@ const HazardsRow: React.FC<Props> = (props) => {
                     description: description
                 };
         
-                props.hazardEdited(props.hazard.id, hazard);
+                props.hazardEdited(hazard);
         }
         
         setIsEditable(false);

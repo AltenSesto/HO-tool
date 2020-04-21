@@ -14,7 +14,7 @@ interface Props {
     hazards: Hazard[];
     nextHazardId: number;
     hazardCreated: (hazard: Hazard) => void;
-    hazardEdited: (id: number, hazard: Hazard) => void;
+    hazardEdited: (hazard: Hazard) => void;
     hazardDeleted: (id: number) => void;
     close: () => void;
 }
