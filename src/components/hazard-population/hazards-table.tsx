@@ -1,10 +1,14 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
 import { TableContainer, Table, TableRow, TableCell, TableBody, TableHead, IconButton, withStyles, createStyles, makeStyles } from '@material-ui/core';
-import { Delete } from '@material-ui/icons';
+import { Delete, Edit } from '@material-ui/icons';
+import { PossibleHazard, ConnectionToObject } from '../../entities/hazard-population/possible-hazard';
 import Hazard from '../../entities/hazard-population/hazard';
+import HazardsRow from './hazard-row';
 
 interface Props {
     hazards: Hazard[];
+    hazardEdited: (item: Hazard) => void;
     hazardDeleted: (id: number) => void;
 }
 
@@ -36,6 +40,7 @@ const useStyles = makeStyles(() => ({
         width: '10%'
     }
 }));
+
 
 const HazardsTable: React.FC<Props> = (props) => {
     const classes = useStyles();
@@ -77,30 +82,12 @@ const HazardsTable: React.FC<Props> = (props) => {
                         props.hazards
                             .sort((a, b) => a.id - b.id)
                             .map((hazard, index) => (
-                                <TableRow key={index}>
-                                    <StyledTableCell>H{hazard.id}</StyledTableCell>
-                                    <StyledTableCell>
-                                        {hazard.mishapVictim.name}
-                                        <br />
-                                        ({hazard.mishapVictimEnvObj.name})
-                                    </StyledTableCell>
-                                    <StyledTableCell>{hazard.exposure.name}</StyledTableCell>
-                                    <StyledTableCell>
-                                        {hazard.hazardElement.name}
-                                        <br />
-                                        ({hazard.hazardElementEnvObj.name})
-                                    </StyledTableCell>
-                                    <StyledTableCell>{hazard.harmTruthmaker}</StyledTableCell>
-                                    <StyledTableCell>{hazard.description}</StyledTableCell>
-                                    <StyledTableCell>
-                                        <IconButton
-                                            size='small'
-                                            onClick={() => props.hazardDeleted(hazard.id)}
-                                        >
-                                            <Delete />
-                                        </IconButton>
-                                    </StyledTableCell>
-                                </TableRow>
+                                <HazardsRow 
+                                hazard={hazard}
+                                index={index}
+                                hazardEdited={props.hazardEdited}
+                                hazardDeleted={props.hazardDeleted}
+                                />
                             ))
                     }
                 </TableBody>
