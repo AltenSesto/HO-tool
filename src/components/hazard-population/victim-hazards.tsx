@@ -1,10 +1,9 @@
 import React from 'react';
 import { makeStyles, Typography } from '@material-ui/core';
-import { NodeSingular, EdgeSingular, SingularElementReturnValue } from 'cytoscape';
+import { NodeSingular } from 'cytoscape';
 
-import { isMishapVictim, MishapVictim } from '../../entities/system-description/role';
-import { getConnection, getRole, getSystemObject } from '../../entities/graph/element-utilities';
-import { PossibleHazard, ConnectionToObject } from '../../entities/hazard-population/possible-hazard';
+import { isMishapVictim } from '../../entities/system-description/role';
+import { getRole } from '../../entities/graph/element-utilities';
 import Hazard from '../../entities/hazard-population/hazard';
 import HazardsTable from './hazards-table';
 import HazardCreate from './hazard-create';
@@ -15,7 +14,8 @@ interface Props {
     hazards: Hazard[];
     nextHazardId: number;
     hazardCreated: (hazard: Hazard) => void;
-    hazardDeleted: (id: string) => void;
+    hazardEdited: (hazard: Hazard) => void;
+    hazardDeleted: (id: number) => void;
     close: () => void;
 }
 
@@ -33,72 +33,11 @@ const useStyles = makeStyles(theme => ({
 
 const VictimHazards: React.FC<Props> = (props) => {
     const classes = useStyles();
+
     const mishapVictim = getRole(props.node);
     if (!mishapVictim || !isMishapVictim(mishapVictim)) {
-        throw new Error('Enity passed is not a mishap victim');
+        throw new Error('Entity passed is not a mishap victim');
     }
-
-    const findPossibleHazards = (mishapVictim: MishapVictim) => {
-        let result: PossibleHazard[] = [];
-        const victimKinds = props.node.incomers();
-        const relators = props.node.outgoers();
-        const hazardRoles = relators.incomers();
-
-        const hazardElementsEnvObjs: ConnectionToObject[] = [];
-        const hazardKinds = hazardRoles.incomers();
-        for (let i = 0; i < hazardKinds.length; i++) {
-            const envObj = getEntityPair(hazardKinds[i], true);
-            if (envObj) {
-                hazardElementsEnvObjs.push(envObj);
-            }
-        }
-
-        for (let i = 0; i < victimKinds.length; i++) {
-            const mishapVictimEnvObj = getEntityPair(victimKinds[i], true);
-            if (!mishapVictimEnvObj) {
-                continue;
-            }
-            for (let j = 0; j < relators.length; j++) {
-                const exposure = getEntityPair(relators[j], false);
-                if (!exposure) {
-                    continue;
-                }
-                for (let k = 0; k < hazardRoles.length; k++) {
-                    const hazardElement = getEntityPair(hazardRoles[k], true);
-                    if (!hazardElement) {
-                        continue;
-                    }
-                    result.push({
-                        mishapVictim,
-                        mishapVictimEnvObj,
-                        exposure,
-                        hazardElement,
-                        hazardElementEnvObjs: hazardElementsEnvObjs
-                            .filter(e => e.connection.target === hazardElement.object.id)
-                    });
-                }
-            }
-        }
-        return result;
-    };
-
-
-    const getEntityPair = (
-        ele: SingularElementReturnValue | (NodeSingular & EdgeSingular),
-        takeSource: boolean
-    ) => {
-        if (ele.isEdge()) {
-            const node = takeSource ? ele.source() : ele.target();
-            const object = getSystemObject(node);
-            const connection = getConnection(ele);
-            if (object && connection) {
-                return { object, connection };
-            }
-        }
-        return null;
-    }
-
-    const possibleHazards = findPossibleHazards(mishapVictim);
 
     return (
         <React.Fragment>
@@ -113,19 +52,17 @@ const VictimHazards: React.FC<Props> = (props) => {
             </Typography>
             <HazardsTable
                 hazards={props.hazards}
+                hazardEdited={props.hazardEdited}
                 hazardDeleted={props.hazardDeleted}
             />
             <div className={classes.tableGutter}></div>
             <Typography variant='h6' color='textSecondary' className={classes.header}>
                 Add New Hazard
             </Typography>
-            <Typography variant='caption' className={classes.header}>
-                Select a table row to add
-            </Typography>
             <HazardCreate
-                possibleHazards={possibleHazards}
                 hazardCreated={props.hazardCreated}
                 nextHazardId={props.nextHazardId}
+                node={props.node}
             />
             <div className={classes.fabSpace}></div>
             <CornerFab onClick={props.close} >

@@ -1,27 +1,71 @@
 import React from 'react';
-import { TableContainer, Table, TableRow, TableCell, TableBody, TableHead, IconButton } from '@material-ui/core';
-import { Delete } from '@material-ui/icons';
+import { TableContainer, Table, TableRow, TableCell, TableBody, TableHead, withStyles, createStyles, makeStyles } from '@material-ui/core';
 import Hazard from '../../entities/hazard-population/hazard';
+import HazardsRow from './hazard-row';
 
 interface Props {
     hazards: Hazard[];
-    hazardDeleted: (id: string) => void;
+    hazardEdited: (item: Hazard) => void;
+    hazardDeleted: (id: number) => void;
 }
 
+const StyledTableCell = withStyles(theme =>
+    createStyles({
+        sizeSmall: {
+            padding: theme.spacing(1)
+        }
+    })
+)(TableCell);
+
+const useStyles = makeStyles(() => ({
+    id: {
+        width: '7%'
+    },
+    mishapVictim: {
+        width: '15%'
+    },
+    exposure: {
+        width: '10%'
+    },
+    hazardElement: {
+        width: '15%'
+    },
+    harmTruthmaker: {
+        width: '15%'
+    },
+    actions: {
+        width: '10%'
+    }
+}));
+
+
 const HazardsTable: React.FC<Props> = (props) => {
+    const classes = useStyles();
 
     return (
         <TableContainer>
             <Table size='small'>
                 <TableHead>
                     <TableRow>
-                        <TableCell>ID</TableCell>
-                        <TableCell>Mishap Victim<br />(Env Obj)</TableCell>
-                        <TableCell>Exposure</TableCell>
-                        <TableCell>Hazard Element<br />(Env Obj)</TableCell>
-                        <TableCell>Harm TruthMaker</TableCell>
-                        <TableCell>Hazard Description</TableCell>
-                        <TableCell />
+                        <StyledTableCell className={classes.id}>
+                            ID
+                        </StyledTableCell>
+                        <StyledTableCell className={classes.mishapVictim}>
+                            Mishap Victim<br />(Env Obj)
+                        </StyledTableCell>
+                        <StyledTableCell className={classes.exposure}>
+                            Exposure
+                        </StyledTableCell>
+                        <StyledTableCell className={classes.hazardElement}>
+                            Hazard Element<br />(Env Obj)
+                        </StyledTableCell>
+                        <StyledTableCell className={classes.harmTruthmaker}>
+                            Harm TruthMaker
+                        </StyledTableCell>
+                        <StyledTableCell>
+                            Hazard Description
+                        </StyledTableCell>
+                        <StyledTableCell className={classes.actions} />
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -33,32 +77,14 @@ const HazardsTable: React.FC<Props> = (props) => {
                         </TableRow>
                         :
                         props.hazards
-                            .sort((a, b) => a.id.localeCompare(b.id))
+                            .sort((a, b) => a.id - b.id)
                             .map((hazard, index) => (
-                                <TableRow key={index}>
-                                    <TableCell>{hazard.id}</TableCell>
-                                    <TableCell>
-                                        {hazard.mishapVictim.name}
-                                        <br />
-                                        ({hazard.mishapVictimEnvObj.name})
-                                    </TableCell>
-                                    <TableCell>{hazard.exposure.name}</TableCell>
-                                    <TableCell>
-                                        {hazard.hazardElement.name}
-                                        <br />
-                                        ({hazard.hazardElementEnvObj.name})
-                                    </TableCell>
-                                    <TableCell>{hazard.harmTruthmaker}</TableCell>
-                                    <TableCell>{hazard.description}</TableCell>
-                                    <TableCell>
-                                        <IconButton
-                                            size='small'
-                                            onClick={() => props.hazardDeleted(hazard.id)}
-                                        >
-                                            <Delete />
-                                        </IconButton>
-                                    </TableCell>
-                                </TableRow>
+                                <HazardsRow 
+                                hazard={hazard}
+                                index={index}
+                                hazardEdited={props.hazardEdited}
+                                hazardDeleted={props.hazardDeleted}
+                                />
                             ))
                     }
                 </TableBody>

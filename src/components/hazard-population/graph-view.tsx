@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { EventObject, NodeSingular } from 'cytoscape';
+import { EventObject, NodeSingular, Core } from 'cytoscape';
 import { Typography } from '@material-ui/core';
 
 import { SystemDescription } from '../../entities/system-model';
@@ -12,6 +12,7 @@ import { getRole } from '../../entities/graph/element-utilities';
 interface Props {
     system: SystemDescription;
     victimSelected: (node: NodeSingular) => void;
+    cyInitialized: (cy: Core) => void;
 }
 
 const GraphView: React.FC<Props> = (props) => {
@@ -45,10 +46,10 @@ const GraphView: React.FC<Props> = (props) => {
             <Graph
                 elements={elements}
                 cursorStyle={isVictimPointed ? 'pointer' : 'default'}
-                graphClicked={() => { }}
                 mouseEnteredNode={checkVictimPointed}
                 mouseLeftNode={checkVictimPointed}
                 nodeClicked={selectVictim}
+                cy={props.cyInitialized}
             />
             <CornerCard>
                 <Typography>
