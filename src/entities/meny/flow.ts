@@ -12,7 +12,7 @@ export const flowSteps: {[key: string]: FlowStepId} = {
     OHI_2: { name: 'OHI-2', order: 5 },
     OHI_3: { name: 'OHI-3', order: 6 },
     OCH: { name: 'OCH', order: OUT_OF_FLOW },
-    OCH_1: { name: 'OCH-1', order: OUT_OF_FLOW },
+    OCH_1: { name: 'OCH-1', order: 7 },
     OCH_2: { name: 'OCH-2', order: OUT_OF_FLOW },
     OCH_3: { name: 'OCH-3', order: OUT_OF_FLOW },
     SARE: { name: 'SARE', order: OUT_OF_FLOW },
@@ -44,7 +44,7 @@ export const flow = [
     {
         id: flowSteps.OCH, label: 'Identify Causes', children: [
             {
-                id: flowSteps.OCH_1, label: 'Categorize', children: []
+                id: flowSteps.OCH_1, label: 'Categorize', helpText: 'Categorize all the hazard descriptions into four categories, in terms of <b>Hazard</b>, <b>Initiating Condition</b>, <b>Initiating Event</b>, and/or <b>Mishap</b> based on the set of heuristic questions.'
             },
             {
                 id: flowSteps.OCH_2, label: 'Expand', children: []

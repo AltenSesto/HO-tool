@@ -61,7 +61,7 @@ const graphStyle = [
     {
         selector: '.arrow-edge',
         style: {
-            'target-arrow-shape': 'triangle'
+            'target-arrow-shape': 'chevron'
         }
     },
     {

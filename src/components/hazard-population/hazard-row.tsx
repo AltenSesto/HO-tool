@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { TableRow, TableCell, TextField, IconButton, withStyles, createStyles } from '@material-ui/core';
 import { Delete, Edit, Save } from '@material-ui/icons';
 import Hazard from '../../entities/hazard-population/hazard';
+import HazardId from './hazard-id';
 
 interface Props {
     hazard: Hazard;
@@ -42,7 +43,9 @@ const HazardsRow: React.FC<Props> = (props) => {
 
     return ( 
         <TableRow key={props.index}>
-            <StyledTableCell>H{props.hazard.id}</StyledTableCell>
+            <StyledTableCell>
+                <HazardId hazard={props.hazard} />
+            </StyledTableCell>
             <StyledTableCell>
                 {props.hazard.mishapVictim.name}
                 <br />
