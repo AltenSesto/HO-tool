@@ -1,6 +1,6 @@
-import { SystemModel } from "../../entities/system-model"
-import { getFirstStepId } from "../../entities/meny/flow"
-import { SystemModelActionTypes, CREATE_HAZARD, UPDATE_HAZARD, DELETE_HAZARD, LOAD_MODEL, RESET_MODEL } from "./types"
+import { SystemModel } from '../../entities/system-model'
+import { getFirstStepId } from '../../entities/meny/flow'
+import { SystemModelActionTypes, CREATE_HAZARD, UPDATE_HAZARD, DELETE_HAZARD, LOAD_MODEL, RESET_MODEL, UPDATE_MODEL } from './types'
 
 const initialState: SystemModel = {
     projectName: 'Hazard Ontology',
@@ -33,6 +33,7 @@ export function systemModelReducer(state = initialState, action: SystemModelActi
                 ...{ hazards: state.hazards.filter(e => e.id !== action.payload.id) }
             }
         case LOAD_MODEL:
+        case UPDATE_MODEL:
             return action.payload;
         case RESET_MODEL:
             return initialState;

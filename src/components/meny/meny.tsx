@@ -1,20 +1,33 @@
-import React from "react";
-import { IconButton } from "@material-ui/core";
-import { FolderOpen, SaveAlt } from "@material-ui/icons";
+import React from 'react';
+import { IconButton } from '@material-ui/core';
+import { FolderOpen, SaveAlt } from '@material-ui/icons';
+import { connect, ConnectedProps } from 'react-redux';
 
-import { SystemModel } from "../../entities/system-model";
-import { isConnectionToCollapsed } from "../../entities/system-description/system-description-entity";
-import Connection from "../../entities/system-description/connection";
-import { FlowStepId } from "../../entities/meny/flow-step";
-import { flowSteps } from "../../entities/meny/flow";
+import { SystemModel } from '../../entities/system-model';
+import { isConnectionToCollapsed } from '../../entities/system-description/system-description-entity';
+import Connection from '../../entities/system-description/connection';
+import { FlowStepId } from '../../entities/meny/flow-step';
+import { flowSteps } from '../../entities/meny/flow';
+import { RootState } from '../../store';
+import { loadModel, resetModel } from '../../store/system-model/actions';
+import { saveChanges } from '../../store/unsaved-changes/actions';
 
-interface Props {
-    hasUnsavedChanges: boolean;
-    openFile: (model: SystemModel) => void;
-    saveFile: () => SystemModel;
+const mapState = (state: RootState) => ({
+    systemModel: state.systemModel,
+    hasUnsavedChanges: state.unsavedChanges
+})
+
+const mapDispatch = {
+    setSystemModel: (model: SystemModel) => loadModel(model),
+    resetSystemModel: () => resetModel(),
+    saveChanges: () => saveChanges()
 }
 
-export default class Meny extends React.Component<Props> {
+const connector = connect(mapState, mapDispatch);
+
+type Props = ConnectedProps<typeof connector>
+
+class Meny extends React.Component<Props> {
 
     private _openFileRef: HTMLFormElement | null;
 
@@ -82,7 +95,7 @@ export default class Meny extends React.Component<Props> {
 
     private readFile(files: FileList | null) {
         if (files === null || files.length !== 1 ||
-            (this.props.hasUnsavedChanges && !window.confirm('You have usaved changes that will be lost. Continue?'))
+            (this.props.hasUnsavedChanges && !window.confirm('You have unsaved changes that will be lost. Continue?'))
         ) {
             return;
         }
@@ -110,10 +123,12 @@ export default class Meny extends React.Component<Props> {
 
         element.click();
         document.body.removeChild(element);
+
+        this.props.saveChanges();
     }
 
     private prepareDataToDownload() {
-        const data = this.props.saveFile();
+        const data = this.props.systemModel;
         return {
             ...data,
             ...{
@@ -181,6 +196,9 @@ export default class Meny extends React.Component<Props> {
         const data = ev.target.result as string;
         const model = this.prepareReadData(JSON.parse(data));
         this._openFileRef && this._openFileRef.reset();
-        this.props.openFile(model);
+        this.props.resetSystemModel();
+        this.props.setSystemModel(model);
     }
 };
+
+export default connector(Meny)

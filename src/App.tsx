@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useBeforeunload } from 'react-beforeunload';
 import 'typeface-roboto';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -19,7 +19,7 @@ import SdfStep4 from './components/system-description/sdf-step-4';
 import HazardPopulation from './components/hazard-population/hazard-population';
 import ProjectName from './components/project-name';
 import { RootState } from './store';
-import { loadModel, resetModel } from './store/system-model/actions';
+import { updateModel } from './store/system-model/actions';
 
 const drawerWidth = 240;
 
@@ -49,23 +49,21 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const mapState = (state: RootState) => ({
-    systemModel: state.systemModel
+    systemModel: state.systemModel,
+    hasUnsavedChanges: state.unsavedChanges
 })
 
 const mapDispatch = {
-    setSystemModel: (model: SystemModel) => loadModel(model),
-    resetSystemModel: () => resetModel()
+    setSystemModel: (model: SystemModel) => updateModel(model)
 }
 
 const connector = connect(mapState, mapDispatch);
 
-type PropsFromRedux = ConnectedProps<typeof connector>
+type Props = ConnectedProps<typeof connector>
 
-const App: React.FC<PropsFromRedux> = (props) => {
+const App: React.FC<Props> = (props) => {
 
-    const { systemModel, setSystemModel, resetSystemModel } = props;
-
-    const [hasUnsavedChanges, setHasUnsaveChanges] = useState(false);
+    const { systemModel, setSystemModel, hasUnsavedChanges } = props;
 
     useBeforeunload((ev) => {
         if (hasUnsavedChanges) {
@@ -73,21 +71,7 @@ const App: React.FC<PropsFromRedux> = (props) => {
         }
     });
 
-    const openFile = (model: SystemModel) => {
-        resetSystemModel(); // reset state first to prevent collisions with opened model
-        setSystemModel(model);
-        setHasUnsaveChanges(false);
-    };
-
-    const saveFile = () => {
-        setHasUnsaveChanges(false);
-        return systemModel;
-    };
-
-    const updateSystemModel = <T extends {}>(model: T, needsSaving: boolean = true) => {
-        if (needsSaving) {
-            setHasUnsaveChanges(true);
-        }
+    const updateSystemModel = <T extends {}>(model: T) => {
         setSystemModel({ ...systemModel, ...model });
     };
 
@@ -140,11 +124,7 @@ const App: React.FC<PropsFromRedux> = (props) => {
                     <Toolbar variant="dense">
                         <Grid container justify="space-evenly">
                             <Grid item xs>
-                                <Meny
-                                    openFile={openFile}
-                                    saveFile={saveFile}
-                                    hasUnsavedChanges={hasUnsavedChanges}
-                                />
+                                <Meny />
                             </Grid>
                             <Grid item xs={6} className={classes.appTitle}>
                                 <ProjectName
