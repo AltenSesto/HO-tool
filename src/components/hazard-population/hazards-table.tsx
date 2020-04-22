@@ -1,8 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
-import { TableContainer, Table, TableRow, TableCell, TableBody, TableHead, IconButton, withStyles, createStyles, makeStyles } from '@material-ui/core';
-import { Delete, Edit } from '@material-ui/icons';
-import { PossibleHazard, ConnectionToObject } from '../../entities/hazard-population/possible-hazard';
+import { TableContainer, Table, TableRow, TableCell, TableBody, TableHead, withStyles, createStyles, makeStyles } from '@material-ui/core';
 import Hazard from '../../entities/hazard-population/hazard';
 import HazardsRow from './hazard-row';
 
