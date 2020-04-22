@@ -4,12 +4,13 @@ import 'typeface-roboto';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core/styles';
 import { Toolbar, AppBar, Grid, Drawer } from '@material-ui/core';
+import { connect, ConnectedProps } from 'react-redux'
 
 import ErrorBoundary from './components/error-boundary';
 import { SystemModel } from './entities/system-model';
 import Meny from './components/meny/meny';
 import ProgressSteps from './components/meny/progress-steps';
-import { getFirstStepId, flowSteps } from './entities/meny/flow';
+import { flowSteps } from './entities/meny/flow';
 import MishapVictimIdentification from './components/mishap-victim-identification/mishap-victim-identification';
 import SdfStep1 from './components/system-description/sdf-step-1';
 import SdfStep2 from './components/system-description/sdf-step-2';
@@ -17,6 +18,8 @@ import SdfStep3 from './components/system-description/sdf-step-3';
 import SdfStep4 from './components/system-description/sdf-step-4';
 import HazardPopulation from './components/hazard-population/hazard-population';
 import ProjectName from './components/project-name';
+import { RootState } from './store';
+import { loadModel, resetModel } from './store/system-model/actions';
 
 const drawerWidth = 240;
 
@@ -45,22 +48,23 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const defaultModel = {
-    projectName: 'Hazard Ontology',
-    currentStep: getFirstStepId(),
-    lastCompletedStep: getFirstStepId(),
-    kinds: [],
-    roles: [],
-    relators: [],
-    systemObjectConnections: [],
-    subsystems: [],
-    hazards: [],
-    nextHazardId: 1
-};
+const mapState = (state: RootState) => ({
+    systemModel: state.systemModel
+})
 
-const App: React.FC = () => {
+const mapDispatch = {
+    setSystemModel: (model: SystemModel) => loadModel(model),
+    resetSystemModel: () => resetModel()
+}
 
-    const [systemModel, setSystemModel] = useState<SystemModel>(defaultModel);
+const connector = connect(mapState, mapDispatch);
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+const App: React.FC<PropsFromRedux> = (props) => {
+
+    const { systemModel, setSystemModel, resetSystemModel } = props;
+
     const [hasUnsavedChanges, setHasUnsaveChanges] = useState(false);
 
     useBeforeunload((ev) => {
@@ -70,7 +74,7 @@ const App: React.FC = () => {
     });
 
     const openFile = (model: SystemModel) => {
-        setSystemModel(defaultModel); // reset state first to prevent collisions with opened model
+        resetSystemModel(); // reset state first to prevent collisions with opened model
         setSystemModel(model);
         setHasUnsaveChanges(false);
     };
@@ -179,4 +183,4 @@ const App: React.FC = () => {
     );
 }
 
-export default App;
+export default connector(App);

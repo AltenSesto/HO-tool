@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 import { systemModelReducer } from './system-model/reducers'
 
-const rootReducer = combineReducers({
+export const rootReducer = combineReducers({
     systemModel: systemModelReducer
 })
 
