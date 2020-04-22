@@ -10,6 +10,7 @@
     "@types/node": "12.11.1",
     "@types/react": "16.9.9",
     "@types/react-dom": "16.9.2",
+    "@types/react-redux": "^7.1.7",
     "cytoscape": "^3.14.0",
     "cytoscape-expand-collapse": "^3.2.0",
     "cytoscape-popper": "^1.0.6",
