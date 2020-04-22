@@ -79,9 +79,9 @@ const HazardsTable: React.FC<Props> = (props) => {
                         props.hazards
                             .sort((a, b) => a.id - b.id)
                             .map((hazard, index) => (
-                                <HazardsRow 
+                                <HazardsRow
+                                key={index}
                                 hazard={hazard}
-                                index={index}
                                 hazardEdited={props.hazardEdited}
                                 hazardDeleted={props.hazardDeleted}
                                 />

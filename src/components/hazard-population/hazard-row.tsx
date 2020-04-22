@@ -7,7 +7,6 @@ import HazardId from './hazard-id';
 
 interface Props {
     hazard: Hazard;
-    index: number;
     hazardEdited: (hazard: Hazard) => void;
     hazardDeleted: (id: number) => void;
 }
@@ -26,23 +25,41 @@ const HazardsRow: React.FC<Props> = (props) => {
     const [harmTruthmaker, setHarmTruthmaker] = useState(props.hazard.harmTruthmaker);
     const [description, setDescription] = useState(props.hazard.description);
 
-    const editHazard = () => {
-        if(harmTruthmaker !== props.hazard.harmTruthmaker ||
-            description !== props.hazard.description) {
-                const hazard = {
-                    ...props.hazard,
-                    harmTruthmaker: harmTruthmaker,
-                    description: description
-                };
-        
-                props.hazardEdited(hazard);
+    const isEmpty = (string: String) => {
+        if(!string || string.length === 0) {
+            return true;
         }
-        
+
+        return false;
+    };
+
+    const editHazard = () => {
+
+        if(!isEmpty(harmTruthmaker) || !isEmpty(description)) {
+            if(harmTruthmaker !== props.hazard.harmTruthmaker ||
+                description !== props.hazard.description) {
+                    const hazard = {
+                        ...props.hazard,
+                        harmTruthmaker: harmTruthmaker,
+                        description: description
+                    };
+            
+                    props.hazardEdited(hazard);
+            }
+            
+
+            setIsEditable(false);
+        }
+    };
+
+    const deleteHazard = () => {
         setIsEditable(false);
+
+        props.hazardDeleted(props.hazard.id);
     };
 
     return ( 
-        <TableRow key={props.index}>
+        <TableRow>
             <StyledTableCell>
                 <HazardId hazard={props.hazard} />
             </StyledTableCell>
@@ -66,6 +83,8 @@ const HazardsRow: React.FC<Props> = (props) => {
                 margin='none'
                 type='text'
                 onChange={(ev) => setHarmTruthmaker(ev.target.value)}
+                error={isEmpty(harmTruthmaker)}
+                helperText={isEmpty(harmTruthmaker) ? 'Required field' : ' '}
                 autoComplete='off'
                 />
                 : props.hazard.harmTruthmaker}
@@ -79,6 +98,8 @@ const HazardsRow: React.FC<Props> = (props) => {
                 fullWidth
                 type='text'
                 onChange={(ev) => setDescription(ev.target.value)}
+                error={isEmpty(description)}
+                helperText={isEmpty(description) ? 'Required field' : ' '}
                 autoComplete='off'
                 />
                 : props.hazard.description}
@@ -90,7 +111,7 @@ const HazardsRow: React.FC<Props> = (props) => {
                 }
                 <IconButton
                     size='small'
-                    onClick={() => props.hazardDeleted(props.index)}
+                    onClick={() => deleteHazard()}
                 >
                     <Delete />
                 </IconButton>
