@@ -1,6 +1,7 @@
-import { SystemModelActionTypes, CREATE_HAZARD, UPDATE_HAZARD, DELETE_HAZARD, LOAD_MODEL, RESET_MODEL, UPDATE_MODEL } from "./types";
+import { SystemModelActionTypes, CREATE_HAZARD, UPDATE_HAZARD, DELETE_HAZARD, LOAD_MODEL, RESET_MODEL, UPDATE_MODEL, UPDATE_FLOW_STEP } from "./types";
 import Hazard from "../../entities/hazard-population/hazard";
 import { SystemModel } from "../../entities/system-model";
+import { FlowStepId } from "../../entities/meny/flow-step";
 
 function createBaseCrudAction<T extends string, P>(type: T, payload: P) {
     return {
@@ -36,5 +37,12 @@ export function loadModel(model: SystemModel): SystemModelActionTypes {
 export function resetModel(): SystemModelActionTypes {
     return {
         type: RESET_MODEL
+    };
+}
+
+export function updateFlowStep(step: FlowStepId): SystemModelActionTypes {
+    return {
+        type: UPDATE_FLOW_STEP,
+        payload: step
     };
 }

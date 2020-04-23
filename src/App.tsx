@@ -148,10 +148,7 @@ const App: React.FC<Props> = (props) => {
                 >
                     <div className={classes.toolbar}></div>
 
-                    <ProgressSteps
-                        progress={systemModel}
-                        progressUpdated={updateSystemModel}
-                    />
+                    <ProgressSteps />
                 </Drawer>
 
                 <main className={classes.content}>
