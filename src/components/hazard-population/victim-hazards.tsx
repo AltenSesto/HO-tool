@@ -4,18 +4,12 @@ import { NodeSingular } from 'cytoscape';
 
 import { isMishapVictim } from '../../entities/system-description/role';
 import { getRole } from '../../entities/graph/element-utilities';
-import Hazard from '../../entities/hazard-population/hazard';
 import HazardsTable from './hazards-table';
 import HazardCreate from './hazard-create';
 import CornerFab from '../shared/corner-fab';
 
 interface Props {
     node: NodeSingular;
-    hazards: Hazard[];
-    nextHazardId: number;
-    hazardCreated: (hazard: Hazard) => void;
-    hazardEdited: (hazard: Hazard) => void;
-    hazardDeleted: (id: number) => void;
     close: () => void;
 }
 
@@ -50,20 +44,12 @@ const VictimHazards: React.FC<Props> = (props) => {
             <Typography variant="h6" color="textSecondary" className={classes.header}>
                 Hazards
             </Typography>
-            <HazardsTable
-                hazards={props.hazards}
-                hazardEdited={props.hazardEdited}
-                hazardDeleted={props.hazardDeleted}
-            />
+            <HazardsTable selectedMishapVictim={mishapVictim} />
             <div className={classes.tableGutter}></div>
             <Typography variant='h6' color='textSecondary' className={classes.header}>
                 Add New Hazard
             </Typography>
-            <HazardCreate
-                hazardCreated={props.hazardCreated}
-                nextHazardId={props.nextHazardId}
-                node={props.node}
-            />
+            <HazardCreate node={props.node} />
             <div className={classes.fabSpace}></div>
             <CornerFab onClick={props.close} >
                 Back

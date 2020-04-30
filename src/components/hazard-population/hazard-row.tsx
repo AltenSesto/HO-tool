@@ -8,7 +8,7 @@ interface Props {
     hazard: Hazard;
     index: number;
     hazardEdited: (hazard: Hazard) => void;
-    hazardDeleted: (id: number) => void;
+    hazardDeleted: (hazard: Hazard) => void;
 }
 
 const StyledTableCell = withStyles(theme =>
@@ -87,7 +87,7 @@ const HazardsRow: React.FC<Props> = (props) => {
                 }
                 <IconButton
                     size='small'
-                    onClick={() => props.hazardDeleted(props.index)}
+                    onClick={() => props.hazardDeleted(props.hazard)}
                 >
                     <Delete />
                 </IconButton>

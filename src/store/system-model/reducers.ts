@@ -20,7 +20,10 @@ export function systemModelReducer(state = initialState, action: SystemModelActi
         case CREATE_HAZARD:
             return {
                 ...state,
-                ...{ hazards: state.hazards.concat(action.payload) }
+                ...{
+                    hazards: state.hazards.concat(action.payload),
+                    nextHazardId: state.nextHazardId + 1
+                }
             }
         case UPDATE_HAZARD:
             return {

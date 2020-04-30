@@ -1,16 +1,24 @@
 import React, { useState } from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import { EventObject, NodeSingular, Core } from 'cytoscape';
 import { Typography } from '@material-ui/core';
 
-import { SystemDescription } from '../../entities/system-model';
 import GraphElementsFactoryMishapVictims from '../../entities/graph/graph-elements-factory-mishap-victims';
 import Graph from '../graph/graph';
 import { isMishapVictim } from '../../entities/system-description/role';
 import CornerCard from '../shared/corner-card';
 import { getRole } from '../../entities/graph/element-utilities';
+import { RootState } from '../../store';
 
-interface Props {
-    system: SystemDescription;
+const mapState = (state: RootState) => ({
+    system: state.systemModel
+})
+
+const connector = connect(mapState);
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {
     victimSelected: (node: NodeSingular) => void;
     cyInitialized: (cy: Core) => void;
 }
@@ -63,4 +71,4 @@ const GraphView: React.FC<Props> = (props) => {
     );
 };
 
-export default GraphView;
+export default connector(GraphView);
