@@ -4,7 +4,7 @@ import { makeStyles, Typography, FormControl, InputLabel, Select, MenuItem } fro
 
 import HazardsTable from './hazards-table';
 import { NodeSingular } from 'cytoscape';
-import { MishapVictim, isMishapVictim } from '../../entities/system-description/role';
+import { isMishapVictim } from '../../entities/system-description/role';
 import HazardCreate from './hazard-create';
 import { RootState } from '../../store';
 
