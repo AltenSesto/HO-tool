@@ -1,13 +1,23 @@
 import React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import { Typography, ListItem, ListItemText, ListItemSecondaryAction, IconButton, TextField, List } from '@material-ui/core';
 
 import { Delete, Add } from '@material-ui/icons';
 import Role from '../../entities/system-description/role';
 import CornerCard from '../shared/corner-card';
+import { addPossibleHarm, removePossibleHarm } from '../../store/system-model/actions';
 
-interface Props {
+const mapDispatch = {
+    harmAdded: addPossibleHarm,
+    harmDeleted: removePossibleHarm
+};
+
+const connector = connect(null, mapDispatch);
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {
     selectedRole: Role | undefined;
-    possibleHarmsUpdated: (role: Role) => void;
 };
 
 const VictimHarms: React.FC<Props> = (props: Props) => {
@@ -17,14 +27,11 @@ const VictimHarms: React.FC<Props> = (props: Props) => {
         const harm = (form.elements.namedItem("harm") as HTMLInputElement).value;
         form.reset();
         ev.preventDefault();
-
-        const updatedHarms = role.possibleHarms.concat(harm);
-        props.possibleHarmsUpdated({ ...role, ...{ possibleHarms: updatedHarms } });
+        props.harmAdded(role.id, harm);
     };
 
     const deletePossibleHarm = (role: Role, harm: string) => {
-        const updatedHarms = role.possibleHarms.filter(e => e !== harm);
-        props.possibleHarmsUpdated({ ...role, ...{ possibleHarms: updatedHarms } });
+        props.harmDeleted(role.id, harm);
     };
 
     const emptyContent = (
@@ -102,4 +109,4 @@ const VictimHarms: React.FC<Props> = (props: Props) => {
     );
 };
 
-export default VictimHarms;
+export default connector(VictimHarms);

@@ -1,4 +1,4 @@
-import { SystemModelActionTypes, CREATE_HAZARD, UPDATE_HAZARD, DELETE_HAZARD, LOAD_MODEL, RESET_MODEL, UPDATE_MODEL, UPDATE_FLOW_STEP } from "./types";
+import { SystemModelActionTypes, CREATE_HAZARD, UPDATE_HAZARD, DELETE_HAZARD, LOAD_MODEL, RESET_MODEL, UPDATE_MODEL, UPDATE_FLOW_STEP, ADD_POSSIBLE_HARM, REMOVE_POSSIBLE_HARM } from "./types";
 import Hazard from "../../entities/hazard-population/hazard";
 import { SystemModel } from "../../entities/system-model";
 import { FlowStepId } from "../../entities/meny/flow-step";
@@ -45,4 +45,12 @@ export function updateFlowStep(step: FlowStepId): SystemModelActionTypes {
         type: UPDATE_FLOW_STEP,
         payload: step
     };
+}
+
+export function addPossibleHarm(mishapVictimId: string, harm: string): SystemModelActionTypes {
+    return createBaseCrudAction(ADD_POSSIBLE_HARM, { mishapVictimId, harm });
+}
+
+export function removePossibleHarm(mishapVictimId: string, harm: string): SystemModelActionTypes {
+    return createBaseCrudAction(REMOVE_POSSIBLE_HARM, { mishapVictimId, harm });
 }

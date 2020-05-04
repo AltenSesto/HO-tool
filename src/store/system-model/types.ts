@@ -9,6 +9,8 @@ export const UPDATE_MODEL = 'UPDATE_MODEL'
 export const LOAD_MODEL = 'LOAD_MODEL'
 export const RESET_MODEL = 'RESET_MODEL'
 export const UPDATE_FLOW_STEP = 'UPDATE_FLOW_STEP'
+export const ADD_POSSIBLE_HARM = 'ADD_POSSIBLE_HARM'
+export const REMOVE_POSSIBLE_HARM = 'REMOVE_POSSIBLE_HARM'
 
 interface CrudActionBase<T, P> {
     type: T;
@@ -16,7 +18,7 @@ interface CrudActionBase<T, P> {
     unsavedChanges: boolean;
 }
 
-interface CreateHazardAction extends CrudActionBase<typeof CREATE_HAZARD, Hazard> {}
+interface CreateHazardAction extends CrudActionBase<typeof CREATE_HAZARD, Hazard> { }
 
 interface DeleteHazardAction extends CrudActionBase<typeof DELETE_HAZARD, Hazard> { }
 
@@ -38,5 +40,16 @@ interface UpdateFlowStepAction {
     payload: FlowStepId
 }
 
+interface AddPossibleHarmAction extends CrudActionBase<
+        typeof ADD_POSSIBLE_HARM,
+        { mishapVictimId: string, harm: string }
+    > { }
+
+interface RemovePossibleHarmAction extends CrudActionBase<
+    typeof REMOVE_POSSIBLE_HARM,
+    { mishapVictimId: string, harm: string }
+    > { }
+
 export type SystemModelActionTypes = CreateHazardAction | DeleteHazardAction | UpdateHazardAction |
-    LoadModelAction | ResetModelAction | UpdateModelAction | UpdateFlowStepAction
+    LoadModelAction | ResetModelAction | UpdateModelAction | UpdateFlowStepAction |
+    AddPossibleHarmAction | RemovePossibleHarmAction

@@ -1,12 +1,22 @@
 import React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import { TableRow, TableCell, Chip, TextField, IconButton, makeStyles } from '@material-ui/core';
 
 import { Add } from '@material-ui/icons';
 import Role from '../../entities/system-description/role';
+import { addPossibleHarm, removePossibleHarm } from '../../store/system-model/actions';
 
-interface Props {
+const mapDispatch = {
+    harmAdded: addPossibleHarm,
+    harmDeleted: removePossibleHarm
+};
+
+const connector = connect(null, mapDispatch);
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {
     role: Role;
-    harmsUpdated: (role: Role) => void;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -23,14 +33,11 @@ const HarmsTableRow: React.FC<Props> = (props: Props) => {
         const harm = (form.elements.namedItem("harm") as HTMLInputElement).value;
         form.reset();
         ev.preventDefault();
-
-        const updatedHarms = props.role.possibleHarms.concat(harm);
-        props.harmsUpdated({ ...props.role, ...{ possibleHarms: updatedHarms } });
+        props.harmAdded(props.role.id, harm);
     };
 
     const deleteHarm = (harm: string) => {
-        const updatedHarms = props.role.possibleHarms.filter(e => e !== harm);
-        props.harmsUpdated({ ...props.role, ...{ possibleHarms: updatedHarms } });
+        props.harmDeleted(props.role.id, harm);
     };
 
     return (
@@ -70,4 +77,4 @@ const HarmsTableRow: React.FC<Props> = (props: Props) => {
     );
 };
 
-export default HarmsTableRow;
+export default connector(HarmsTableRow);

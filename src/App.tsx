@@ -100,10 +100,7 @@ const App: React.FC<Props> = (props) => {
                     systemUpdated={updateSystemModel}
                 />
             case flowSteps.OHI_2:
-                return <MishapVictimIdentification
-                    system={systemModel}
-                    possibleHarmsUpdated={updateSystemModel}
-                />;
+                return <MishapVictimIdentification />;
             case flowSteps.OHI_3:
                 return <HazardPopulation />;
         }

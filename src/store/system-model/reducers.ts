@@ -1,6 +1,6 @@
 import { SystemModel } from '../../entities/system-model'
 import { getFirstStepId } from '../../entities/meny/flow'
-import { SystemModelActionTypes, CREATE_HAZARD, UPDATE_HAZARD, DELETE_HAZARD, LOAD_MODEL, RESET_MODEL, UPDATE_MODEL, UPDATE_FLOW_STEP } from './types'
+import { SystemModelActionTypes, CREATE_HAZARD, UPDATE_HAZARD, DELETE_HAZARD, LOAD_MODEL, RESET_MODEL, UPDATE_MODEL, UPDATE_FLOW_STEP, ADD_POSSIBLE_HARM, REMOVE_POSSIBLE_HARM } from './types'
 
 const initialState: SystemModel = {
     projectName: 'Hazard Ontology',
@@ -48,7 +48,31 @@ export function systemModelReducer(state = initialState, action: SystemModelActi
             if (step.order > state.lastCompletedStep.order) {
                 return { ...state, ...{ currentStep: step, lastCompletedStep: step } };
             }
-            return { ...state, ...{ currentStep: step }};
+            return { ...state, ...{ currentStep: step } };
+        case ADD_POSSIBLE_HARM:
+            return {
+                ...state,
+                ...{
+                    roles: state.roles.map(e => e.id === action.payload.mishapVictimId ?
+                        {
+                            ...e, ...{ possibleHarms: e.possibleHarms.concat(action.payload.harm) }
+                        }
+                        :
+                        e)
+                }
+            }
+        case REMOVE_POSSIBLE_HARM:
+            return {
+                ...state,
+                ...{
+                    roles: state.roles.map(e => e.id === action.payload.mishapVictimId ?
+                        {
+                            ...e, ...{ possibleHarms: e.possibleHarms.filter(h => h !== action.payload.harm) }
+                        }
+                        :
+                        e)
+                }
+            }
         default:
             return state
     }
