@@ -1,6 +1,8 @@
 import { SystemModel } from '../../entities/system-model'
 import { getFirstStepId } from '../../entities/meny/flow'
-import { SystemModelActionTypes, CREATE_HAZARD, UPDATE_HAZARD, DELETE_HAZARD, LOAD_MODEL, RESET_MODEL, UPDATE_MODEL, UPDATE_FLOW_STEP, ADD_POSSIBLE_HARM, REMOVE_POSSIBLE_HARM } from './types'
+import { SystemModelActionTypes, LOAD_MODEL, RESET_MODEL, UPDATE_MODEL, UPDATE_FLOW_STEP, ADD_POSSIBLE_HARM, REMOVE_POSSIBLE_HARM } from './types'
+import { hazardsReducer } from './reducers/hazards-reducer'
+import { nextHazardIdReducer } from './reducers/next-hazard-id-reducer'
 
 const initialState: SystemModel = {
     projectName: 'Hazard Ontology',
@@ -17,24 +19,6 @@ const initialState: SystemModel = {
 
 export function systemModelReducer(state = initialState, action: SystemModelActionTypes): SystemModel {
     switch (action.type) {
-        case CREATE_HAZARD:
-            return {
-                ...state,
-                ...{
-                    hazards: state.hazards.concat(action.payload),
-                    nextHazardId: state.nextHazardId + 1
-                }
-            }
-        case UPDATE_HAZARD:
-            return {
-                ...state,
-                ...{ hazards: state.hazards.map(e => e.id === action.payload.id ? action.payload : e) }
-            }
-        case DELETE_HAZARD:
-            return {
-                ...state,
-                ...{ hazards: state.hazards.filter(e => e.id !== action.payload.id) }
-            }
         case LOAD_MODEL:
         case UPDATE_MODEL:
             return action.payload;
@@ -62,13 +46,7 @@ export function systemModelReducer(state = initialState, action: SystemModelActi
                 }
             }
         case REMOVE_POSSIBLE_HARM:
-            const { mishapVictim, harm, affectedHazards } = action.payload;
-
-            let hazards = state.hazards;
-            if (affectedHazards.length > 0) {
-                hazards = hazards.filter(h => !affectedHazards.some(a => h.id === a.id));
-            }
-
+            const { mishapVictim, harm } = action.payload;
             return {
                 ...state,
                 ...{
@@ -77,11 +55,16 @@ export function systemModelReducer(state = initialState, action: SystemModelActi
                             ...e, ...{ possibleHarms: e.possibleHarms.filter(h => h !== harm) }
                         }
                         :
-                        e),
-                    hazards
+                        e)
                 }
             }
         default:
-            return state
+            return {
+                ...state,
+                ...{
+                    hazards: hazardsReducer(state.hazards, action),
+                    nextHazardId: nextHazardIdReducer(state.nextHazardId, action)
+                }
+            }
     }
 }
