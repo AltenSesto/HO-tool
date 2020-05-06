@@ -1,18 +1,27 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { Action, Dispatch } from 'redux';
 import { Typography, ListItem, ListItemText, ListItemSecondaryAction, IconButton, TextField, List } from '@material-ui/core';
 
 import { Delete, Add } from '@material-ui/icons';
-import Role from '../../entities/system-description/role';
+import Role, { MishapVictim } from '../../entities/system-description/role';
 import CornerCard from '../shared/corner-card';
 import { addPossibleHarm, removePossibleHarm } from '../../store/system-model/actions';
+import { RootState } from '../../store';
+import Hazard from '../../entities/hazard-population/hazard';
 
-const mapDispatch = {
-    harmAdded: addPossibleHarm,
-    harmDeleted: removePossibleHarm
-};
+const mapState = (state: RootState) => ({
+    hazards: state.systemModel.hazards
+});
 
-const connector = connect(null, mapDispatch);
+const mapDispatch = (dispatch: Dispatch<Action>) => ({
+    harmAdded: (mishapVictim: MishapVictim, harm: string) =>
+        dispatch(addPossibleHarm(mishapVictim, harm)),
+    harmDeleted: (mishapVictim: MishapVictim, harm: string, hazards: Hazard[]) =>
+        removePossibleHarm(mishapVictim, harm, hazards, dispatch)
+});
+
+const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>
 
@@ -27,11 +36,11 @@ const VictimHarms: React.FC<Props> = (props: Props) => {
         const harm = (form.elements.namedItem("harm") as HTMLInputElement).value;
         form.reset();
         ev.preventDefault();
-        props.harmAdded(role.id, harm);
+        props.harmAdded(role, harm);
     };
 
     const deletePossibleHarm = (role: Role, harm: string) => {
-        props.harmDeleted(role.id, harm);
+        props.harmDeleted(role, harm, props.hazards);
     };
 
     const emptyContent = (

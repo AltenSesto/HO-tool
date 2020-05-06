@@ -1,6 +1,7 @@
 import Hazard from '../../entities/hazard-population/hazard'
 import { SystemModel } from '../../entities/system-model'
 import { FlowStepId } from '../../entities/meny/flow-step'
+import { MishapVictim } from '../../entities/system-description/role'
 
 export const CREATE_HAZARD = 'CREATE_HAZARD'
 export const DELETE_HAZARD = 'DELETE_HAZARD'
@@ -42,12 +43,12 @@ interface UpdateFlowStepAction {
 
 interface AddPossibleHarmAction extends CrudActionBase<
         typeof ADD_POSSIBLE_HARM,
-        { mishapVictimId: string, harm: string }
+        { mishapVictim: MishapVictim, harm: string }
     > { }
 
 interface RemovePossibleHarmAction extends CrudActionBase<
     typeof REMOVE_POSSIBLE_HARM,
-    { mishapVictimId: string, harm: string }
+    { mishapVictim: MishapVictim, harm: string, affectedHazards: Hazard[] }
     > { }
 
 export type SystemModelActionTypes = CreateHazardAction | DeleteHazardAction | UpdateHazardAction |

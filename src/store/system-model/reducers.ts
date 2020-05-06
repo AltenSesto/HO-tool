@@ -53,7 +53,7 @@ export function systemModelReducer(state = initialState, action: SystemModelActi
             return {
                 ...state,
                 ...{
-                    roles: state.roles.map(e => e.id === action.payload.mishapVictimId ?
+                    roles: state.roles.map(e => e.id === action.payload.mishapVictim.id ?
                         {
                             ...e, ...{ possibleHarms: e.possibleHarms.concat(action.payload.harm) }
                         }
@@ -62,15 +62,23 @@ export function systemModelReducer(state = initialState, action: SystemModelActi
                 }
             }
         case REMOVE_POSSIBLE_HARM:
+            const { mishapVictim, harm, affectedHazards } = action.payload;
+
+            let hazards = state.hazards;
+            if (affectedHazards.length > 0) {
+                hazards = hazards.filter(h => !affectedHazards.some(a => h.id === a.id));
+            }
+
             return {
                 ...state,
                 ...{
-                    roles: state.roles.map(e => e.id === action.payload.mishapVictimId ?
+                    roles: state.roles.map(e => e.id === mishapVictim.id ?
                         {
-                            ...e, ...{ possibleHarms: e.possibleHarms.filter(h => h !== action.payload.harm) }
+                            ...e, ...{ possibleHarms: e.possibleHarms.filter(h => h !== harm) }
                         }
                         :
-                        e)
+                        e),
+                    hazards
                 }
             }
         default:

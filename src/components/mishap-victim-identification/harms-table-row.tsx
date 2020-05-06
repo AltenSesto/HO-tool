@@ -1,17 +1,26 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { Action, Dispatch } from 'redux';
 import { TableRow, TableCell, Chip, TextField, IconButton, makeStyles } from '@material-ui/core';
 
 import { Add } from '@material-ui/icons';
-import Role from '../../entities/system-description/role';
+import Role, { MishapVictim } from '../../entities/system-description/role';
 import { addPossibleHarm, removePossibleHarm } from '../../store/system-model/actions';
+import { RootState } from '../../store';
+import Hazard from '../../entities/hazard-population/hazard';
 
-const mapDispatch = {
-    harmAdded: addPossibleHarm,
-    harmDeleted: removePossibleHarm
-};
+const mapState = (state: RootState) => ({
+    hazards: state.systemModel.hazards
+});
 
-const connector = connect(null, mapDispatch);
+const mapDispatch = (dispatch: Dispatch<Action>) => ({
+    harmAdded: (mishapVictim: MishapVictim, harm: string) =>
+        dispatch(addPossibleHarm(mishapVictim, harm)),
+    harmDeleted: (mishapVictim: MishapVictim, harm: string, hazards: Hazard[]) =>
+        removePossibleHarm(mishapVictim, harm, hazards, dispatch)
+});
+
+const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>
 
@@ -33,11 +42,11 @@ const HarmsTableRow: React.FC<Props> = (props: Props) => {
         const harm = (form.elements.namedItem("harm") as HTMLInputElement).value;
         form.reset();
         ev.preventDefault();
-        props.harmAdded(props.role.id, harm);
+        props.harmAdded(props.role, harm);
     };
 
     const deleteHarm = (harm: string) => {
-        props.harmDeleted(props.role.id, harm);
+        props.harmDeleted(props.role, harm, props.hazards);
     };
 
     return (

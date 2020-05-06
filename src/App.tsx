@@ -20,6 +20,7 @@ import HazardPopulation from './components/hazard-population/hazard-population';
 import ProjectName from './components/project-name';
 import { RootState } from './store';
 import { updateModel } from './store/system-model/actions';
+import ConfirmationDialog from './components/confirmation-dialog';
 
 const drawerWidth = 240;
 
@@ -109,6 +110,7 @@ const App: React.FC<Props> = (props) => {
     return (
         <ErrorBoundary>
             <CssBaseline />
+            <ConfirmationDialog />
 
             <div className={classes.root}>
                 <AppBar
