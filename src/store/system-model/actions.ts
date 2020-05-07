@@ -1,10 +1,13 @@
 import { Action, Dispatch } from 'redux';
-import { SystemModelActionTypes, CREATE_HAZARD, UPDATE_HAZARD, DELETE_HAZARDS, LOAD_MODEL, RESET_MODEL, UPDATE_MODEL, UPDATE_FLOW_STEP, ADD_POSSIBLE_HARM, REMOVE_POSSIBLE_HARM } from "./types";
+import { SystemModelActionTypes, CREATE_HAZARD, UPDATE_HAZARD, DELETE_HAZARDS, LOAD_MODEL, RESET_MODEL, UPDATE_MODEL, UPDATE_FLOW_STEP, ADD_POSSIBLE_HARM, REMOVE_POSSIBLE_HARM, CREATE_SUBSYSTEM, UPDATE_SUBSYSTEM, DELETE_SUBSYSTEM, CREATE_CONNECTION, DELETE_CONNECTION, CREATE_SYSTEM_OBJECT, UPDATE_SYSTEM_OBJECT, DELETE_SYSTEM_OBJECT, RENAME_SYSTEM_OBJECT } from "./types";
 import Hazard from "../../entities/hazard-population/hazard";
 import { SystemModel } from "../../entities/system-model";
 import { FlowStepId } from "../../entities/meny/flow-step";
 import { MishapVictim } from "../../entities/system-description/role";
 import { showConfirmationDialog } from "../modal-dialog/actions";
+import Subsystem from '../../entities/system-description/subsystem';
+import Connection from '../../entities/system-description/connection';
+import SystemObject from '../../entities/system-description/system-object';
 
 function createBaseCrudAction<T extends string, P>(type: T, payload: P) {
     return {
@@ -24,6 +27,42 @@ export function updateHazard(hazard: Hazard): SystemModelActionTypes {
 
 export function deleteHazards(hazards: Hazard[]): SystemModelActionTypes {
     return createBaseCrudAction(DELETE_HAZARDS, hazards);
+}
+
+export function createSubsystem(subsystem: Subsystem): SystemModelActionTypes {
+    return createBaseCrudAction(CREATE_SUBSYSTEM, subsystem);
+}
+
+export function updateSubsystem(subsystem: Subsystem): SystemModelActionTypes {
+    return createBaseCrudAction(UPDATE_SUBSYSTEM, subsystem);
+}
+
+export function deleteSubsystems(subsystem: Subsystem): SystemModelActionTypes {
+    return createBaseCrudAction(DELETE_SUBSYSTEM, subsystem);
+}
+
+export function createConnection(connection: Connection): SystemModelActionTypes {
+    return createBaseCrudAction(CREATE_CONNECTION, connection);
+}
+
+export function deleteConnection(connection: Connection): SystemModelActionTypes {
+    return createBaseCrudAction(DELETE_CONNECTION, connection);
+}
+
+export function createSystemObject(systemObject: SystemObject): SystemModelActionTypes {
+    return createBaseCrudAction(CREATE_SYSTEM_OBJECT, systemObject);
+}
+
+export function updateSystemObject(systemObject: SystemObject): SystemModelActionTypes {
+    return createBaseCrudAction(UPDATE_SYSTEM_OBJECT, systemObject);
+}
+
+export function deleteSystemObject(systemObject: SystemObject): SystemModelActionTypes {
+    return createBaseCrudAction(DELETE_SYSTEM_OBJECT, systemObject);
+}
+
+export function renameSystemObject(systemObject: SystemObject): SystemModelActionTypes {
+    return createBaseCrudAction(RENAME_SYSTEM_OBJECT, systemObject);
 }
 
 export function updateModel(model: SystemModel): SystemModelActionTypes {

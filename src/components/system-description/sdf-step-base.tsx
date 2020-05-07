@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import Popper from 'popper.js';
 import { NodeSingular, EventObject, Singular, EdgeSingular } from 'cytoscape';
 
@@ -8,16 +9,27 @@ import { SystemDescription } from '../../entities/system-model';
 import GraphElementsFactory from '../../entities/graph/graph-elements-factory';
 import Graph from '../graph/graph';
 import NodeEditor from './node-editor';
-import { ObjectTypes } from '../../entities/system-description/object-types';
-import { isSystemObject, isSubsystem, SystemDescriptionEntity, isConnection } from '../../entities/system-description/system-description-entity';
+import { isSystemObject, isSubsystem } from '../../entities/system-description/system-description-entity';
 import { isSystemObjectData, isSubsystemData, GraphElementPosition } from '../../entities/graph/graph-element';
 import NodePopper from '../graph/node-popper';
 import Connection from '../../entities/system-description/connection';
 import DeleteElementButton from './delete-element-button';
-import { isRole } from '../../entities/system-description/role';
-import Hazard from '../../entities/hazard-population/hazard';
+import { createSubsystem, updateSubsystem, createConnection, renameSystemObject, createSystemObject, updateSystemObject } from '../../store/system-model/actions';
 
-interface Props {
+const mapDispatch = {
+    subsystemCreated: createSubsystem,
+    subsystemUpdated: updateSubsystem,
+    connectionCreated: createConnection,
+    systemObjectRenamed: renameSystemObject,
+    systemObjectCreated: createSystemObject,
+    systemObjectUpdated: updateSystemObject
+};
+
+const connector = connect(null, mapDispatch);
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {
     system: SystemDescription;
     systemUpdated: (system: SystemDescription) => void;
     objectEditing?: SystemObject | Subsystem | null;
@@ -52,7 +64,7 @@ const DEFAULT_POSITION = {
     x: 100, y: 50
 };
 
-export default class SdfStepBase extends React.Component<Props, State> {
+class SdfStepBase extends React.Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
@@ -60,15 +72,12 @@ export default class SdfStepBase extends React.Component<Props, State> {
         this.showNodeActions = this.showNodeActions.bind(this);
         this.hideNodeActions = this.hideNodeActions.bind(this);
         this.tryCreateConnection = this.tryCreateConnection.bind(this);
-        this.updateEntity = this.updateEntity.bind(this);
         this.completeEditEntity = this.completeEditEntity.bind(this);
-        this.modifySystemDescription = this.modifySystemDescription.bind(this);
         this.updateNodePosition = this.updateNodePosition.bind(this);
         this.validateConnection = this.validateConnection.bind(this);
         this.preventOverlap = this.preventOverlap.bind(this);
         this.cancelEditEntity = this.cancelEditEntity.bind(this);
         this.renderConnectionActions = this.renderConnectionActions.bind(this);
-        this.updateHazards = this.updateHazards.bind(this);
 
         this.state = {
             isConnectionValid: false
@@ -193,7 +202,7 @@ export default class SdfStepBase extends React.Component<Props, State> {
         if (target.isNode()) {
             const connection = this.validateConnection(target);
             if (connection) {
-                this.modifySystemDescription(connection, (list, item) => list.concat(item));
+                this.props.connectionCreated(connection);
             }
         }
         this.props.nodeConnectingDone();
@@ -215,25 +224,21 @@ export default class SdfStepBase extends React.Component<Props, State> {
         const data = node.data();
         if (isSystemObjectData(data)) {
             const systemObject = data.systemObject;
-            systemObject.posX = position.x;
-            systemObject.posY = position.y;
-            this.updateEntity(systemObject);
+            this.props.systemObjectUpdated(
+                { ...systemObject, ...{ posX: position.x, posY: position.y } });
             if (data.parent && node.parent().length > 0) {
                 // save position of parent subsystem as it changes when its children move
                 const parent = this.props.system.subsystems.find(e => e.id === data.parent);
                 if (parent) {
                     const parentPosition = node.parent()[0].position();
-                    parent.posX = parentPosition.x;
-                    parent.posY = parentPosition.y;
-                    this.updateEntity(parent);
+                    this.props.subsystemUpdated(
+                        { ...parent, ...{ posX: parentPosition.x, posY: parentPosition.y } });
                 }
             }
 
         } else if (isSubsystemData(data)) {
             const subsystem = data.subsystem;
-            subsystem.posX = position.x;
-            subsystem.posY = position.y;
-            this.updateEntity(subsystem);
+            this.props.subsystemUpdated({ ...subsystem, ...{ posX: position.x, posY: position.y } });
             // update position of children nodes
             for (var i = 0; i < node.children().length; i++) {
                 const childNode = node.children()[i];
@@ -241,98 +246,11 @@ export default class SdfStepBase extends React.Component<Props, State> {
                 if (isSystemObjectData(childData)) {
                     const childObject = childData.systemObject;
                     const position = childNode.position();
-                    childObject.posX = position.x;
-                    childObject.posY = position.y;
-                    this.updateEntity(childObject);
+                    this.props.systemObjectUpdated(
+                        { ...childObject, ...{ posX: position.x, posY: position.y } });
                 }
             }
         }
-    }
-
-    private updateHazards(entity: SystemObject) {
-        let transformHazard = (hazard: Hazard) => hazard;
-        switch (entity.type) {
-            case ObjectTypes.relator:
-                transformHazard = (hazard: Hazard) => {
-                    if (hazard.exposure.id !== entity.id) {
-                        return hazard;
-                    }
-                    return {
-                        ...hazard,
-                        ...{ exposure: { id: entity.id, name: entity.name } }
-                    };
-                };
-                break;
-            case ObjectTypes.role:
-                transformHazard = (hazard: Hazard) => {
-                    if (hazard.mishapVictim.id !== entity.id && hazard.hazardElement.id !== entity.id) {
-                        return hazard;
-                    }
-                    return {
-                        ...hazard,
-                        ...{
-                            mishapVictim: hazard.mishapVictim.id === entity.id ?
-                                { id: entity.id, name: entity.name } : hazard.mishapVictim,
-                            hazardElement: hazard.hazardElement.id === entity.id ?
-                                { id: entity.id, name: entity.name } : hazard.hazardElement,
-                        }
-                    };
-                };
-                break;
-            case ObjectTypes.kind:
-                transformHazard = (hazard: Hazard) => {
-                    if (hazard.mishapVictimEnvObj.id !== entity.id &&
-                        hazard.hazardElementEnvObj.id !== entity.id
-                    ) {
-                        return hazard;
-                    }
-                    return {
-                        ...hazard,
-                        ...{
-                            mishapVictimEnvObj: hazard.mishapVictimEnvObj.id === entity.id ?
-                                { id: entity.id, name: entity.name } : hazard.mishapVictimEnvObj,
-                            hazardElementEnvObj: hazard.hazardElementEnvObj.id === entity.id ?
-                                { id: entity.id, name: entity.name } : hazard.hazardElementEnvObj,
-                        }
-                    };
-                };
-                break;
-        }
-
-        const updatedHazards = this.props.system.hazards.map(transformHazard);
-        this.props.systemUpdated({ ...this.props.system, ...{ hazards: updatedHazards } });
-    }
-
-    private updateEntity(entity: SystemObject | Subsystem) {
-        this.modifySystemDescription(entity, (list, item) => list.map(e => e.id === item.id ? item : e));
-    }
-
-    private modifySystemDescription(
-        entity: SystemDescriptionEntity,
-        action: <T extends SystemDescriptionEntity>(list: T[], item: T) => T[]
-    ) {
-        const system = this.props.system;
-        if (isSubsystem(entity)) {
-            system.subsystems = action(system.subsystems, entity);
-        } else if (isSystemObject(entity)) {
-            if (isRole(entity)) {
-                system.roles = action(system.roles, entity);
-            } else {
-                switch (entity.type) {
-                    case ObjectTypes.kind:
-                        system.kinds = action(system.kinds, entity);
-                        break;
-                    case ObjectTypes.relator:
-                        system.relators = action(system.relators, entity);
-                        break;
-                    default:
-                        throw new Error('Unknown entity type');
-                }
-            }
-        } else if (isConnection(entity)) {
-            system.systemObjectConnections = action(system.systemObjectConnections, entity);
-        }
-        this.props.systemUpdated({ ...this.props.system, ...system });
     }
 
     private cancelEditEntity() {
@@ -364,10 +282,15 @@ export default class SdfStepBase extends React.Component<Props, State> {
                 }
 
                 if (entity.name !== existingEntity.name) {
-                    this.updateHazards(entity);
+                    this.props.systemObjectRenamed(entity);
                 }
             }
-            this.updateEntity(entity);
+
+            if (isSubsystem(entity)) {
+                this.props.subsystemUpdated(entity);
+            } else {
+                this.props.systemObjectUpdated(entity);
+            }
 
         } else {
             let nodePosition = DEFAULT_POSITION;
@@ -383,7 +306,11 @@ export default class SdfStepBase extends React.Component<Props, State> {
             entity.posX = adjustedPosition.x;
             entity.posY = adjustedPosition.y;
 
-            this.modifySystemDescription(entity, (list, item) => list.concat(item));
+            if (isSubsystem(entity)) {
+                this.props.subsystemCreated(entity);
+            } else {
+                this.props.systemObjectCreated(entity);
+            }
         }
 
         this.props.objectEditingDone && this.props.objectEditingDone();
@@ -400,3 +327,5 @@ export default class SdfStepBase extends React.Component<Props, State> {
         return this.preventOverlap({ x: position.x + 20, y: position.y + 20 }, otherNodes);
     }
 }
+
+export default connector(SdfStepBase)

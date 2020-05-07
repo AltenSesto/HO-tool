@@ -123,8 +123,6 @@ export default class SdfStep1 extends React.Component<StepProps, StepState> {
             <SubsystemCollapseButton
                 node={element}
                 subsystem={subsystem}
-                system={this.props.system}
-                systemUpdated={this.props.systemUpdated}
             />
             <IconButton
                 size='small'

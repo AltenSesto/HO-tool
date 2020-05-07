@@ -1,8 +1,13 @@
 import { SystemModel } from '../../entities/system-model'
 import { getFirstStepId } from '../../entities/meny/flow'
-import { SystemModelActionTypes, LOAD_MODEL, RESET_MODEL, UPDATE_MODEL, UPDATE_FLOW_STEP, ADD_POSSIBLE_HARM, REMOVE_POSSIBLE_HARM } from './types'
+import { SystemModelActionTypes, LOAD_MODEL, RESET_MODEL, UPDATE_MODEL, UPDATE_FLOW_STEP } from './types'
 import { hazardsReducer } from './reducers/hazards-reducer'
 import { nextHazardIdReducer } from './reducers/next-hazard-id-reducer'
+import { subsystemReducer } from './reducers/subsystems-reducer'
+import { connectionReducer } from './reducers/connections-reducer'
+import { kindsReducer } from './reducers/kinds-reducer'
+import { rolesReducer } from './reducers/roles-reducer'
+import { relatorsReducer } from './reducers/relators-reducer'
 
 const initialState: SystemModel = {
     projectName: 'Hazard Ontology',
@@ -33,37 +38,17 @@ export function systemModelReducer(state = initialState, action: SystemModelActi
                 return { ...state, ...{ currentStep: step, lastCompletedStep: step } };
             }
             return { ...state, ...{ currentStep: step } };
-        case ADD_POSSIBLE_HARM:
-            return {
-                ...state,
-                ...{
-                    roles: state.roles.map(e => e.id === action.payload.mishapVictim.id ?
-                        {
-                            ...e, ...{ possibleHarms: e.possibleHarms.concat(action.payload.harm) }
-                        }
-                        :
-                        e)
-                }
-            }
-        case REMOVE_POSSIBLE_HARM:
-            const { mishapVictim, harm } = action.payload;
-            return {
-                ...state,
-                ...{
-                    roles: state.roles.map(e => e.id === mishapVictim.id ?
-                        {
-                            ...e, ...{ possibleHarms: e.possibleHarms.filter(h => h !== harm) }
-                        }
-                        :
-                        e)
-                }
-            }
         default:
             return {
                 ...state,
                 ...{
                     hazards: hazardsReducer(state.hazards, action),
-                    nextHazardId: nextHazardIdReducer(state.nextHazardId, action)
+                    nextHazardId: nextHazardIdReducer(state.nextHazardId, action),
+                    subsystems: subsystemReducer(state.subsystems, action),
+                    systemObjectConnections: connectionReducer(state.systemObjectConnections, action),
+                    kinds: kindsReducer(state.kinds, action),
+                    roles: rolesReducer(state.roles, action),
+                    relators: relatorsReducer(state.relators, action)
                 }
             }
     }
