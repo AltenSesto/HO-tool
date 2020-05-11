@@ -37,7 +37,7 @@ export function updateSubsystem(subsystem: Subsystem): SystemModelActionTypes {
     return createBaseCrudAction(UPDATE_SUBSYSTEM, subsystem);
 }
 
-export function deleteSubsystems(subsystem: Subsystem): SystemModelActionTypes {
+export function deleteSubsystem(subsystem: Subsystem): SystemModelActionTypes {
     return createBaseCrudAction(DELETE_SUBSYSTEM, subsystem);
 }
 

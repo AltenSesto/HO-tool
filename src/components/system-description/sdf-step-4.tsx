@@ -7,10 +7,10 @@ import SystemObject from '../../entities/system-description/system-object';
 import Subsystem from '../../entities/system-description/subsystem';
 import { createObjectId } from '../../entities/system-model';
 import { ObjectTypes } from '../../entities/system-description/object-types';
-import { isSystemObjectData } from '../../entities/graph/graph-element';
 import SdfStepBase, { StepProps, StepState } from './sdf-step-base';
 import SubsystemCollapseButton from './subsystem-collapse-button';
-import DeleteElementButton from './delete-element-button';
+import DeleteConnectionButton from './delete-connection-button';
+import { getConnection, getSystemObject } from '../../entities/graph/element-utilities';
 
 export default class SdfStep4 extends React.Component<StepProps, StepState> {
 
@@ -79,23 +79,22 @@ export default class SdfStep4 extends React.Component<StepProps, StepState> {
             return <React.Fragment></React.Fragment>;
         }
 
-        return <DeleteElementButton
-            element={element}
-            system={this.props.system}
-            systemUpdated={this.props.systemUpdated}
-        />;
+        const connection = getConnection(element);
+        if (connection) {
+            return <DeleteConnectionButton connection={connection} />;
+        }
+
+        return <React.Fragment></React.Fragment>;
     }
 
     private tryCreateConnection(source: NodeSingular, target: NodeSingular) {
-        const roleData = source.data();
-        const kindData = target.data();
-        if (isSystemObjectData(roleData) && roleData.systemObject.type === ObjectTypes.role &&
-            isSystemObjectData(kindData) && kindData.systemObject.type === ObjectTypes.kind
-        ) {
+        const role = getSystemObject(source);
+        const kind = getSystemObject(target);
+        if (role && role.type === ObjectTypes.role && kind && kind.type === ObjectTypes.kind) {
             return {
                 id: createObjectId('connection'),
-                source: kindData.systemObject.id,
-                target: roleData.systemObject.id,
+                source: kind.id,
+                target: role.id,
                 label: 'play',
                 isOriented: true
             };

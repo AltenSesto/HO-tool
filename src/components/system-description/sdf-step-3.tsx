@@ -10,7 +10,7 @@ import ToolbarButtons from './toolbar-buttons';
 import { ObjectTypes } from '../../entities/system-description/object-types';
 import { isSystemObjectData } from '../../entities/graph/graph-element';
 import SdfStepBase, { StepProps, StepState } from './sdf-step-base';
-import DeleteElementButton from './delete-element-button';
+import DeleteSystemObjectButton from './delete-system-object-button';
 import SubsystemCollapseButton from './subsystem-collapse-button';
 
 export default class SdfStep3 extends React.Component<StepProps, StepState> {
@@ -77,10 +77,9 @@ export default class SdfStep3 extends React.Component<StepProps, StepState> {
                 >
                     <Edit />
                 </IconButton>
-                <DeleteElementButton
+                <DeleteSystemObjectButton
                     element={element}
-                    system={this.props.system}
-                    systemUpdated={this.props.systemUpdated}
+                    systemObject={object}
                 />
             </div>);
         }

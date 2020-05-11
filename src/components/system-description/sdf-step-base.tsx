@@ -13,8 +13,9 @@ import { isSystemObject, isSubsystem } from '../../entities/system-description/s
 import { isSystemObjectData, isSubsystemData, GraphElementPosition } from '../../entities/graph/graph-element';
 import NodePopper from '../graph/node-popper';
 import Connection from '../../entities/system-description/connection';
-import DeleteElementButton from './delete-element-button';
+import DeleteConnectionButton from './delete-connection-button';
 import { createSubsystem, updateSubsystem, createConnection, renameSystemObject, createSystemObject, updateSystemObject } from '../../store/system-model/actions';
+import { getConnection } from '../../entities/graph/element-utilities';
 
 const mapDispatch = {
     subsystemCreated: createSubsystem,
@@ -169,11 +170,12 @@ class SdfStepBase extends React.Component<Props, State> {
             return <React.Fragment></React.Fragment>;
         }
 
-        return <DeleteElementButton
-            element={element}
-            system={this.props.system}
-            systemUpdated={this.props.systemUpdated}
-        />;
+        const connection = getConnection(element);
+        if (connection) {
+            return <DeleteConnectionButton connection={connection} />;
+        }
+
+        return <React.Fragment></React.Fragment>;
     }
 
     private showNodeActions(event: EventObject) {
