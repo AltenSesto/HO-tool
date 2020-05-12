@@ -5,7 +5,6 @@ import { NodeSingular, EventObject, Singular, EdgeSingular } from 'cytoscape';
 
 import SystemObject from '../../entities/system-description/system-object';
 import Subsystem from '../../entities/system-description/subsystem';
-import { SystemDescription } from '../../entities/system-model';
 import GraphElementsFactory from '../../entities/graph/graph-elements-factory';
 import Graph from '../graph/graph';
 import NodeEditor from './node-editor';
@@ -16,6 +15,11 @@ import Connection from '../../entities/system-description/connection';
 import DeleteConnectionButton from './delete-connection-button';
 import { createSubsystem, updateSubsystem, createConnection, renameSystemObject, createSystemObject, updateSystemObject } from '../../store/system-model/actions';
 import { getConnection } from '../../entities/graph/element-utilities';
+import { RootState } from '../../store';
+
+const mapState = (state: RootState) => ({
+    system: state.systemModel
+});
 
 const mapDispatch = {
     subsystemCreated: createSubsystem,
@@ -26,13 +30,11 @@ const mapDispatch = {
     systemObjectUpdated: updateSystemObject
 };
 
-const connector = connect(null, mapDispatch);
+const connector = connect(mapState, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
-    system: SystemDescription;
-    systemUpdated: (system: SystemDescription) => void;
     objectEditing?: SystemObject | Subsystem | null;
     objectEditingDone?: () => void;
     nodeConnecting: NodeSingular | null;
@@ -48,11 +50,6 @@ type Props = PropsFromRedux & {
 
 interface State {
     isConnectionValid: boolean;
-}
-
-export interface StepProps {
-    system: SystemDescription;
-    systemUpdated: (system: SystemDescription) => void;
 }
 
 export interface StepState {

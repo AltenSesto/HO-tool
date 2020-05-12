@@ -7,7 +7,6 @@ import { Toolbar, AppBar, Grid, Drawer } from '@material-ui/core';
 import { connect, ConnectedProps } from 'react-redux'
 
 import ErrorBoundary from './components/error-boundary';
-import { SystemModel } from './entities/system-model';
 import Meny from './components/meny/meny';
 import ProgressSteps from './components/meny/progress-steps';
 import { flowSteps } from './entities/meny/flow';
@@ -19,7 +18,6 @@ import SdfStep4 from './components/system-description/sdf-step-4';
 import HazardPopulation from './components/hazard-population/hazard-population';
 import ProjectName from './components/project-name';
 import { RootState } from './store';
-import { updateModel } from './store/system-model/actions';
 import ConfirmationDialog from './components/confirmation-dialog';
 
 const drawerWidth = 240;
@@ -50,56 +48,34 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const mapState = (state: RootState) => ({
-    systemModel: state.systemModel,
+    currentStep: state.systemModel.currentStep,
     hasUnsavedChanges: state.unsavedChanges
 })
 
-const mapDispatch = {
-    setSystemModel: (model: SystemModel) => updateModel(model)
-}
-
-const connector = connect(mapState, mapDispatch);
+const connector = connect(mapState);
 
 type Props = ConnectedProps<typeof connector>
 
 const App: React.FC<Props> = (props) => {
 
-    const { systemModel, setSystemModel, hasUnsavedChanges } = props;
-
     useBeforeunload((ev) => {
-        if (hasUnsavedChanges) {
+        if (props.hasUnsavedChanges) {
             ev.preventDefault();
         }
     });
 
-    const updateSystemModel = <T extends {}>(model: T) => {
-        setSystemModel({ ...systemModel, ...model });
-    };
-
     const classes = useStyles();
 
     const getMainContent = () => {
-        switch (systemModel.currentStep) {
+        switch (props.currentStep) {
             case flowSteps.SDF_1:
-                return <SdfStep1
-                    system={systemModel}
-                    systemUpdated={updateSystemModel}
-                />
+                return <SdfStep1 />
             case flowSteps.SDF_2:
-                return <SdfStep2
-                    system={systemModel}
-                    systemUpdated={updateSystemModel}
-                />
+                return <SdfStep2 />
             case flowSteps.SDF_3:
-                return <SdfStep3
-                    system={systemModel}
-                    systemUpdated={updateSystemModel}
-                />
+                return <SdfStep3 />
             case flowSteps.SDF_4:
-                return <SdfStep4
-                    system={systemModel}
-                    systemUpdated={updateSystemModel}
-                />
+                return <SdfStep4 />
             case flowSteps.OHI_2:
                 return <MishapVictimIdentification />;
             case flowSteps.OHI_3:

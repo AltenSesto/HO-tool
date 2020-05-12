@@ -7,14 +7,14 @@ import SystemObject from '../../entities/system-description/system-object';
 import Subsystem from '../../entities/system-description/subsystem';
 import { createObjectId } from '../../entities/system-model';
 import { ObjectTypes } from '../../entities/system-description/object-types';
-import SdfStepBase, { StepProps, StepState } from './sdf-step-base';
+import SdfStepBase, { StepState } from './sdf-step-base';
 import SubsystemCollapseButton from './subsystem-collapse-button';
 import DeleteConnectionButton from './delete-connection-button';
 import { getConnection, getSystemObject } from '../../entities/graph/element-utilities';
 
-export default class SdfStep4 extends React.Component<StepProps, StepState> {
+export default class SdfStep4 extends React.Component<{}, StepState> {
 
-    constructor(props: StepProps) {
+    constructor(props: Readonly<{}>) {
         super(props);
 
         this.tryCreateConnection = this.tryCreateConnection.bind(this);
@@ -32,8 +32,6 @@ export default class SdfStep4 extends React.Component<StepProps, StepState> {
     render() {
         return (
             <SdfStepBase
-                system={this.props.system}
-                systemUpdated={this.props.systemUpdated}
                 elementDisplayPopper={this.state.elementDisplayPopper}
                 elementDisplayPopperChanged={(ele) => this.setState({
                     ...this.state, ...{ elementDisplayPopper: ele }
