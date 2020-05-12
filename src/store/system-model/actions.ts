@@ -1,5 +1,5 @@
 import { Action, Dispatch } from 'redux';
-import { SystemModelActionTypes, CREATE_HAZARD, UPDATE_HAZARD, DELETE_HAZARDS, LOAD_MODEL, RESET_MODEL, UPDATE_MODEL, UPDATE_FLOW_STEP, ADD_POSSIBLE_HARM, REMOVE_POSSIBLE_HARM, CREATE_SUBSYSTEM, UPDATE_SUBSYSTEM, DELETE_SUBSYSTEM, CREATE_CONNECTION, DELETE_CONNECTION, CREATE_SYSTEM_OBJECT, UPDATE_SYSTEM_OBJECT, DELETE_SYSTEM_OBJECT, RENAME_SYSTEM_OBJECT } from "./types";
+import { SystemModelActionTypes, CREATE_HAZARD, UPDATE_HAZARD, DELETE_HAZARDS, LOAD_MODEL, RESET_MODEL, UPDATE_MODEL, UPDATE_FLOW_STEP, ADD_POSSIBLE_HARM, REMOVE_POSSIBLE_HARM, CREATE_SUBSYSTEM, UPDATE_SUBSYSTEM, DELETE_SUBSYSTEM, CREATE_CONNECTION, DELETE_CONNECTION, CREATE_SYSTEM_OBJECT, UPDATE_SYSTEM_OBJECT, DELETE_SYSTEM_OBJECT, RENAME_SYSTEM_OBJECT, UPDATE_PROJECT_NAME } from "./types";
 import Hazard from "../../entities/hazard-population/hazard";
 import { SystemModel } from "../../entities/system-model";
 import { FlowStepId } from "../../entities/meny/flow-step";
@@ -116,4 +116,8 @@ export function removePossibleHarm(
     }
 
     dispatch(removeHarmAction);
+}
+
+export function updateProjectName(name: string): SystemModelActionTypes {
+    return createBaseCrudAction(UPDATE_PROJECT_NAME, name);
 }

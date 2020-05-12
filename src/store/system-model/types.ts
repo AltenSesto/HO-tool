@@ -24,6 +24,7 @@ export const CREATE_SYSTEM_OBJECT = 'CREATE_SYSTEM_OBJECT'
 export const DELETE_SYSTEM_OBJECT = 'DELETE_SYSTEM_OBJECT'
 export const UPDATE_SYSTEM_OBJECT = 'UPDATE_SYSTEM_OBJECT'
 export const RENAME_SYSTEM_OBJECT = 'RENAME_SYSTEM_OBJECT'
+export const UPDATE_PROJECT_NAME = 'UPDATE_PROJECT_NAME'
 
 
 interface CrudActionBase<T, P> {
@@ -82,9 +83,11 @@ interface RemovePossibleHarmAction extends CrudActionBase<
     { mishapVictim: MishapVictim, harm: string }
     > { }
 
+interface UpdateProjectName extends CrudActionBase<typeof UPDATE_PROJECT_NAME, string> { }
+
 export type SystemModelActionTypes = CreateHazardAction | DeleteHazardsAction | UpdateHazardAction |
     LoadModelAction | ResetModelAction | UpdateModelAction | UpdateFlowStepAction |
-    AddPossibleHarmAction | RemovePossibleHarmAction |
+    AddPossibleHarmAction | RemovePossibleHarmAction | UpdateProjectName |
     CreateSubsystemAction | UpdateSubsystemAction | DeleteSubsystemAction |
     CreateConnectionAction | DeleteConnectionAction | RenameSystemObjectAction |
     CreateSystemObjectAction | DeleteSystemObjectAction | UpdateSystemObjectAction

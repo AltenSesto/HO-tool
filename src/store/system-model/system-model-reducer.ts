@@ -1,6 +1,6 @@
 import { SystemModel } from '../../entities/system-model'
 import { getFirstStepId } from '../../entities/meny/flow'
-import { SystemModelActionTypes, LOAD_MODEL, RESET_MODEL, UPDATE_MODEL, UPDATE_FLOW_STEP } from './types'
+import { SystemModelActionTypes, LOAD_MODEL, RESET_MODEL, UPDATE_MODEL, UPDATE_FLOW_STEP, UPDATE_PROJECT_NAME } from './types'
 import { hazardsReducer } from './reducers/hazards-reducer'
 import { nextHazardIdReducer } from './reducers/next-hazard-id-reducer'
 import { subsystemReducer } from './reducers/subsystems-reducer'
@@ -38,6 +38,8 @@ export function systemModelReducer(state = initialState, action: SystemModelActi
                 return { ...state, ...{ currentStep: step, lastCompletedStep: step } };
             }
             return { ...state, ...{ currentStep: step } };
+        case UPDATE_PROJECT_NAME:
+            return { ...state, ...{ projectName: action.payload } };
         default:
             return {
                 ...state,

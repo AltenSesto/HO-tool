@@ -123,10 +123,7 @@ const App: React.FC<Props> = (props) => {
                                 <Meny />
                             </Grid>
                             <Grid item xs={6} className={classes.appTitle}>
-                                <ProjectName
-                                    name={systemModel.projectName}
-                                    nameUpdated={(projectName) => updateSystemModel({ projectName })}
-                                />
+                                <ProjectName />
                             </Grid>
                             <Grid item xs>
                                 &nbsp;
