@@ -19,6 +19,7 @@ import HazardPopulation from './components/hazard-population/hazard-population';
 import ProjectName from './components/project-name';
 import { RootState } from './store';
 import ConfirmationDialog from './components/confirmation-dialog';
+import OchStep1 from './components/hazard-description-categorization/och-step-1/och-step-1';
 
 const drawerWidth = 240;
 
@@ -80,6 +81,8 @@ const App: React.FC<Props> = (props) => {
                 return <MishapVictimIdentification />;
             case flowSteps.OHI_3:
                 return <HazardPopulation />;
+            case flowSteps.OCH_1:
+                return <OchStep1 />;
         }
     };
 
