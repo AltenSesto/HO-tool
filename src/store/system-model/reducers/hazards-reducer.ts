@@ -1,5 +1,5 @@
-import Hazard from '../../../entities/hazard-population/hazard';
-import { SystemModelActionTypes, CREATE_HAZARD, UPDATE_HAZARD, DELETE_HAZARDS, RENAME_SYSTEM_OBJECT, DELETE_CONNECTION } from '../types';
+import Hazard, { isRelatorInHazard, isRoleInHazard, isKindInHazard, getIsSystemObjectInHazard } from '../../../entities/hazard-population/hazard';
+import { SystemModelActionTypes, CREATE_HAZARD, UPDATE_HAZARD, DELETE_HAZARD, RENAME_SYSTEM_OBJECT, DELETE_CONNECTION, DELETE_SYSTEM_OBJECT } from '../types';
 import SystemObject from '../../../entities/system-description/system-object';
 import { ObjectTypes } from '../../../entities/system-description/object-types';
 
@@ -9,21 +9,19 @@ export function hazardsReducer(state: Hazard[], action: SystemModelActionTypes):
             return state.concat(action.payload);
         case UPDATE_HAZARD:
             return state.map(e => e.id === action.payload.id ? action.payload : e);
-        case DELETE_HAZARDS:
-            return state.filter(e => !action.payload.some(d => e.id === d.id));
+        case DELETE_HAZARD:
+            return state.filter(e => e.id !== action.payload.id);
         case RENAME_SYSTEM_OBJECT:
             const transform = getHazardTransform(action.payload);
             return state.map(transform);
         case DELETE_CONNECTION:
-            const targetId = action.payload.target;
+            const isTargetInHazard = getIsSystemObjectInHazard(action.payload.target);
             // both connection's source and destination are always part of the same hazard.
-            // so no sense to check them both, checking only destination
-            return state.filter(e =>
-                e.mishapVictim.id !== targetId &&
-                e.exposure.id !== targetId &&
-                e.hazardElement.id !== targetId &&
-                e.hazardElementEnvObj.id !== targetId &&
-                e.mishapVictimEnvObj.id !== targetId);
+            // so no sense to check them both, checking either of them
+            return state.filter(e => !isTargetInHazard(e));
+        case DELETE_SYSTEM_OBJECT:
+            const isObjectInHazard = getIsSystemObjectInHazard(action.payload);
+            return state.filter(e => !isObjectInHazard(e));
         default:
             return state
     }
@@ -33,7 +31,7 @@ function getHazardTransform(entity: SystemObject) {
     switch (entity.type) {
         case ObjectTypes.relator:
             return (hazard: Hazard) => {
-                if (hazard.exposure.id !== entity.id) {
+                if (!isRelatorInHazard(entity, hazard)) {
                     return hazard;
                 }
                 return {
@@ -43,7 +41,7 @@ function getHazardTransform(entity: SystemObject) {
             };
         case ObjectTypes.role:
             return (hazard: Hazard) => {
-                if (hazard.mishapVictim.id !== entity.id && hazard.hazardElement.id !== entity.id) {
+                if (!isRoleInHazard(entity, hazard)) {
                     return hazard;
                 }
                 return {
@@ -58,9 +56,7 @@ function getHazardTransform(entity: SystemObject) {
             };
         case ObjectTypes.kind:
             return (hazard: Hazard) => {
-                if (hazard.mishapVictimEnvObj.id !== entity.id &&
-                    hazard.hazardElementEnvObj.id !== entity.id
-                ) {
+                if (!isKindInHazard(entity, hazard)) {
                     return hazard;
                 }
                 return {

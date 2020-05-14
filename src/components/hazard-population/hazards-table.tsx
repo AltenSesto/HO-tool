@@ -3,7 +3,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { TableContainer, Table, TableRow, TableCell, TableBody, TableHead, withStyles, createStyles, makeStyles } from '@material-ui/core';
 import HazardsRow from './hazard-row';
 import { RootState } from '../../store';
-import { updateHazard, deleteHazards } from '../../store/system-model/actions';
+import { updateHazard, deleteHazard } from '../../store/system-model/actions';
 import { MishapVictim } from '../../entities/system-description/role';
 
 const mapState = (state: RootState) => ({
@@ -12,7 +12,7 @@ const mapState = (state: RootState) => ({
 
 const mapDispatch = {
     hazardEdited: updateHazard,
-    hazardsDeleted: deleteHazards
+    hazardDeleted: deleteHazard
 }
 
 const connector = connect(mapState, mapDispatch);
@@ -103,7 +103,7 @@ const HazardsTable: React.FC<Props> = (props) => {
                                     hazard={hazard}
                                     index={index}
                                     hazardEdited={props.hazardEdited}
-                                    hazardDeleted={(hazard) => props.hazardsDeleted([hazard])}
+                                    hazardDeleted={props.hazardDeleted}
                                 />
                             ))
                     }

@@ -169,7 +169,11 @@ class SdfStepBase extends React.Component<Props, State> {
 
         const connection = getConnection(element);
         if (connection) {
-            return <DeleteConnectionButton connection={connection} />;
+            return <DeleteConnectionButton
+                connection={connection}
+                element={element}
+                onClick={() => this.props.elementDisplayPopperChanged(null)}
+            />;
         }
 
         return <React.Fragment></React.Fragment>;

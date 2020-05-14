@@ -79,7 +79,11 @@ export default class SdfStep4 extends React.Component<{}, StepState> {
 
         const connection = getConnection(element);
         if (connection) {
-            return <DeleteConnectionButton connection={connection} />;
+            return <DeleteConnectionButton
+                connection={connection}
+                element={element}
+                onClick={() => this.setState({ ...this.state, ...{ elementDisplayPopper: null } })}
+            />;
         }
 
         return <React.Fragment></React.Fragment>;

@@ -90,8 +90,8 @@ export default class SdfStep1 extends React.Component<{}, StepState> {
                     <Edit />
                 </IconButton>
                 <DeleteSystemObjectButton
-                    element={element}
                     systemObject={object}
+                    onClick={() => this.setState({ ...this.state, ...{ elementDisplayPopper: null } })}
                 />
             </div>);
         }
@@ -107,8 +107,8 @@ export default class SdfStep1 extends React.Component<{}, StepState> {
                     <Edit />
                 </IconButton>
                 <DeleteSystemObjectButton
-                    element={element}
                     systemObject={object}
+                    onClick={() => this.setState({ ...this.state, ...{ elementDisplayPopper: null } })}
                 />
             </div>);
         }

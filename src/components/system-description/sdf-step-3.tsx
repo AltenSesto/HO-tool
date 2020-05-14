@@ -76,8 +76,8 @@ export default class SdfStep3 extends React.Component<{}, StepState> {
                     <Edit />
                 </IconButton>
                 <DeleteSystemObjectButton
-                    element={element}
                     systemObject={object}
+                    onClick={() => this.setState({ ...this.state, ...{ elementDisplayPopper: null } })}
                 />
             </div>);
         }

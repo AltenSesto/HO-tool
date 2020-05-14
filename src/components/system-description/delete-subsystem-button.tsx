@@ -1,13 +1,14 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { NodeSingular } from 'cytoscape';
-import { RootState } from '../../store';
-import { deleteSystemObject, deleteConnection, deleteSubsystem } from '../../store/system-model/actions';
-import SystemObject from '../../entities/system-description/system-object';
-import { getConnection, getSystemObject } from '../../entities/graph/element-utilities';
+import { deleteSystemObject, deleteSubsystem } from '../../store/system-model/actions';
+import { getSystemObject } from '../../entities/graph/element-utilities';
 import DeleteElementButton from './delete-element-button';
 import { showConfirmationDialog } from '../../store/modal-dialog/actions';
 import Subsystem from '../../entities/system-description/subsystem';
+import SystemObject from '../../entities/system-description/system-object';
+import { RootState } from '../../store';
+import { getIsSystemObjectInHazard } from '../../entities/hazard-population/hazard';
 
 const mapState = (state: RootState) => ({
     hazards: state.systemModel.hazards
@@ -16,7 +17,6 @@ const mapState = (state: RootState) => ({
 const mapDispatch = {
     subsystemDeleted: deleteSubsystem,
     systemObjectDeleted: deleteSystemObject,
-    connectionDeleted: deleteConnection,
     confirm: showConfirmationDialog
 };
 
@@ -31,27 +31,30 @@ type Props = PropsFromRedux & {
 }
 
 const DeleteSubsystemButton: React.FC<Props> = (props) => {
-    const deleteObjectWithConnections = (systemObject: SystemObject, element: NodeSingular) => {
-        const connections = element.connectedEdges();
-        for (var i = 0; i < connections.length; i++) {
-            const connection = getConnection(connections[i]);
-            if (connection) {
-                props.connectionDeleted(connection);
-            }
-        }
-        props.systemObjectDeleted(systemObject);
+
+    const deleteSubsystemWithChildren = (children: (SystemObject | undefined)[]) => {
+        children.forEach(e => e && props.systemObjectDeleted(e));
+        props.subsystemDeleted(props.subsystem);
     };
 
-    const deleteSubsystemWithChildren = () => {
-        const children = props.element.children();
-        for (var i = 0; i < children.length; i++) {
-            const childElement = children[i];
-            const systemObject = getSystemObject(childElement);
-            if (systemObject) {
-                deleteObjectWithConnections(systemObject, childElement);
+    const checkHazardsAndDelete = () => {
+        const children = props.element.children().map(e => getSystemObject(e));
+        const hasHazardsAssociated = children.some(e => {
+            if (!e) {
+                return false;
             }
+            const isObjectInHazard = getIsSystemObjectInHazard(e);
+            return props.hazards.some(isObjectInHazard);
+        });
+
+        if (!hasHazardsAssociated) {
+            deleteSubsystemWithChildren(children);
+        } else {
+            props.confirm(
+                'Some of the subsystem\'s child objects take part in one ore more hazards. If you delete the subsystem those hazards will be removed as well. Continue?',
+                () => deleteSubsystemWithChildren(children)
+            );
         }
-        props.subsystemDeleted(props.subsystem);
     };
 
     const deleteSubsystem = () => {
@@ -61,7 +64,7 @@ const DeleteSubsystemButton: React.FC<Props> = (props) => {
         } else {
             props.confirm(
                 'All the objects in the subsystem will be removed as well. Continue?',
-                deleteSubsystemWithChildren
+                checkHazardsAndDelete
             );
         }
     };

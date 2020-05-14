@@ -7,7 +7,7 @@ import Connection from '../../entities/system-description/connection'
 import SystemObject from '../../entities/system-description/system-object'
 
 export const CREATE_HAZARD = 'CREATE_HAZARD'
-export const DELETE_HAZARDS = 'DELETE_HAZARDS'
+export const DELETE_HAZARD = 'DELETE_HAZARD'
 export const UPDATE_HAZARD = 'UPDATE_HAZARD'
 export const UPDATE_MODEL = 'UPDATE_MODEL'
 export const LOAD_MODEL = 'LOAD_MODEL'
@@ -35,7 +35,7 @@ interface CrudActionBase<T, P> {
 
 interface CreateHazardAction extends CrudActionBase<typeof CREATE_HAZARD, Hazard> { }
 
-interface DeleteHazardsAction extends CrudActionBase<typeof DELETE_HAZARDS, Hazard[]> { }
+interface DeleteHazardAction extends CrudActionBase<typeof DELETE_HAZARD, Hazard> { }
 
 interface UpdateHazardAction extends CrudActionBase<typeof UPDATE_HAZARD, Hazard> { }
 
@@ -47,7 +47,10 @@ interface UpdateSubsystemAction extends CrudActionBase<typeof UPDATE_SUBSYSTEM, 
 
 interface CreateConnectionAction extends CrudActionBase<typeof CREATE_CONNECTION, Connection> { }
 
-interface DeleteConnectionAction extends CrudActionBase<typeof DELETE_CONNECTION, Connection> { }
+interface DeleteConnectionAction extends CrudActionBase<typeof DELETE_CONNECTION, {
+    connection: Connection,
+    target: SystemObject
+}> { }
 
 interface CreateSystemObjectAction extends CrudActionBase<typeof CREATE_SYSTEM_OBJECT, SystemObject> { }
 
@@ -85,7 +88,7 @@ interface RemovePossibleHarmAction extends CrudActionBase<
 
 interface UpdateProjectName extends CrudActionBase<typeof UPDATE_PROJECT_NAME, string> { }
 
-export type SystemModelActionTypes = CreateHazardAction | DeleteHazardsAction | UpdateHazardAction |
+export type SystemModelActionTypes = CreateHazardAction | DeleteHazardAction | UpdateHazardAction |
     LoadModelAction | ResetModelAction | UpdateModelAction | UpdateFlowStepAction |
     AddPossibleHarmAction | RemovePossibleHarmAction | UpdateProjectName |
     CreateSubsystemAction | UpdateSubsystemAction | DeleteSubsystemAction |
