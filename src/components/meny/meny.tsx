@@ -4,8 +4,6 @@ import { FolderOpen, SaveAlt } from '@material-ui/icons';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { SystemModel } from '../../entities/system-model';
-import { isConnectionToCollapsed } from '../../entities/system-description/system-description-entity';
-import Connection from '../../entities/system-description/connection';
 import { FlowStepId } from '../../entities/meny/flow-step';
 import { flowSteps } from '../../entities/meny/flow';
 import { RootState } from '../../store';
@@ -132,7 +130,6 @@ class Meny extends React.Component<Props> {
         return {
             ...data,
             ...{
-                systemObjectConnections: this.patchCollapsedConnections(data.systemObjectConnections),
                 currentStep: this.serializeStepId(data.currentStep),
                 lastCompletedStep: this.serializeStepId(data.lastCompletedStep)
             }
@@ -147,20 +144,6 @@ class Meny extends React.Component<Props> {
                 lastCompletedStep: this.deserializeStepId(data.lastCompletedStep)
             }
         };
-    }
-
-    private patchCollapsedConnections(connections: Connection[]) {
-        // needed as cytoscape.js-expand-collapse modifies the model so that it brings circular references
-        return connections.map(e => {
-            if (isConnectionToCollapsed(e)) {
-                return {
-                    id: e.id,
-                    source: e.originalEnds.source.data().id,
-                    target: e.originalEnds.target.data().id
-                };
-            }
-            return e;
-        });
     }
 
     private serializeStepId(step: FlowStepId) {
