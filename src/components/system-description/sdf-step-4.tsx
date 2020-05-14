@@ -1,5 +1,5 @@
 import React from 'react';
-import { NodeSingular, EdgeSingular } from 'cytoscape';
+import { NodeSingular } from 'cytoscape';
 import { IconButton } from '@material-ui/core';
 import { Link } from '@material-ui/icons';
 
@@ -9,7 +9,6 @@ import { createObjectId } from '../../entities/system-model';
 import { ObjectTypes } from '../../entities/system-description/object-types';
 import SdfStepBase, { StepState } from './sdf-step-base';
 import SubsystemCollapseButton from './subsystem-collapse-button';
-import DeleteConnectionButton from './delete-connection-button';
 import { getConnection, getSystemObject } from '../../entities/graph/element-utilities';
 
 export default class SdfStep4 extends React.Component<{}, StepState> {
@@ -20,7 +19,6 @@ export default class SdfStep4 extends React.Component<{}, StepState> {
         this.tryCreateConnection = this.tryCreateConnection.bind(this);
         this.renderSystemObjectActions = this.renderSystemObjectActions.bind(this);
         this.renderSubsystemActions = this.renderSubsystemActions.bind(this);
-        this.renderConnectionActions = this.renderConnectionActions.bind(this);
 
         this.state = {
             nodeConnecting: null,
@@ -41,7 +39,6 @@ export default class SdfStep4 extends React.Component<{}, StepState> {
                 tryCreateConnection={this.tryCreateConnection}
                 renderSubsystemActions={this.renderSubsystemActions}
                 renderSystemObjectActions={this.renderSystemObjectActions}
-                renderConnectionActions={this.renderConnectionActions}
             />
         );
     }
@@ -71,32 +68,27 @@ export default class SdfStep4 extends React.Component<{}, StepState> {
         </div>;
     }
 
-    private renderConnectionActions(element: EdgeSingular) {
-        // swap ends
-        if (!this.tryCreateConnection(element.target(), element.source())) {
-            return <React.Fragment></React.Fragment>;
-        }
-
-        const connection = getConnection(element);
-        if (connection) {
-            return <DeleteConnectionButton
-                connection={connection}
-                element={element}
-                onClick={() => this.setState({ ...this.state, ...{ elementDisplayPopper: null } })}
-            />;
-        }
-
-        return <React.Fragment></React.Fragment>;
-    }
-
     private tryCreateConnection(source: NodeSingular, target: NodeSingular) {
-        const role = getSystemObject(source);
-        const kind = getSystemObject(target);
-        if (role && role.type === ObjectTypes.role && kind && kind.type === ObjectTypes.kind) {
+        // in this step we create reversed connection from role to kind
+        // still in data model the connection goes from kind to role
+        // so there is difference in creating a new connection with handling an existing one
+        const existingConnection = source.edgesWith(target);
+        if (existingConnection.length > 0) {
+            const connection = getConnection(existingConnection[0]);
+            if (connection) {
+                return connection;
+            }
+        }
+
+        const sourceObj = getSystemObject(source);
+        const targetObj = getSystemObject(target);
+        if (sourceObj && sourceObj.type === ObjectTypes.role &&
+            targetObj && targetObj.type === ObjectTypes.kind
+        ) {
             return {
                 id: createObjectId('connection'),
-                source: kind.id,
-                target: role.id,
+                source: targetObj.id,
+                target: sourceObj.id,
                 label: 'play',
                 isOriented: true
             };

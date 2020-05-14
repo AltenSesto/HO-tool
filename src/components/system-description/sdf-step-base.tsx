@@ -45,7 +45,6 @@ type Props = PropsFromRedux & {
     elementDisplayPopperChanged: (element: Singular | null) => void;
     renderSystemObjectActions: (object: SystemObject, element: NodeSingular) => JSX.Element;
     renderSubsystemActions: (subsystem: Subsystem, element: NodeSingular) => JSX.Element;
-    renderConnectionActions?: (element: EdgeSingular) => JSX.Element;
 }
 
 interface State {
@@ -69,7 +68,7 @@ class SdfStepBase extends React.Component<Props, State> {
 
         this.showNodeActions = this.showNodeActions.bind(this);
         this.hideNodeActions = this.hideNodeActions.bind(this);
-        this.tryCreateConnection = this.tryCreateConnection.bind(this);
+        this.createConnection = this.createConnection.bind(this);
         this.completeEditEntity = this.completeEditEntity.bind(this);
         this.updateNodePosition = this.updateNodePosition.bind(this);
         this.validateConnection = this.validateConnection.bind(this);
@@ -108,11 +107,7 @@ class SdfStepBase extends React.Component<Props, State> {
         const actionElement = this.props.elementDisplayPopper;
         if (actionElement) {
             if (actionElement.isEdge()) {
-                if (this.props.renderConnectionActions) {
-                    elementActions = this.props.renderConnectionActions(actionElement);
-                } else {
-                    elementActions = this.renderConnectionActions(actionElement);
-                }
+                elementActions = this.renderConnectionActions(actionElement);
             } else if (actionElement.isNode()) {
                 const data = actionElement.data();
                 if (isSystemObjectData(data)) {
@@ -129,7 +124,7 @@ class SdfStepBase extends React.Component<Props, State> {
                     elements={elements}
                     cursorStyle={cursorStyle}
                     graphClicked={this.props.nodeConnectingDone}
-                    nodeClicked={this.tryCreateConnection}
+                    nodeClicked={this.createConnection}
                     mouseEnteredNode={this.showNodeActions}
                     mouseLeftNode={this.hideNodeActions}
                     nodeMoved={this.updateNodePosition}
@@ -163,17 +158,16 @@ class SdfStepBase extends React.Component<Props, State> {
     }
 
     private renderConnectionActions(element: EdgeSingular) {
-        if (!this.props.tryCreateConnection(element.source(), element.target())) {
-            return <React.Fragment></React.Fragment>;
-        }
+        if (this.props.tryCreateConnection(element.source(), element.target())) {
 
-        const connection = getConnection(element);
-        if (connection) {
-            return <DeleteConnectionButton
-                connection={connection}
-                element={element}
-                onClick={() => this.props.elementDisplayPopperChanged(null)}
-            />;
+            const connection = getConnection(element);
+            if (connection) {
+                return <DeleteConnectionButton
+                    connection={connection}
+                    element={element}
+                    onClick={() => this.props.elementDisplayPopperChanged(null)}
+                />;
+            }
         }
 
         return <React.Fragment></React.Fragment>;
@@ -200,7 +194,7 @@ class SdfStepBase extends React.Component<Props, State> {
         this.props.elementDisplayPopperChanged(null);
     }
 
-    private tryCreateConnection(event: EventObject) {
+    private createConnection(event: EventObject) {
         const target = event.target as Singular;
         if (target.isNode()) {
             const connection = this.validateConnection(target);
