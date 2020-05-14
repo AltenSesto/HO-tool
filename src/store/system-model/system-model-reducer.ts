@@ -1,5 +1,5 @@
 import { SystemModel } from '../../entities/system-model'
-import { getFirstStepId } from '../../entities/meny/flow'
+import { getFirstStepId, getFlowStepOrder } from '../../entities/meny/flow'
 import { SystemModelActionTypes, LOAD_MODEL, RESET_MODEL, UPDATE_MODEL, UPDATE_FLOW_STEP, UPDATE_PROJECT_NAME } from './types'
 import { hazardsReducer } from './reducers/hazards-reducer'
 import { nextHazardIdReducer } from './reducers/next-hazard-id-reducer'
@@ -31,10 +31,11 @@ export function systemModelReducer(state = initialState, action: SystemModelActi
             return initialState;
         case UPDATE_FLOW_STEP:
             const step = action.payload;
-            if (step.order === state.currentStep.order) {
+            const stepOrder = getFlowStepOrder(step);
+            if (stepOrder === getFlowStepOrder(state.currentStep)) {
                 return state;
             }
-            if (step.order > state.lastCompletedStep.order) {
+            if (stepOrder > getFlowStepOrder(state.lastCompletedStep)) {
                 return { ...state, ...{ currentStep: step, lastCompletedStep: step } };
             }
             return { ...state, ...{ currentStep: step } };

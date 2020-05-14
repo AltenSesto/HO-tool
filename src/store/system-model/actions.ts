@@ -2,12 +2,12 @@ import { Action, Dispatch } from 'redux';
 import { SystemModelActionTypes, CREATE_HAZARD, UPDATE_HAZARD, DELETE_HAZARD, LOAD_MODEL, RESET_MODEL, UPDATE_MODEL, UPDATE_FLOW_STEP, ADD_POSSIBLE_HARM, REMOVE_POSSIBLE_HARM, CREATE_SUBSYSTEM, UPDATE_SUBSYSTEM, DELETE_SUBSYSTEM, CREATE_CONNECTION, DELETE_CONNECTION, CREATE_SYSTEM_OBJECT, UPDATE_SYSTEM_OBJECT, DELETE_SYSTEM_OBJECT, RENAME_SYSTEM_OBJECT, UPDATE_PROJECT_NAME } from "./types";
 import Hazard from "../../entities/hazard-population/hazard";
 import { SystemModel } from "../../entities/system-model";
-import { FlowStepId } from "../../entities/meny/flow-step";
 import { MishapVictim } from "../../entities/system-description/role";
 import { showConfirmationDialog } from "../modal-dialog/actions";
 import Subsystem from '../../entities/system-description/subsystem';
 import Connection from '../../entities/system-description/connection';
 import SystemObject from '../../entities/system-description/system-object';
+import { FlowStepId } from '../../entities/meny/flow-step-id';
 
 function createBaseCrudAction<T extends string, P>(type: T, payload: P) {
     return {

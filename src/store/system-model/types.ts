@@ -1,10 +1,10 @@
 import Hazard from '../../entities/hazard-population/hazard'
 import { SystemModel } from '../../entities/system-model'
-import { FlowStepId } from '../../entities/meny/flow-step'
 import { MishapVictim } from '../../entities/system-description/role'
 import Subsystem from '../../entities/system-description/subsystem'
 import Connection from '../../entities/system-description/connection'
 import SystemObject from '../../entities/system-description/system-object'
+import { FlowStepId } from '../../entities/meny/flow-step-id'
 
 export const CREATE_HAZARD = 'CREATE_HAZARD'
 export const DELETE_HAZARD = 'DELETE_HAZARD'

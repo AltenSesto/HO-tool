@@ -4,8 +4,6 @@ import { FolderOpen, SaveAlt } from '@material-ui/icons';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { SystemModel } from '../../entities/system-model';
-import { FlowStepId } from '../../entities/meny/flow-step';
-import { flowSteps } from '../../entities/meny/flow';
 import { RootState } from '../../store';
 import { loadModel, resetModel } from '../../store/system-model/actions';
 import { saveChanges } from '../../store/unsaved-changes/actions';
@@ -37,7 +35,6 @@ class Meny extends React.Component<Props> {
         this.processResult = this.processResult.bind(this);
         this.handleFileError = this.handleFileError.bind(this);
         this.reportError = this.reportError.bind(this);
-        this.prepareDataToDownload = this.prepareDataToDownload.bind(this);
 
         this._openFileRef = null;
     }
@@ -109,8 +106,8 @@ class Meny extends React.Component<Props> {
     }
 
     private downloadFile() {
-        const data = this.prepareDataToDownload();
-        const serialized = JSON.stringify(this.prepareDataToDownload(), null, '\t');
+        const data = this.props.systemModel;
+        const serialized = JSON.stringify(data, null, '\t');
         const fileName = `${data.projectName} ${new Date().toISOString().replace(/:/g, '_')}.json`;
 
         var element = document.createElement('a');
@@ -123,40 +120,6 @@ class Meny extends React.Component<Props> {
         document.body.removeChild(element);
 
         this.props.saveChanges();
-    }
-
-    private prepareDataToDownload() {
-        const data = this.props.systemModel;
-        return {
-            ...data,
-            ...{
-                currentStep: this.serializeStepId(data.currentStep),
-                lastCompletedStep: this.serializeStepId(data.lastCompletedStep)
-            }
-        };
-    }
-
-    private prepareReadData(data: any) {
-        return {
-            ...data,
-            ...{
-                currentStep: this.deserializeStepId(data.currentStep),
-                lastCompletedStep: this.deserializeStepId(data.lastCompletedStep)
-            }
-        };
-    }
-
-    private serializeStepId(step: FlowStepId) {
-        return step.name;
-    }
-
-    private deserializeStepId(name: string) {
-        for (var key in flowSteps) {
-            if (flowSteps[key].name === name) {
-                return flowSteps[key];
-            }
-        }
-        throw new Error(`Unknown flow step id - ${name}`);
     }
 
     private reportError(message: string) {
@@ -177,7 +140,7 @@ class Meny extends React.Component<Props> {
         }
 
         const data = ev.target.result as string;
-        const model = this.prepareReadData(JSON.parse(data));
+        const model = JSON.parse(data);
         this._openFileRef && this._openFileRef.reset();
         this.props.resetSystemModel();
         this.props.setSystemModel(model);

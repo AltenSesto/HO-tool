@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { List, ListItem, ListItemText, Chip, makeStyles, ListItemIcon, Divider, ListItemSecondaryAction } from '@material-ui/core';
-import { FlowStep, FlowStepId } from '../../entities/meny/flow-step';
-import { flow, OUT_OF_FLOW } from '../../entities/meny/flow';
+import { FlowStep } from '../../entities/meny/flow-step';
+import { flow, OUT_OF_FLOW, getFlowStepOrder } from '../../entities/meny/flow';
 import HelpText from './help-text';
 import { RootState } from '../../store';
 import { updateFlowStep } from '../../store/system-model/actions';
@@ -28,7 +28,7 @@ const mapState = (state: RootState) => ({
 })
 
 const mapDispatch = {
-    setCurentStep: (step: FlowStepId) => updateFlowStep(step)
+    setCurentStep: updateFlowStep
 }
 
 const connector = connect(mapState, mapDispatch);
@@ -41,14 +41,16 @@ const ProgressSteps: React.FC<Props> = (props: Props) => {
     const renderSteps = (steps: FlowStep[], paddingClass: string) => (
         <List disablePadding dense>
             {steps.map((step: FlowStep) => {
-                const isInFlow = step.id.order !== OUT_OF_FLOW;
-                const isCurrent = isInFlow && step.id.order === props.currentStep.order;
-                const isEnabled = !isInFlow || step.id.order <= props.lastCompletedStep.order + 1;
+                const stepOrder = getFlowStepOrder(step.id);
+                const isInFlow = stepOrder !== OUT_OF_FLOW;
+                const isCurrent = isInFlow && step.id === props.currentStep;
+                const isEnabled = !isInFlow ||
+                    stepOrder <= getFlowStepOrder(props.lastCompletedStep) + 1;
                 const helpOpenedOnFirstVisit = step.id === props.currentStep &&
                     step.id === props.lastCompletedStep;
 
                 return (
-                    <React.Fragment key={step.id.name}>
+                    <React.Fragment key={step.id}>
                         <ListItem
                             className={paddingClass}
                             button
@@ -59,7 +61,7 @@ const ProgressSteps: React.FC<Props> = (props: Props) => {
                                 <Chip
                                     size="small"
                                     disabled={!isEnabled}
-                                    label={step.id.name}
+                                    label={step.id}
                                     color={isCurrent ? 'secondary' : 'primary'}
                                     variant={isInFlow ? 'default' : 'outlined'}
                                 />
@@ -86,10 +88,10 @@ const ProgressSteps: React.FC<Props> = (props: Props) => {
     return (
         <List dense>
             {flow.map(stage => (
-                <React.Fragment key={stage.id.name}>
+                <React.Fragment key={stage.id}>
                     <ListItem>
                         <ListItemIcon>
-                            <Chip label={stage.id.name} variant='outlined' color='primary' />
+                            <Chip label={stage.id} variant='outlined' color='primary' />
                         </ListItemIcon>
                         <ListItemText
                             primary={stage.label}
