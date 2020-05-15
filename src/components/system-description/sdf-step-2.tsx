@@ -10,6 +10,7 @@ import { ObjectTypes } from '../../entities/system-description/object-types';
 import { isSystemObjectData } from '../../entities/graph/graph-element';
 import SdfStepBase, { StepState } from './sdf-step-base';
 import SubsystemCollapseButton from './subsystem-collapse-button';
+import NodeActions from '../graph/node-actions';
 
 export default class SdfStep2 extends React.Component<{}, StepState> {
 
@@ -48,24 +49,26 @@ export default class SdfStep2 extends React.Component<{}, StepState> {
             return <React.Fragment></React.Fragment>;
         }
 
-        return (<div style={{ position: 'relative', top: '-5px', left: '-5px' }}>
-            <IconButton
-                size='small'
-                title='Connect to role'
-                onClick={() => this.setState({ ...this.state, ...{ nodeConnecting: element } })}
-            >
-                <Link />
-            </IconButton>
-        </div>);
+        return (
+            <NodeActions placement='top'>
+                <IconButton
+                    size='small'
+                    title='Connect to role'
+                    onClick={() => this.setState({ ...this.state, ...{ nodeConnecting: element } })}
+                >
+                    <Link />
+                </IconButton>
+            </NodeActions>
+        );
     }
 
     private renderSubsystemActions(subsystem: Subsystem, element: NodeSingular) {
-        return <div style={{ position: 'relative', top: '5px', left: '-5px' }}>
+        return <NodeActions placement='bottom'>
             <SubsystemCollapseButton
                 node={element}
                 subsystem={subsystem}
             />
-        </div>;
+        </NodeActions>;
     }
 
     private tryCreateConnection(source: NodeSingular, target: NodeSingular) {

@@ -12,6 +12,7 @@ import { isSystemObjectData } from '../../entities/graph/graph-element';
 import SdfStepBase, { StepState } from './sdf-step-base';
 import DeleteSystemObjectButton from './delete-system-object-button';
 import SubsystemCollapseButton from './subsystem-collapse-button';
+import NodeActions from '../graph/node-actions';
 
 export default class SdfStep3 extends React.Component<{}, StepState> {
 
@@ -58,50 +59,53 @@ export default class SdfStep3 extends React.Component<{}, StepState> {
 
     private renderSystemObjectActions(object: SystemObject, element: NodeSingular) {
         if (object.type === ObjectTypes.relator) {
-            return (<div style={{ position: 'relative', top: '-5px', left: '-5px' }}>
-                <IconButton
-                    size='small'
-                    title='Connect to role'
-                    onClick={() => this.setState({ ...this.state, ...{ nodeConnecting: element } })}
-                >
-                    <Link />
-                </IconButton>
-                <IconButton
-                    size='small'
-                    title='Edit'
-                    onClick={() => this.setState({
-                        ...this.state, ...{ objectEditing: object, elementDisplayPopper: null }
-                    })}
-                >
-                    <Edit />
-                </IconButton>
-                <DeleteSystemObjectButton
-                    systemObject={object}
-                    onClick={() => this.setState({ ...this.state, ...{ elementDisplayPopper: null } })}
-                />
-            </div>);
+            return (
+                <NodeActions placement='top'>
+                    <IconButton
+                        size='small'
+                        title='Connect to role'
+                        onClick={() => this.setState({ ...this.state, ...{ nodeConnecting: element } })}
+                    >
+                        <Link />
+                    </IconButton>
+                    <IconButton
+                        size='small'
+                        title='Edit'
+                        onClick={() => this.setState({
+                            ...this.state, ...{ objectEditing: object, elementDisplayPopper: null }
+                        })}
+                    >
+                        <Edit />
+                    </IconButton>
+                    <DeleteSystemObjectButton
+                        systemObject={object}
+                        onClick={() => this.setState({ ...this.state, ...{ elementDisplayPopper: null } })}
+                    />
+                </NodeActions>);
         }
         if (object.type === ObjectTypes.role) {
-            return (<div style={{ position: 'relative', top: '-5px', left: '-5px' }}>
-                <IconButton
-                    size='small'
-                    title='Connect to relator'
-                    onClick={() => this.setState({ ...this.state, ...{ nodeConnecting: element } })}
-                >
-                    <Link />
-                </IconButton>
-            </div>);
+            return (
+                <NodeActions placement='top'>
+                    <IconButton
+                        size='small'
+                        title='Connect to relator'
+                        onClick={() => this.setState({ ...this.state, ...{ nodeConnecting: element } })}
+                    >
+                        <Link />
+                    </IconButton>
+                </NodeActions>
+            );
         }
         return <React.Fragment></React.Fragment>;
     }
 
     private renderSubsystemActions(subsystem: Subsystem, element: NodeSingular) {
-        return <div style={{ position: 'relative', top: '5px', left: '-5px' }}>
+        return <NodeActions placement='bottom'>
             <SubsystemCollapseButton
                 node={element}
                 subsystem={subsystem}
             />
-        </div>;
+        </NodeActions>;
     }
 
     private tryCreateConnection(source: NodeSingular, target: NodeSingular) {

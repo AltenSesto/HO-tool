@@ -13,6 +13,7 @@ import SdfStepBase, { StepState } from './sdf-step-base';
 import DeleteSystemObjectButton from './delete-system-object-button';
 import DeleteSubsystemButton from './delete-subsystem-button';
 import SubsystemCollapseButton from './subsystem-collapse-button';
+import NodeActions from '../graph/node-actions';
 
 export default class SdfStep1 extends React.Component<{}, StepState> {
 
@@ -72,70 +73,76 @@ export default class SdfStep1 extends React.Component<{}, StepState> {
 
     private renderSystemObjectActions(object: SystemObject, element: NodeSingular) {
         if (object.type === ObjectTypes.kind) {
-            return (<div style={{ position: 'relative', top: '-5px', left: '-5px' }}>
-                <IconButton
-                    size='small'
-                    title='Connect to containing kind'
-                    onClick={() => this.setState({ ...this.state, ...{ nodeConnecting: element } })}
-                >
-                    <Link />
-                </IconButton>
-                <IconButton
-                    size='small'
-                    title='Edit'
-                    onClick={() => this.setState({
-                        ...this.state, ...{ objectEditing: object, elementDisplayPopper: null }
-                    })}
-                >
-                    <Edit />
-                </IconButton>
-                <DeleteSystemObjectButton
-                    systemObject={object}
-                    onClick={() => this.setState({ ...this.state, ...{ elementDisplayPopper: null } })}
-                />
-            </div>);
+            return (
+                <NodeActions placement='top'>
+                    <IconButton
+                        size='small'
+                        title='Connect to containing kind'
+                        onClick={() => this.setState({ ...this.state, ...{ nodeConnecting: element } })}
+                    >
+                        <Link />
+                    </IconButton>
+                    <IconButton
+                        size='small'
+                        title='Edit'
+                        onClick={() => this.setState({
+                            ...this.state, ...{ objectEditing: object, elementDisplayPopper: null }
+                        })}
+                    >
+                        <Edit />
+                    </IconButton>
+                    <DeleteSystemObjectButton
+                        systemObject={object}
+                        onClick={() => this.setState({ ...this.state, ...{ elementDisplayPopper: null } })}
+                    />
+                </NodeActions>
+            );
         }
         if (object.type === ObjectTypes.role) {
-            return (<div style={{ position: 'relative', top: '-5px', left: '-5px' }}>
-                <IconButton
-                    size='small'
-                    title='Edit'
-                    onClick={() => this.setState({
-                        ...this.state, ...{ objectEditing: object, elementDisplayPopper: null }
-                    })}
-                >
-                    <Edit />
-                </IconButton>
-                <DeleteSystemObjectButton
-                    systemObject={object}
-                    onClick={() => this.setState({ ...this.state, ...{ elementDisplayPopper: null } })}
-                />
-            </div>);
+            return (
+                <NodeActions placement='top'>
+                    <IconButton
+                        size='small'
+                        title='Edit'
+                        onClick={() => this.setState({
+                            ...this.state, ...{ objectEditing: object, elementDisplayPopper: null }
+                        })}
+                    >
+                        <Edit />
+                    </IconButton>
+                    <DeleteSystemObjectButton
+                        systemObject={object}
+                        onClick={() => this.setState({ ...this.state, ...{ elementDisplayPopper: null } })}
+                    />
+                </NodeActions>
+            );
         }
         return <React.Fragment></React.Fragment>;
     }
 
     private renderSubsystemActions(subsystem: Subsystem, element: NodeSingular) {
-        return <div style={{ position: 'relative', top: '5px', left: '-5px' }}>
-            <SubsystemCollapseButton
-                node={element}
-                subsystem={subsystem}
-            />
-            <IconButton
-                size='small'
-                title='Edit'
-                onClick={() => this.setState({
-                    ...this.state, ...{ objectEditing: subsystem, elementDisplayPopper: null }
-                })}
-            >
-                <Edit />
-            </IconButton>
-            <DeleteSubsystemButton
-                element={element}
-                subsystem={subsystem}
-                onClick={() => this.setState({ ...this.state, ...{ elementDisplayPopper: null } })}
-            />
-        </div>;
+        return (
+            <NodeActions placement='bottom'>
+                <SubsystemCollapseButton
+                    node={element}
+                    subsystem={subsystem}
+                />
+                <IconButton
+                    size='small'
+                    title='Edit'
+                    onClick={() => this.setState({
+                        ...this.state, ...{ objectEditing: subsystem, elementDisplayPopper: null }
+                    })}
+                >
+                    <Edit />
+                </IconButton>
+                <DeleteSubsystemButton
+                    element={element}
+                    subsystem={subsystem}
+                    onClick={() => this.setState({ ...this.state, ...{ elementDisplayPopper: null } })}
+                />
+            </NodeActions>
+        );
     }
 
     private tryCreateConnection(source: NodeSingular, target: NodeSingular) {
