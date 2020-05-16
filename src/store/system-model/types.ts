@@ -9,7 +9,6 @@ import { FlowStepId } from '../../entities/meny/flow-step-id'
 export const CREATE_HAZARD = 'CREATE_HAZARD'
 export const DELETE_HAZARD = 'DELETE_HAZARD'
 export const UPDATE_HAZARD = 'UPDATE_HAZARD'
-export const UPDATE_MODEL = 'UPDATE_MODEL'
 export const LOAD_MODEL = 'LOAD_MODEL'
 export const RESET_MODEL = 'RESET_MODEL'
 export const UPDATE_FLOW_STEP = 'UPDATE_FLOW_STEP'
@@ -60,8 +59,6 @@ interface UpdateSystemObjectAction extends CrudActionBase<typeof UPDATE_SYSTEM_O
 
 interface RenameSystemObjectAction extends CrudActionBase<typeof RENAME_SYSTEM_OBJECT, SystemObject> { }
 
-interface UpdateModelAction extends CrudActionBase<typeof UPDATE_MODEL, SystemModel> { }
-
 interface LoadModelAction {
     type: typeof LOAD_MODEL,
     payload: SystemModel
@@ -89,7 +86,7 @@ interface RemovePossibleHarmAction extends CrudActionBase<
 interface UpdateProjectName extends CrudActionBase<typeof UPDATE_PROJECT_NAME, string> { }
 
 export type SystemModelActionTypes = CreateHazardAction | DeleteHazardAction | UpdateHazardAction |
-    LoadModelAction | ResetModelAction | UpdateModelAction | UpdateFlowStepAction |
+    LoadModelAction | ResetModelAction | UpdateFlowStepAction |
     AddPossibleHarmAction | RemovePossibleHarmAction | UpdateProjectName |
     CreateSubsystemAction | UpdateSubsystemAction | DeleteSubsystemAction |
     CreateConnectionAction | DeleteConnectionAction | RenameSystemObjectAction |

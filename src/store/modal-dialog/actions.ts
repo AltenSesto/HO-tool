@@ -16,3 +16,7 @@ export function hideConfirmationDialog(): ModalDialogActionTypes {
         type: HIDE_CONFIRMATION_DIALOG
     };
 }
+
+export function confirmDiscardModel(onYes: () => void) {
+    return showConfirmationDialog('You have unsaved changes that will be lost. Continue ?', onYes);
+}

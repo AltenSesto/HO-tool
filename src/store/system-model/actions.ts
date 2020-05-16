@@ -1,5 +1,5 @@
 import { Action, Dispatch } from 'redux';
-import { SystemModelActionTypes, CREATE_HAZARD, UPDATE_HAZARD, DELETE_HAZARD, LOAD_MODEL, RESET_MODEL, UPDATE_MODEL, UPDATE_FLOW_STEP, ADD_POSSIBLE_HARM, REMOVE_POSSIBLE_HARM, CREATE_SUBSYSTEM, UPDATE_SUBSYSTEM, DELETE_SUBSYSTEM, CREATE_CONNECTION, DELETE_CONNECTION, CREATE_SYSTEM_OBJECT, UPDATE_SYSTEM_OBJECT, DELETE_SYSTEM_OBJECT, RENAME_SYSTEM_OBJECT, UPDATE_PROJECT_NAME } from "./types";
+import { SystemModelActionTypes, CREATE_HAZARD, UPDATE_HAZARD, DELETE_HAZARD, LOAD_MODEL, RESET_MODEL, UPDATE_FLOW_STEP, ADD_POSSIBLE_HARM, REMOVE_POSSIBLE_HARM, CREATE_SUBSYSTEM, UPDATE_SUBSYSTEM, DELETE_SUBSYSTEM, CREATE_CONNECTION, DELETE_CONNECTION, CREATE_SYSTEM_OBJECT, UPDATE_SYSTEM_OBJECT, DELETE_SYSTEM_OBJECT, RENAME_SYSTEM_OBJECT, UPDATE_PROJECT_NAME } from "./types";
 import Hazard from "../../entities/hazard-population/hazard";
 import { SystemModel } from "../../entities/system-model";
 import { MishapVictim } from "../../entities/system-description/role";
@@ -63,10 +63,6 @@ export function deleteSystemObject(systemObject: SystemObject): SystemModelActio
 
 export function renameSystemObject(systemObject: SystemObject): SystemModelActionTypes {
     return createBaseCrudAction(RENAME_SYSTEM_OBJECT, systemObject);
-}
-
-export function updateModel(model: SystemModel): SystemModelActionTypes {
-    return createBaseCrudAction(UPDATE_MODEL, model);
 }
 
 export function loadModel(model: SystemModel): SystemModelActionTypes {

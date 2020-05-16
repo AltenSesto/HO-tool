@@ -1,6 +1,6 @@
 import { SystemModel } from '../../entities/system-model'
 import { getFirstStepId, getFlowStepOrder } from '../../entities/meny/flow'
-import { SystemModelActionTypes, LOAD_MODEL, RESET_MODEL, UPDATE_MODEL, UPDATE_FLOW_STEP, UPDATE_PROJECT_NAME } from './types'
+import { SystemModelActionTypes, LOAD_MODEL, RESET_MODEL, UPDATE_FLOW_STEP, UPDATE_PROJECT_NAME } from './types'
 import { hazardsReducer } from './reducers/hazards-reducer'
 import { nextHazardIdReducer } from './reducers/next-hazard-id-reducer'
 import { subsystemReducer } from './reducers/subsystems-reducer'
@@ -25,7 +25,6 @@ const initialState: SystemModel = {
 export function systemModelReducer(state = initialState, action: SystemModelActionTypes): SystemModel {
     switch (action.type) {
         case LOAD_MODEL:
-        case UPDATE_MODEL:
             return action.payload;
         case RESET_MODEL:
             return initialState;
