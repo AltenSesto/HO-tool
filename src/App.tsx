@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useBeforeunload } from 'react-beforeunload';
 import 'typeface-roboto';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core/styles';
 import { Toolbar, AppBar, Grid, Drawer } from '@material-ui/core';
+import { connect, ConnectedProps } from 'react-redux'
 
 import ErrorBoundary from './components/error-boundary';
-import { SystemModel } from './entities/system-model';
 import Meny from './components/meny/meny';
 import ProgressSteps from './components/meny/progress-steps';
-import { getFirstStepId, flowSteps } from './entities/meny/flow';
 import MishapVictimIdentification from './components/mishap-victim-identification/mishap-victim-identification';
 import SdfStep1 from './components/system-description/sdf-step-1';
 import SdfStep2 from './components/system-description/sdf-step-2';
@@ -17,7 +16,10 @@ import SdfStep3 from './components/system-description/sdf-step-3';
 import SdfStep4 from './components/system-description/sdf-step-4';
 import HazardPopulation from './components/hazard-population/hazard-population';
 import ProjectName from './components/project-name';
+import { RootState } from './store';
+import ConfirmationDialog from './components/confirmation-dialog';
 import OchStep1 from './components/hazard-description-categorization/och-step-1/och-step-1';
+import { FlowStepId } from './entities/meny/flow-step-id';
 
 const drawerWidth = 240;
 
@@ -46,93 +48,50 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const defaultModel = {
-    projectName: 'Hazard Ontology',
-    currentStep: getFirstStepId(),
-    lastCompletedStep: getFirstStepId(),
-    kinds: [],
-    roles: [],
-    relators: [],
-    systemObjectConnections: [],
-    subsystems: [],
-    hazards: [],
-    nextHazardId: 1
-};
+const mapState = (state: RootState) => ({
+    currentStep: state.systemModel.currentStep,
+    hasUnsavedChanges: state.unsavedChanges
+})
 
-const App: React.FC = () => {
+const connector = connect(mapState);
 
-    const [systemModel, setSystemModel] = useState<SystemModel>(defaultModel);
-    const [hasUnsavedChanges, setHasUnsaveChanges] = useState(false);
+type Props = ConnectedProps<typeof connector>
+
+const App: React.FC<Props> = (props) => {
 
     useBeforeunload((ev) => {
-        if (hasUnsavedChanges) {
+        if (props.hasUnsavedChanges) {
             ev.preventDefault();
         }
     });
 
-    const openFile = (model: SystemModel) => {
-        setSystemModel(defaultModel); // reset state first to prevent collisions with opened model
-        setSystemModel(model);
-        setHasUnsaveChanges(false);
-    };
-
-    const saveFile = () => {
-        setHasUnsaveChanges(false);
-        return systemModel;
-    };
-
-    const updateSystemModel = <T extends {}>(model: T, needsSaving: boolean = true) => {
-        if (needsSaving) {
-            setHasUnsaveChanges(true);
-        }
-        setSystemModel({ ...systemModel, ...model });
-    };
-
     const classes = useStyles();
 
     const getMainContent = () => {
-        switch (systemModel.currentStep) {
-            case flowSteps.SDF_1:
-                return <SdfStep1
-                    system={systemModel}
-                    systemUpdated={updateSystemModel}
-                />
-            case flowSteps.SDF_2:
-                return <SdfStep2
-                    system={systemModel}
-                    systemUpdated={updateSystemModel}
-                />
-            case flowSteps.SDF_3:
-                return <SdfStep3
-                    system={systemModel}
-                    systemUpdated={updateSystemModel}
-                />
-            case flowSteps.SDF_4:
-                return <SdfStep4
-                    system={systemModel}
-                    systemUpdated={updateSystemModel}
-                />
-            case flowSteps.OHI_2:
-                return <MishapVictimIdentification
-                    system={systemModel}
-                    possibleHarmsUpdated={updateSystemModel}
-                />;
-            case flowSteps.OHI_3:
-                return <HazardPopulation
-                    system={systemModel}
-                    systemUpdated={updateSystemModel}
-                />;
-            case flowSteps.OCH_1:
-                return <OchStep1
-                    hazards={systemModel.hazards}
-                    systemUpdated={updateSystemModel}
-                />;
+        switch (props.currentStep) {
+            case FlowStepId.SDF_1:
+                return <SdfStep1 />
+            case FlowStepId.SDF_2:
+                return <SdfStep2 />
+            case FlowStepId.SDF_3:
+                return <SdfStep3 />
+            case FlowStepId.SDF_4:
+                return <SdfStep4 />
+            case FlowStepId.OHI_2:
+                return <MishapVictimIdentification />;
+            case FlowStepId.OHI_3:
+                return <HazardPopulation />;
+            case FlowStepId.OCH_1:
+                return <OchStep1 />;
+            default:
+                throw new Error(`Unknown step id ${props.currentStep}`);
         }
     };
 
     return (
         <ErrorBoundary>
             <CssBaseline />
+            <ConfirmationDialog />
 
             <div className={classes.root}>
                 <AppBar
@@ -142,17 +101,10 @@ const App: React.FC = () => {
                     <Toolbar variant="dense">
                         <Grid container justify="space-evenly">
                             <Grid item xs>
-                                <Meny
-                                    openFile={openFile}
-                                    saveFile={saveFile}
-                                    hasUnsavedChanges={hasUnsavedChanges}
-                                />
+                                <Meny />
                             </Grid>
                             <Grid item xs={6} className={classes.appTitle}>
-                                <ProjectName
-                                    name={systemModel.projectName}
-                                    nameUpdated={(projectName) => updateSystemModel({ projectName })}
-                                />
+                                <ProjectName />
                             </Grid>
                             <Grid item xs>
                                 &nbsp;
@@ -170,10 +122,7 @@ const App: React.FC = () => {
                 >
                     <div className={classes.toolbar}></div>
 
-                    <ProgressSteps
-                        progress={systemModel}
-                        progressUpdated={updateSystemModel}
-                    />
+                    <ProgressSteps />
                 </Drawer>
 
                 <main className={classes.content}>
@@ -185,4 +134,4 @@ const App: React.FC = () => {
     );
 }
 
-export default App;
+export default connector(App);

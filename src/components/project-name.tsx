@@ -1,11 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import { Typography, IconButton, TextField, makeStyles } from '@material-ui/core';
 import { Edit, Done, Clear } from '@material-ui/icons';
+import { RootState } from '../store';
+import { updateProjectName } from '../store/system-model/actions';
 
-interface Props {
-    name: string;
-    nameUpdated: (name: string) => void;
-}
+const mapState = (state: RootState) => ({
+    name: state.systemModel.projectName
+});
+
+const mapDispatch = {
+    nameUpdated: updateProjectName
+};
+
+const connector = connect(mapState, mapDispatch);
+
+type Props = ConnectedProps<typeof connector>
 
 const useStyle = makeStyles(theme => ({
     input: {
@@ -87,4 +97,4 @@ const ProjectName: React.FC<Props> = (props) => {
     );
 };
 
-export default ProjectName;
+export default connector(ProjectName);

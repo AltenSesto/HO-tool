@@ -1,12 +1,26 @@
 import React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import { TableContainer, Table, TableRow, TableCell, TableBody, TableHead, withStyles, createStyles, makeStyles } from '@material-ui/core';
-import Hazard from '../../entities/hazard-population/hazard';
 import HazardsRow from './hazard-row';
+import { RootState } from '../../store';
+import { updateHazard, deleteHazard } from '../../store/system-model/actions';
+import { MishapVictim } from '../../entities/system-description/role';
 
-interface Props {
-    hazards: Hazard[];
-    hazardEdited: (item: Hazard) => void;
-    hazardDeleted: (id: number) => void;
+const mapState = (state: RootState) => ({
+    hazards: state.systemModel.hazards
+})
+
+const mapDispatch = {
+    hazardEdited: updateHazard,
+    hazardDeleted: deleteHazard
+}
+
+const connector = connect(mapState, mapDispatch);
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {
+    selectedMishapVictim?: MishapVictim
 }
 
 const StyledTableCell = withStyles(theme =>
@@ -42,6 +56,12 @@ const useStyles = makeStyles(() => ({
 const HazardsTable: React.FC<Props> = (props) => {
     const classes = useStyles();
 
+    let hazards = props.hazards;
+    const mishapVictim = props.selectedMishapVictim;
+    if (mishapVictim) {
+        hazards = hazards.filter(e => e.mishapVictim.id === mishapVictim.id);
+    }
+
     return (
         <TableContainer>
             <Table size='small'>
@@ -69,21 +89,21 @@ const HazardsTable: React.FC<Props> = (props) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {props.hazards.length === 0 ?
+                    {hazards.length === 0 ?
                         <TableRow>
                             <TableCell colSpan={7} align='center'>
                                 No hazards identified
                             </TableCell>
                         </TableRow>
                         :
-                        props.hazards
+                        hazards
                             .sort((a, b) => a.id - b.id)
                             .map((hazard, index) => (
                                 <HazardsRow 
-                                hazard={hazard}
-                                index={index}
-                                hazardEdited={props.hazardEdited}
-                                hazardDeleted={props.hazardDeleted}
+                                    hazard={hazard}
+                                    index={index}
+                                    hazardEdited={props.hazardEdited}
+                                    hazardDeleted={props.hazardDeleted}
                                 />
                             ))
                     }
@@ -93,4 +113,4 @@ const HazardsTable: React.FC<Props> = (props) => {
     );
 };
 
-export default HazardsTable;
+export default connector(HazardsTable);
