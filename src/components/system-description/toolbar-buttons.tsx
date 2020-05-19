@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
     root: {
         position: 'fixed',
         bottom: 0,
-        zIndex: 110
+        zIndex: theme.zIndex.graphAction
     },
     fab: {
         marginBottom: theme.spacing(1),

@@ -8,9 +8,9 @@ interface Props {
     placement?: Popper.Placement
 }
 
-const useStyle = makeStyles(() => ({
+const useStyle = makeStyles(theme => ({
     popper: {
-        zIndex: 100
+        zIndex: theme.zIndex.nodeAction
     }
 }));
 

@@ -6,7 +6,7 @@ const useStyles = makeStyles(theme => ({
         position: 'fixed',
         bottom: theme.spacing(2),
         right: theme.spacing(1),
-        zIndex: 110,
+        zIndex: theme.zIndex.graphHelp,
         minWidth: 200,
     }
 }));

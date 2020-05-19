@@ -3,6 +3,7 @@ import cytoscape, { Core, EventObject, Singular, NodeSingular } from 'cytoscape'
 import CytoscapeComponent from 'react-cytoscapejs';
 import expandCollapse from 'cytoscape-expand-collapse';
 import popper from 'cytoscape-popper';
+import { withTheme, Theme } from '@material-ui/core/styles';
 
 import style from '../../entities/graph/style';
 import { GraphElement, isSubsystemData } from '../../entities/graph/graph-element';
@@ -21,6 +22,7 @@ interface Props {
     graphClicked?: (ev: EventObject) => void;
     nodeMoved?: (ev: EventObject) => void;
     cy?: (cy: Core) => void;
+    theme: Theme;
 }
 
 interface State {
@@ -30,7 +32,7 @@ interface State {
     maxY: number;
 }
 
-export default class Graph extends React.Component<Props, State> {
+class Graph extends React.Component<Props, State> {
 
     // storing max canvas dimentions to use while loading a graph from a file
     // state will non work here as nodes load one by one without state being updated
@@ -62,7 +64,7 @@ export default class Graph extends React.Component<Props, State> {
         const graphContainerStyle = {
             width: this.state.maxX,
             height: this.state.maxY,
-            zIndex: 10,
+            zIndex: this.props.theme.zIndex.graph,
             cursor: this.props.cursorStyle
         };
 
@@ -144,3 +146,5 @@ export default class Graph extends React.Component<Props, State> {
         this.setState({ ...this.state, ...{ cy, collapseApi } });
     }
 }
+
+export default withTheme(Graph);

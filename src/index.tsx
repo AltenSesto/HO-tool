@@ -4,11 +4,15 @@ import App from './App';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import { rootReducer } from './store';
+import { ThemeProvider } from '@material-ui/core';
+import appTheme from './styles/app-theme';
 
 const store = createStore(rootReducer);
 
 ReactDOM.render(
     <Provider store={store}>
-        <App />
+        <ThemeProvider theme={appTheme}>
+            <App />
+        </ThemeProvider>
     </Provider>,
     document.getElementById('root'));
