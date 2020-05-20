@@ -1,10 +1,11 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { TableContainer, Table, TableRow, TableCell, TableBody, TableHead, withStyles, createStyles, makeStyles } from '@material-ui/core';
+import { TableContainer, Table, TableRow, TableCell, TableBody, TableHead, makeStyles } from '@material-ui/core';
 import HazardsRow from './hazard-row';
 import { RootState } from '../../store';
 import { updateHazard, deleteHazard } from '../../store/system-model/actions';
 import { MishapVictim } from '../../entities/system-description/role';
+import TableCellSmall from '../shared/table-cell-small';
 
 const mapState = (state: RootState) => ({
     hazards: state.systemModel.hazards
@@ -22,14 +23,6 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 type Props = PropsFromRedux & {
     selectedMishapVictim?: MishapVictim
 }
-
-const StyledTableCell = withStyles(theme =>
-    createStyles({
-        sizeSmall: {
-            padding: theme.spacing(1)
-        }
-    })
-)(TableCell);
 
 const useStyles = makeStyles(() => ({
     id: {
@@ -67,25 +60,25 @@ const HazardsTable: React.FC<Props> = (props) => {
             <Table size='small'>
                 <TableHead>
                     <TableRow>
-                        <StyledTableCell className={classes.id}>
+                        <TableCellSmall className={classes.id}>
                             ID
-                        </StyledTableCell>
-                        <StyledTableCell className={classes.mishapVictim}>
+                        </TableCellSmall>
+                        <TableCellSmall className={classes.mishapVictim}>
                             Mishap Victim<br />(Env Obj)
-                        </StyledTableCell>
-                        <StyledTableCell className={classes.exposure}>
+                        </TableCellSmall>
+                        <TableCellSmall className={classes.exposure}>
                             Exposure
-                        </StyledTableCell>
-                        <StyledTableCell className={classes.hazardElement}>
+                        </TableCellSmall>
+                        <TableCellSmall className={classes.hazardElement}>
                             Hazard Element<br />(Env Obj)
-                        </StyledTableCell>
-                        <StyledTableCell className={classes.harmTruthmaker}>
+                        </TableCellSmall>
+                        <TableCellSmall className={classes.harmTruthmaker}>
                             Harm TruthMaker
-                        </StyledTableCell>
-                        <StyledTableCell>
+                        </TableCellSmall>
+                        <TableCellSmall>
                             Hazard Description
-                        </StyledTableCell>
-                        <StyledTableCell className={classes.actions} />
+                        </TableCellSmall>
+                        <TableCellSmall className={classes.actions} />
                     </TableRow>
                 </TableHead>
                 <TableBody>

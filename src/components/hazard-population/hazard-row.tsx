@@ -1,9 +1,10 @@
 import React from 'react';
 import { useState } from 'react';
-import { TableRow, TableCell, TextField, IconButton, withStyles, createStyles } from '@material-ui/core';
+import { TableRow, TextField, IconButton } from '@material-ui/core';
 import { Delete, Edit, Save } from '@material-ui/icons';
 import Hazard from '../../entities/hazard-population/hazard';
 import HazardId from './hazard-id';
+import TableCellSmall from '../shared/table-cell-small';
 
 interface Props {
     hazard: Hazard;
@@ -11,14 +12,6 @@ interface Props {
     hazardEdited: (hazard: Hazard) => void;
     hazardDeleted: (hazard: Hazard) => void;
 }
-
-const StyledTableCell = withStyles(theme =>
-    createStyles({
-        sizeSmall: {
-            padding: theme.spacing(1)
-        }
-    })
-)(TableCell);
 
 const HazardsRow: React.FC<Props> = (props) => {
 
@@ -43,21 +36,21 @@ const HazardsRow: React.FC<Props> = (props) => {
 
     return ( 
         <TableRow key={props.index}>
-            <StyledTableCell>
+            <TableCellSmall>
                 <HazardId hazard={props.hazard} />
-            </StyledTableCell>
-            <StyledTableCell>
+            </TableCellSmall>
+            <TableCellSmall>
                 {props.hazard.mishapVictim.name}
                 <br />
                 ({props.hazard.mishapVictimEnvObj.name})
-            </StyledTableCell>
-            <StyledTableCell>{props.hazard.exposure.name}</StyledTableCell>
-            <StyledTableCell>
+            </TableCellSmall>
+            <TableCellSmall>{props.hazard.exposure.name}</TableCellSmall>
+            <TableCellSmall>
                 {props.hazard.hazardElement.name}
                 <br />
                 ({props.hazard.hazardElementEnvObj.name})
-            </StyledTableCell>
-            <StyledTableCell>
+            </TableCellSmall>
+            <TableCellSmall>
                 {isEditable
                 ? <TextField
                 required
@@ -69,8 +62,8 @@ const HazardsRow: React.FC<Props> = (props) => {
                 autoComplete='off'
                 />
                 : props.hazard.harmTruthmaker}
-            </StyledTableCell>
-            <StyledTableCell>
+            </TableCellSmall>
+            <TableCellSmall>
                 {isEditable
                 ? <TextField
                 required
@@ -82,8 +75,8 @@ const HazardsRow: React.FC<Props> = (props) => {
                 autoComplete='off'
                 />
                 : props.hazard.description}
-            </StyledTableCell>
-            <StyledTableCell>
+            </TableCellSmall>
+            <TableCellSmall>
                 {isEditable 
                 ? <IconButton size='small' onClick={() => editHazard()}><Save /></IconButton>
                 : <IconButton size='small' onClick={() => setIsEditable(true)}><Edit /></IconButton>
@@ -94,7 +87,7 @@ const HazardsRow: React.FC<Props> = (props) => {
                 >
                     <Delete />
                 </IconButton>
-            </StyledTableCell>
+            </TableCellSmall>
         </TableRow>
     );
 };

@@ -7,8 +7,16 @@ const appZIndex = {
     graphAction: 40
 };
 
+const defaultTheme = createMuiTheme();
+
+const appSpacing = {
+    standard: defaultTheme.spacing(2),
+    fabOverlap: defaultTheme.spacing(2) + defaultTheme.spacing(1) + 40
+};
+
 const appTheme = createMuiTheme({
-    zIndex: appZIndex
+    zIndex: appZIndex,
+    appSpacing
 });
 
 export default appTheme;

@@ -15,13 +15,13 @@ interface Props {
 
 const useStyles = makeStyles(theme => ({
     header: {
-        marginLeft: theme.spacing(2)
+        marginLeft: theme.appSpacing.standard
     },
     tableGutter: {
-        marginBottom: theme.spacing(2)
+        marginBottom: theme.appSpacing.standard
     },
     fabSpace: {
-        marginBottom: theme.spacing(2) + 40
+        marginBottom: theme.appSpacing.fabOverlap
     }
 }));
 

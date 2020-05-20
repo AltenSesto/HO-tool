@@ -37,7 +37,7 @@ const StyledTableRow = withStyles((theme: Theme) =>
 
 const useStyles = makeStyles(theme => ({
     header: {
-        marginLeft: theme.spacing(2)
+        marginLeft: theme.appSpacing.standard
     }
 }));
 

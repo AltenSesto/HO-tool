@@ -22,13 +22,13 @@ type Props = PropsFromRedux & {
 
 const useStyles = makeStyles(theme => ({
     header: {
-        marginLeft: theme.spacing(2)
+        marginLeft: theme.appSpacing.standard
     },
     tableGutter: {
-        marginBottom: theme.spacing(2)
+        marginBottom: theme.appSpacing.standard
     },
     select: {
-        marginLeft: theme.spacing(2),
+        marginLeft: theme.appSpacing.standard,
         width: '220px'
     }
 }));

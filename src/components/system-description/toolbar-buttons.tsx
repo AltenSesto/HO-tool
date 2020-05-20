@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
     },
     fab: {
         marginBottom: theme.spacing(1),
-        marginLeft: theme.spacing(2),
+        marginLeft: theme.appSpacing.standard,
         display: 'flex'
     }
 }));

@@ -11,7 +11,7 @@ import { makeStyles } from '@material-ui/core';
 
 const useStyle = makeStyles((theme) => ({
     fabSpace: {
-        height: theme.spacing(2) + 40
+        height: theme.appSpacing.fabOverlap
     }
 }));
 
