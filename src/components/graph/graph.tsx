@@ -5,9 +5,10 @@ import expandCollapse from 'cytoscape-expand-collapse';
 import popper from 'cytoscape-popper';
 import { withTheme, Theme } from '@material-ui/core/styles';
 
-import style from '../../entities/graph/style';
+import style from '../../styles/graph-style';
 import { GraphElement, isSubsystemData } from '../../entities/graph/graph-element';
 import { initCollapseApi, CollapseApi, getCollapseApi } from '../../entities/graph/collapse-api';
+import GraphContainer from './graph-container';
 
 cytoscape.use(popper);
 expandCollapse(cytoscape);
@@ -32,12 +33,14 @@ interface State {
     maxY: number;
 }
 
+const CANVAS_DEFAULT_SIZE = 0;
+
 class Graph extends React.Component<Props, State> {
 
     // storing max canvas dimentions to use while loading a graph from a file
     // state will non work here as nodes load one by one without state being updated
-    private newMaxX: number;
-    private newMaxY: number;
+    private newMaxX = CANVAS_DEFAULT_SIZE;
+    private newMaxY = CANVAS_DEFAULT_SIZE;
 
     constructor(props: Props) {
         super(props);
@@ -47,9 +50,8 @@ class Graph extends React.Component<Props, State> {
         this.checkCanvasSizeToFitNode = this.checkCanvasSizeToFitNode.bind(this);
         this.resizeCanvas = this.resizeCanvas.bind(this);
         this.handleNodeMoved = this.handleNodeMoved.bind(this);
+        this.setInitialCanvasSize = this.setInitialCanvasSize.bind(this);
 
-        this.newMaxX = 1500;
-        this.newMaxY = 900;
         this.state = {
             cy: null,
             collapseApi: null,
@@ -69,14 +71,23 @@ class Graph extends React.Component<Props, State> {
         };
 
         return (
-            <CytoscapeComponent
-                elements={elements}
-                style={graphContainerStyle}
-                stylesheet={style}
-                userZoomingEnabled={false}
-                userPanningEnabled={false}
-                cy={this.initCytoscape} />
+            <GraphContainer size={this.setInitialCanvasSize}>
+                <CytoscapeComponent
+                    elements={elements}
+                    style={graphContainerStyle}
+                    stylesheet={style}
+                    userZoomingEnabled={false}
+                    userPanningEnabled={false}
+                    cy={this.initCytoscape} />
+            </GraphContainer>
         );
+    }
+
+    private setInitialCanvasSize(height: number, width: number) {
+        if (this.newMaxX === CANVAS_DEFAULT_SIZE && this.newMaxY === CANVAS_DEFAULT_SIZE) {
+            this.newMaxY = height;
+            this.newMaxX = width;
+        }
     }
 
     private resizeCanvas() {

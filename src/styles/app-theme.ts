@@ -11,7 +11,8 @@ const defaultTheme = createMuiTheme();
 
 const appSpacing = {
     standard: defaultTheme.spacing(2),
-    fabOverlap: defaultTheme.spacing(2) + defaultTheme.spacing(1) + 40
+    fabOverlap: defaultTheme.spacing(2) + defaultTheme.spacing(1) + 40,
+    drawerWidth: 240
 };
 
 const appTheme = createMuiTheme({

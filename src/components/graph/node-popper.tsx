@@ -1,4 +1,4 @@
-import React, { createRef, useState, useEffect } from 'react';
+import React, { createRef, useState, useEffect, useCallback } from 'react';
 import { Singular } from 'cytoscape';
 import { makeStyles } from '@material-ui/core';
 import Popper from 'popper.js';
@@ -14,11 +14,21 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
-const nodeEvent = 'position';
+const EVENT_POSITION = 'position';
+const EVENT_MOUSEUP = 'mouseup';
 
 const NodePopper: React.FC<Props> = (props) => {
     const root = createRef<HTMLDivElement>();
     const [popper, setPopper] = useState<Popper | null>(null);
+
+    const destroyPopper = useCallback(() => {
+        if (popper) {
+            props.element.off(EVENT_POSITION, undefined, popper.scheduleUpdate);
+            props.element.off(EVENT_MOUSEUP, undefined, destroyPopper);
+            popper.destroy();
+            setPopper(null);
+        }
+    }, [popper, props.element]);
 
     useEffect(() => {
         if (root.current && !popper) {
@@ -28,17 +38,13 @@ const NodePopper: React.FC<Props> = (props) => {
                     placement: props.placement ? props.placement : 'top'
                 }
             });
-            props.element.on(nodeEvent, popperObj.scheduleUpdate);
+            props.element.on(EVENT_POSITION, popperObj.scheduleUpdate);
+            props.element.on(EVENT_MOUSEUP, destroyPopper); // otherwise the popper will dislocate on mouseup
             setPopper(popperObj);
         }
 
-        return () => {
-            if (popper) {
-                props.element.off(nodeEvent, undefined, popper.scheduleUpdate);
-                popper.destroy();
-            }
-        };
-    }, [root, popper, props.element, props.placement]);
+        return destroyPopper;
+    }, [root, popper, props.element, props.placement, destroyPopper]);
 
     const classes = useStyle();
 
