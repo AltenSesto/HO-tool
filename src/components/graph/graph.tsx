@@ -1,5 +1,5 @@
 import React from 'react';
-import cytoscape, { Core, EventObject, Singular, NodeSingular } from 'cytoscape';
+import cytoscape, { Core, EventObject, Singular } from 'cytoscape';
 import CytoscapeComponent from 'react-cytoscapejs';
 import expandCollapse from 'cytoscape-expand-collapse';
 import popper from 'cytoscape-popper';
@@ -33,21 +33,18 @@ interface State {
     maxY: number;
 }
 
-const CANVAS_DEFAULT_SIZE = 0;
-
 class Graph extends React.Component<Props, State> {
 
-    // storing max canvas dimentions to use while loading a graph from a file
-    // state will non work here as nodes load one by one without state being updated
-    private newMaxX = CANVAS_DEFAULT_SIZE;
-    private newMaxY = CANVAS_DEFAULT_SIZE;
+    private containerSize = {
+        height: 0,
+        width: 0
+    };
 
     constructor(props: Props) {
         super(props);
 
         this.initCytoscape = this.initCytoscape.bind(this);
         this.addEventListeners = this.addEventListeners.bind(this);
-        this.checkCanvasSizeToFitNode = this.checkCanvasSizeToFitNode.bind(this);
         this.resizeCanvas = this.resizeCanvas.bind(this);
         this.handleNodeMoved = this.handleNodeMoved.bind(this);
         this.setInitialCanvasSize = this.setInitialCanvasSize.bind(this);
@@ -55,8 +52,8 @@ class Graph extends React.Component<Props, State> {
         this.state = {
             cy: null,
             collapseApi: null,
-            maxX: this.newMaxX,
-            maxY: this.newMaxY
+            maxX: this.containerSize.width,
+            maxY: this.containerSize.height
         };
     }
 
@@ -83,31 +80,25 @@ class Graph extends React.Component<Props, State> {
         );
     }
 
+    componentDidMount() {
+        this.setState({
+            ...this.state,
+            ...{ maxX: this.containerSize.width, maxY: this.containerSize.height }
+        });
+    }
+
     private setInitialCanvasSize(height: number, width: number) {
-        if (this.newMaxX === CANVAS_DEFAULT_SIZE && this.newMaxY === CANVAS_DEFAULT_SIZE) {
-            this.newMaxY = height;
-            this.newMaxX = width;
-        }
+        this.containerSize = { height, width };
     }
 
     private resizeCanvas() {
-        if (this.newMaxX > this.state.maxX || this.newMaxY > this.state.maxY) {
-            this.setState({ ...this.state, ...{ maxX: this.newMaxX, maxY: this.newMaxY } });
-        }
-    }
-
-    private checkCanvasSizeToFitNode(event: EventObject) {
-        const node = event.target as NodeSingular;
-        const position = node.position();
-        const width = node.outerWidth();
-        const height = node.outerHeight();
-
-        const margin = 120; // we'll add more space than needed as node dimensions are not correct when loading from file
-        if (position.x + width + margin > this.newMaxX) {
-            this.newMaxX = position.x + width + margin;
-        }
-        if (position.y + height + margin > this.newMaxY) {
-            this.newMaxY = position.y + height + margin;
+        if (this.state.cy) {
+            const boundingBox = this.state.cy.nodes().renderedBoundingBox({});
+            const height = Math.max(boundingBox.y2, this.state.maxY);
+            const width = Math.max(boundingBox.x2, this.state.maxX);
+            if (height !== this.state.maxY || width !== this.state.maxX) {
+                this.setState({ ...this.state, ...{ maxX: width, maxY: height } });
+            }
         }
     }
 
@@ -120,8 +111,6 @@ class Graph extends React.Component<Props, State> {
     private addEventListeners(event: EventObject) {
         const ele: Singular = event.target.element();
         if (ele.isNode()) {
-            ele.on('position', this.checkCanvasSizeToFitNode);
-            ele.trigger('position');
             ele.on('dragfree', this.handleNodeMoved);
 
             const data = ele.data();
