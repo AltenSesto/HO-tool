@@ -21,7 +21,7 @@ const GraphContainer: React.FC<Props> = (props) => {
 
     const extractSize = (ref: HTMLDivElement | null) => {
         if (ref && props.size) {
-            props.size(ref.clientHeight, ref.clientWidth);
+            props.size(ref.scrollHeight, ref.scrollWidth);
         }
     };
 
