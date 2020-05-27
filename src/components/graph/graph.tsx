@@ -1,5 +1,5 @@
 import React from 'react';
-import cytoscape, { Core, EventObject, Singular } from 'cytoscape';
+import cytoscape, { Core, EventObject, Singular, NodeSingular } from 'cytoscape';
 import CytoscapeComponent from 'react-cytoscapejs';
 import expandCollapse from 'cytoscape-expand-collapse';
 import popper from 'cytoscape-popper';
@@ -103,9 +103,17 @@ class Graph extends React.Component<Props, State> {
     }
 
     private handleNodeMoved(event: EventObject) {
-        if (this.props.nodeMoved) {
-            this.props.nodeMoved(event);
+        const node: NodeSingular = event.target.element();
+        const position = node.position();
+        // prevent a node from being dragged beyond left and top border
+        if (position.x < 0 || position.y < 0) {
+            node.position({
+                ...position,
+                ...{ x: Math.max(position.x, 0), y: Math.max(position.y, 0) }
+            });
         }
+
+        this.props.nodeMoved?.(event);
     }
 
     private addEventListeners(event: EventObject) {
