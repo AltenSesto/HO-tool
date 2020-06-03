@@ -2,22 +2,10 @@ import React, { useState } from 'react';
 import GraphView from './graph-view';
 import { TableChart, BubbleChart } from '@material-ui/icons';
 import TableView from './table-view';
-import { SystemDescription } from '../../entities/system-model';
-import Role from '../../entities/system-description/role';
 import CornerFab from '../shared/corner-fab';
 
-interface Props {
-    system: SystemDescription;
-    possibleHarmsUpdated: (roles: { roles: Role[] }) => void;
-}
-
-const MishapVictimIdentification: React.FC<Props> = (props: Props) => {
+const MishapVictimIdentification: React.FC = () => {
     const [isGraphView, setIsGraphView] = useState(true);
-
-    const updateHarms = (role: Role) => {
-        const updatedRoles = props.system.roles.map(e => e.id === role.id ? role : e);
-        props.possibleHarmsUpdated({ roles: updatedRoles });
-    };
 
     if (isGraphView) {
         return (
@@ -26,10 +14,7 @@ const MishapVictimIdentification: React.FC<Props> = (props: Props) => {
                     <TableChart />
                     Table View
                 </CornerFab>
-                <GraphView
-                    systemDescription={props.system}
-                    possibleHarmsUpdated={updateHarms}
-                />
+                <GraphView />
             </React.Fragment>
         );
     }
@@ -40,10 +25,7 @@ const MishapVictimIdentification: React.FC<Props> = (props: Props) => {
                 <BubbleChart />
                 Graph View
             </CornerFab>
-            <TableView
-                roles={props.system.roles}
-                possibleHarmsUpdated={updateHarms}
-            />
+            <TableView />
         </React.Fragment>
     );
 }

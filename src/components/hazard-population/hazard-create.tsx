@@ -1,17 +1,29 @@
 import React, { useState, useEffect } from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import { TableRow, TableCell, TableContainer, Table, TableHead, TableBody, withStyles, createStyles, Theme, Grid, Typography, makeStyles } from '@material-ui/core';
 import { NodeSingular, EdgeSingular, SingularElementReturnValue } from 'cytoscape';
 
 import { PossibleHazard, ConnectionToObject } from '../../entities/hazard-population/possible-hazard';
-import Hazard from '../../entities/hazard-population/hazard';
 import HazardCreateDetails from './hazard-create-details';
 import { getRole, getSystemObject, getConnection } from '../../entities/graph/element-utilities';
 import { isMishapVictim, MishapVictim } from '../../entities/system-description/role';
+import { RootState } from '../../store';
+import { createHazard } from '../../store/system-model/actions';
 
-interface Props {
-    node: NodeSingular;
-    nextHazardId: number;
-    hazardCreated: (item: Hazard) => void;
+const mapState = (state: RootState) => ({
+    nextHazardId: state.systemModel.nextHazardId
+})
+
+const mapDispatch = {
+    hazardCreated: createHazard,
+}
+
+const connector = connect(mapState, mapDispatch);
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {
+    node: NodeSingular
 }
 
 const StyledTableRow = withStyles((theme: Theme) =>
@@ -25,7 +37,7 @@ const StyledTableRow = withStyles((theme: Theme) =>
 
 const useStyles = makeStyles(theme => ({
     header: {
-        marginLeft: theme.spacing(2)
+        marginLeft: theme.appSpacing.standard
     }
 }));
 
@@ -169,4 +181,4 @@ const HazardCreate: React.FC<Props> = (props) => {
     );
 };
 
-export default HazardCreate;
+export default connector(HazardCreate);

@@ -1,24 +1,28 @@
 import React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import { EventObject, Singular } from 'cytoscape';
 
 import VictimHarms from './victim-harms';
 import Graph from '../graph/graph';
 import GraphElementsFactoryMishapVictims from '../../entities/graph/graph-elements-factory-mishap-victims';
 import { isSystemObjectData } from '../../entities/graph/graph-element';
-import { SystemDescription } from '../../entities/system-model';
 import Role, { isRole } from '../../entities/system-description/role';
+import { RootState } from '../../store';
 
-interface Props {
-    systemDescription: SystemDescription;
-    possibleHarmsUpdated: (role: Role) => void;
-}
+const mapState = (state: RootState) => ({
+    systemDescription: state.systemModel
+})
+
+const connector = connect(mapState);
+
+type Props = ConnectedProps<typeof connector>
 
 interface State {
     selectedRoleId: string;
     isMouseOverRole: boolean;
 }
 
-export default class GraphView extends React.Component<Props, State> {
+class GraphView extends React.Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
@@ -52,7 +56,6 @@ export default class GraphView extends React.Component<Props, State> {
                 <VictimHarms
                     selectedRole={this.props.systemDescription.roles
                         .find(e => e.id === this.state.selectedRoleId)}
-                    possibleHarmsUpdated={this.props.possibleHarmsUpdated}
                 />
             </React.Fragment>
         );
@@ -92,3 +95,5 @@ export default class GraphView extends React.Component<Props, State> {
         }
     }
 }
+
+export default connector(GraphView);

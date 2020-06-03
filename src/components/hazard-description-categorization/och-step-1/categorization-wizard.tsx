@@ -32,7 +32,7 @@ const CategorizationWizard: React.FC<Props> = (props) => {
                     </p>
                     <p>
                         1) if a hazard description describes that some event is supposed to occur but
-                        does not, then the hazard description is regarded as a generic situation that
+                        does not, then the hazard description is regarded as a generic <b>situation</b> that
                         will not trigger the specific event, such as "the brake command is not issued",
                     </p>
                     <p>
@@ -40,7 +40,7 @@ const CategorizationWizard: React.FC<Props> = (props) => {
                     </p>
                     <p>
                         2) if a hazard description describes a repetitive and continuous behavior, it 
-                        can be regarded as a situation, such as "a train is running on the track".
+                        can be regarded as a <b>situation</b>, such as "a train is running on the track".
                     </p>
                 </React.Fragment>
             );

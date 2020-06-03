@@ -11,7 +11,7 @@ const useStyles = makeStyles(theme => ({
         marginBottom: theme.spacing(2),
         marginLeft: theme.spacing(2),
         bottom: 0,
-        zIndex: 110,
+        zIndex: theme.zIndex.graphAction,
     }
 }));
 
