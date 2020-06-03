@@ -1,7 +1,7 @@
 import React from 'react';
 import { NodeSingular } from 'cytoscape';
 import { IconButton } from '@material-ui/core';
-import { Add, Edit, Link } from '@material-ui/icons';
+import { Add, Link } from '@material-ui/icons';
 
 import SystemObject from '../../entities/system-description/system-object';
 import Subsystem from '../../entities/system-description/subsystem';
@@ -13,6 +13,7 @@ import SdfStepBase, { StepState } from './sdf-step-base';
 import DeleteSystemObjectButton from './delete-system-object-button';
 import SubsystemCollapseButton from './subsystem-collapse-button';
 import NodeActions from '../graph/node-actions';
+import EditNodeButton from './edit-node-button';
 
 export default class SdfStep3 extends React.Component<{}, StepState> {
 
@@ -68,15 +69,12 @@ export default class SdfStep3 extends React.Component<{}, StepState> {
                     >
                         <Link />
                     </IconButton>
-                    <IconButton
-                        size='small'
-                        title='Edit'
+                    <EditNodeButton
+                        node={object}
                         onClick={() => this.setState({
                             ...this.state, ...{ objectEditing: object, elementDisplayPopper: null }
                         })}
-                    >
-                        <Edit />
-                    </IconButton>
+                    />
                     <DeleteSystemObjectButton
                         systemObject={object}
                         onClick={() => this.setState({ ...this.state, ...{ elementDisplayPopper: null } })}
