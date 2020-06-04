@@ -22,6 +22,8 @@ export function getFlowStepOrder(step: FlowStepId): number {
             return 6;
         case FlowStepId.OCH_1:
             return 7;
+        case FlowStepId.OCH_2:
+            return 8;
         default:
             return OUT_OF_FLOW;
     }
@@ -52,7 +54,7 @@ export const flow = [
                 id: FlowStepId.OCH_1, label: 'Categorize', helpText: 'Categorize all the hazard descriptions into four categories, in terms of <b>Hazard</b>, <b>Initiating Condition</b>, <b>Initiating Event</b>, and/or <b>Mishap</b> based on the set of heuristic questions.'
             },
             {
-                id: FlowStepId.OCH_2, label: 'Expand', children: []
+                id: FlowStepId.OCH_2, label: 'Expand', helpText: 'Expand the categorized hazard description, taking both the expertise of analysts and the system description into consideration. '
             },
             {
                 id: FlowStepId.OCH_3, label: 'Identify Causes', children: []

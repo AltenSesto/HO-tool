@@ -10,22 +10,22 @@ const MishapVictimIdentification: React.FC = () => {
     if (isGraphView) {
         return (
             <React.Fragment>
+                <GraphView />
                 <CornerFab onClick={() => setIsGraphView(false)} >
                     <TableChart />
                     Table View
                 </CornerFab>
-                <GraphView />
             </React.Fragment>
         );
     }
 
     return (
         <React.Fragment>
-            <CornerFab onClick={() => setIsGraphView(true)} >
+            <TableView />
+            <CornerFab separated={true} onClick={() => setIsGraphView(true)} >
                 <BubbleChart />
                 Graph View
             </CornerFab>
-            <TableView />
         </React.Fragment>
     );
 }

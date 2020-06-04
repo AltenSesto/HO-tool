@@ -40,7 +40,7 @@ const OchStep1: React.FC<Props> = (props) => {
                     <TableBody>
                         {props.hazards.length === 0 ?
                             <TableRow>
-                                <TableCell colSpan={4}>
+                                <TableCell colSpan={4} align='center'>
                                     No hazards identified
                                 </TableCell>
                             </TableRow>

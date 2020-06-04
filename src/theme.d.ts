@@ -3,7 +3,6 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 
 type AppSpacing = {
     standard: number;
-    fabOverlap: number;
     drawerWidth: number;
 };
 

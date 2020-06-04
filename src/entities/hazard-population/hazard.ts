@@ -17,6 +17,7 @@ export default interface Hazard {
     hazardElement: NameIdPair;
     hazardElementEnvObj: NameIdPair;
     category?: HazardCategory;
+    expansion?: {};
 }
 
 export function isKindInHazard(kind: SystemObject, hazard: Hazard) {

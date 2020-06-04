@@ -7,16 +7,8 @@ import TableView from './table-view';
 import { getSystemObject } from '../../entities/graph/element-utilities';
 import CornerFab from '../shared/corner-fab';
 import { TableChart, BubbleChart } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core';
-
-const useStyle = makeStyles((theme) => ({
-    fabSpace: {
-        height: theme.appSpacing.fabOverlap
-    }
-}));
 
 const HazardPopulation: React.FC = () => {
-    const classes = useStyle();
 
     const [isSummarySelected, setIsSummarySelected] = useState(false);
     const [selectedVictim, setSelectedVictim] = useState<NodeSingular | null>(null);
@@ -49,8 +41,7 @@ const HazardPopulation: React.FC = () => {
         return (
             <React.Fragment>
                 <TableView getNode={findNode} />
-                <div className={classes.fabSpace} />
-                <CornerFab onClick={() => setIsSummarySelected(false)}>
+                <CornerFab separated={true} onClick={() => setIsSummarySelected(false)}>
                     <BubbleChart />
                     Graph View
                 </CornerFab>

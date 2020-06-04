@@ -9,17 +9,19 @@ import { connect, ConnectedProps } from 'react-redux'
 import ErrorBoundary from './components/error-boundary';
 import Meny from './components/meny/meny';
 import ProgressSteps from './components/meny/progress-steps';
+import ProjectName from './components/project-name';
+import { RootState } from './store';
+import ConfirmationDialog from './components/confirmation-dialog';
+import { FlowStepId } from './entities/meny/flow-step-id';
+
 import MishapVictimIdentification from './components/mishap-victim-identification/mishap-victim-identification';
 import SdfStep1 from './components/system-description/sdf-step-1';
 import SdfStep2 from './components/system-description/sdf-step-2';
 import SdfStep3 from './components/system-description/sdf-step-3';
 import SdfStep4 from './components/system-description/sdf-step-4';
 import HazardPopulation from './components/hazard-population/hazard-population';
-import ProjectName from './components/project-name';
-import { RootState } from './store';
-import ConfirmationDialog from './components/confirmation-dialog';
-import OchStep1 from './components/hazard-description-categorization/och-step-1/och-step-1';
-import { FlowStepId } from './entities/meny/flow-step-id';
+import OchStep1 from './components/causes-identification/och-step-1/och-step-1';
+import OchStep2 from './components/causes-identification/och-step-2/och-step-2';
 
 const drawerWidth = 240;
 
@@ -83,6 +85,8 @@ const App: React.FC<Props> = (props) => {
                 return <HazardPopulation />;
             case FlowStepId.OCH_1:
                 return <OchStep1 />;
+            case FlowStepId.OCH_2:
+                return <OchStep2 />
             default:
                 throw new Error(`Unknown step id ${props.currentStep}`);
         }
