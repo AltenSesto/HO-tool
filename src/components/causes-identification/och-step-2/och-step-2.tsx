@@ -8,7 +8,10 @@ const OchStep2: React.FC = () => {
     const [selectedHazard, setSelectedHazard] = useState<Hazard | null>(null);
 
     if (selectedHazard) {
-        return <ExpansionGraph onClose={() => setSelectedHazard(null)} />
+        return <ExpansionGraph
+            selectedHazard={selectedHazard}
+            onClose={() => setSelectedHazard(null)}
+        />
     }
 
     return <HazardsList hazardSelected={setSelectedHazard} />;

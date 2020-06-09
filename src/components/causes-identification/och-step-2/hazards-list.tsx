@@ -69,7 +69,7 @@ const HazardsList: React.FC<Props> = (props) => {
                                         variant='outlined'
                                         onClick={() => props.hazardSelected(hazard)}
                                     >
-                                        'Expand'
+                                        Expand
                                     </Button>
                                 </TableCell>
                             </TableRow>
