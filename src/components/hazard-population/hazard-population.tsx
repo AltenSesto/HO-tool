@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { NodeSingular, Core } from 'cytoscape';
+import React, { useState } from 'react';
+import { NodeSingular } from 'cytoscape';
 
 import VictimHazards from './victim-hazards';
 import GraphView from './graph-view';
@@ -12,19 +12,6 @@ const HazardPopulation: React.FC = () => {
 
     const [isSummarySelected, setIsSummarySelected] = useState(false);
     const [selectedVictim, setSelectedVictim] = useState<NodeSingular | null>(null);
-
-    const cyRef = useRef<Core>();
-
-    const findNode = (id: string) => {
-        if (!cyRef.current) {
-            return null;
-        }
-        const ele = cyRef.current.$(`#${id}`);
-        if (ele.isNode()) {
-            return ele;
-        }
-        return null;
-    }
 
     if (selectedVictim) {
         const mishapVictim = getSystemObject(selectedVictim);
@@ -40,7 +27,7 @@ const HazardPopulation: React.FC = () => {
     if (isSummarySelected) {
         return (
             <React.Fragment>
-                <TableView getNode={findNode} />
+                <TableView />
                 <CornerFab separated={true} onClick={() => setIsSummarySelected(false)}>
                     <BubbleChart />
                     Graph View
@@ -51,10 +38,7 @@ const HazardPopulation: React.FC = () => {
 
     return (
         <React.Fragment>
-            <GraphView
-                victimSelected={setSelectedVictim}
-                cyInitialized={cy => cyRef.current = cy}
-            />
+            <GraphView victimSelected={setSelectedVictim} />
             <CornerFab onClick={() => setIsSummarySelected(true)}>
                 <TableChart />
                 Table View

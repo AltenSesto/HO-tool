@@ -22,7 +22,6 @@ interface Props {
     nodeClicked: (ev: EventObject) => void;
     graphClicked?: (ev: EventObject) => void;
     nodeMoved?: (ev: EventObject) => void;
-    cy?: (cy: Core) => void;
     theme: Theme;
 }
 
@@ -132,9 +131,6 @@ class Graph extends React.Component<Props, State> {
     }
 
     private initCytoscape(cy: Core) {
-        if (this.props.cy) {
-            this.props.cy(cy);
-        }
 
         // this method must run only once
         if (this.state.cy) {
