@@ -94,7 +94,7 @@ const HazardsTable: React.FC<Props> = (props) => {
                             .map((hazard, index) => (
                                 <HazardsRow 
                                     hazard={hazard}
-                                    index={index}
+                                    key={index}
                                     hazardEdited={props.hazardEdited}
                                     hazardDeleted={props.hazardDeleted}
                                 />
