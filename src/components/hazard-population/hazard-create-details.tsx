@@ -12,7 +12,7 @@ interface Props {
 
 const useStyle = makeStyles((theme) => ({
     divide: {
-        paddingRight: theme.spacing(2)
+        paddingRight: theme.appSpacing.standard
     },
     select: {
         width: '220px'

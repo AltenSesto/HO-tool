@@ -10,7 +10,7 @@ interface Props {
 
 const useStyles = makeStyles(theme => ({
     typography: {
-        padding: theme.spacing(2),
+        padding: theme.appSpacing.standard,
         maxWidth: '320px'
     }
 }));

@@ -4,9 +4,9 @@ import { Card, makeStyles, CardContent } from '@material-ui/core';
 const useStyles = makeStyles(theme => ({
     root: {
         position: 'fixed',
-        bottom: theme.spacing(2),
-        right: theme.spacing(1),
-        zIndex: 110,
+        bottom: theme.appSpacing.standard,
+        right: theme.appSpacing.standard,
+        zIndex: theme.zIndex.graphHelp,
         minWidth: 200,
     }
 }));

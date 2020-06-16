@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@material-ui/core';
 
 import HarmsTableRow from './harms-table-row';
 import SelectRoleTableRow from './select-role-table-row';
 import Role, { isMishapVictim } from '../../entities/system-description/role';
 import CornerButtonPrimary from '../shared/corner-button-primary';
+import { RootState } from '../../store';
 
-interface Props {
-    roles: Role[];
-    possibleHarmsUpdated: (role: Role) => void;
-}
+const mapState = (state: RootState) => ({
+    roles: state.systemModel.roles
+})
+
+const connector = connect(mapState);
+
+type Props = ConnectedProps<typeof connector>
 
 const TableView: React.FC<Props> = (props: Props) => {
 
@@ -53,7 +58,6 @@ const TableView: React.FC<Props> = (props: Props) => {
                                 <HarmsTableRow
                                     key={e.id}
                                     role={e}
-                                    harmsUpdated={props.possibleHarmsUpdated}
                                 />
                             ))}
                         {isSelectingRole ?
@@ -75,4 +79,4 @@ const TableView: React.FC<Props> = (props: Props) => {
     );
 };
 
-export default TableView;
+export default connector(TableView);

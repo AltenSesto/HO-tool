@@ -1,18 +1,23 @@
 import React from 'react';
-import Hazard from '../../../entities/hazard-population/hazard';
+import { connect, ConnectedProps } from 'react-redux';
 import { TableContainer, TableBody, TableRow, Table, TableHead, TableCell } from '@material-ui/core';
 import OchStep1TableRow from './table-row';
+import { RootState } from '../../../store';
+import { updateHazard } from '../../../store/system-model/actions';
 
-interface Props {
-    hazards: Hazard[];
-    systemUpdated: (system: { hazards: Hazard[] }) => void;
-}
+const mapState = (state: RootState) => ({
+    hazards: state.systemModel.hazards
+});
+
+const mapDispatch = {
+    hazardUpdated: updateHazard
+};
+
+const connector = connect(mapState, mapDispatch);
+
+type Props = ConnectedProps<typeof connector>
 
 const OchStep1: React.FC<Props> = (props) => {
-
-    const updateHazard = (hazard: Hazard) => {
-        props.systemUpdated({ hazards: props.hazards.map(e => e.id === hazard.id ? hazard : e) });
-    };
 
     return (
         <React.Fragment>
@@ -44,7 +49,7 @@ const OchStep1: React.FC<Props> = (props) => {
                                 <OchStep1TableRow
                                     key={index}
                                     hazard={hazard}
-                                    hazardUpdated={updateHazard}
+                                    hazardUpdated={props.hazardUpdated}
                                 />
                             ))
                         }
@@ -55,4 +60,4 @@ const OchStep1: React.FC<Props> = (props) => {
     );
 };
 
-export default OchStep1;
+export default connector(OchStep1);

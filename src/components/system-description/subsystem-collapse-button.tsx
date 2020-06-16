@@ -1,16 +1,23 @@
 import React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import { NodeSingular } from 'cytoscape';
 import Subsystem from '../../entities/system-description/subsystem';
 import { IconButton } from '@material-ui/core';
 import { ExpandMore, ExpandLess } from '@material-ui/icons';
 import { getCollapseApi } from '../../entities/graph/collapse-api';
-import { SystemDescription } from '../../entities/system-model';
+import { updateSubsystem } from '../../store/system-model/actions';
 
-interface Props {
+const mapDispatch = {
+    subsystemUpdated: updateSubsystem,
+};
+
+const connector = connect(null, mapDispatch);
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {
     node: NodeSingular;
     subsystem: Subsystem;
-    system: SystemDescription;
-    systemUpdated: (system: SystemDescription) => void;
 }
 
 const SubsystemCollapseButton: React.FC<Props> = (props) => {
@@ -29,9 +36,7 @@ const SubsystemCollapseButton: React.FC<Props> = (props) => {
         cy.zoom(1.1); // restore position
         cy.pan({ x: 0, y: 0 });
 
-        const updatedSubsystems = props.system.subsystems
-            .map(e => e.id !== props.subsystem.id ? e : { ...props.subsystem, ...{ isCollapsed: newStateCollapsed } });
-        props.systemUpdated({ ...props.system, ...{ subsystems: updatedSubsystems } });
+        props.subsystemUpdated({ ...props.subsystem, ...{ isCollapsed: newStateCollapsed } });
     };
 
     return (
@@ -45,4 +50,4 @@ const SubsystemCollapseButton: React.FC<Props> = (props) => {
     );
 };
 
-export default SubsystemCollapseButton;
+export default connector(SubsystemCollapseButton);

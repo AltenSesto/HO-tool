@@ -1,4 +1,4 @@
-import { ObjectTypes } from "../system-description/object-types";
+import { ObjectTypes } from '../entities/system-description/object-types';
 
 const graphStyle = [
     {

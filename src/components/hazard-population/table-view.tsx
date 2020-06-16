@@ -1,31 +1,34 @@
 import React, { useState } from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import { makeStyles, Typography, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
 
-import Hazard from '../../entities/hazard-population/hazard';
 import HazardsTable from './hazards-table';
 import { NodeSingular } from 'cytoscape';
-import { MishapVictim } from '../../entities/system-description/role';
+import { isMishapVictim } from '../../entities/system-description/role';
 import HazardCreate from './hazard-create';
+import { RootState } from '../../store';
 
-interface Props {
-    hazards: Hazard[];
-    mishapVictims: MishapVictim[];
+const mapState = (state: RootState) => ({
+    mishapVictims: state.systemModel.roles.filter(e => isMishapVictim(e))
+})
+
+const connector = connect(mapState);
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {
     getNode: (id: string) => NodeSingular | null;
-    nextHazardId: number;
-    hazardCreated: (item: Hazard) => void;
-    hazardEdited: (item: Hazard) => void;
-    hazardDeleted: (id: number) => void;
 }
 
 const useStyles = makeStyles(theme => ({
     header: {
-        marginLeft: theme.spacing(2)
+        marginLeft: theme.appSpacing.standard
     },
     tableGutter: {
-        marginBottom: theme.spacing(2)
+        marginBottom: theme.appSpacing.standard
     },
     select: {
-        marginLeft: theme.spacing(2),
+        marginLeft: theme.appSpacing.standard,
         width: '220px'
     }
 }));
@@ -50,11 +53,7 @@ const TableView: React.FC<Props> = (props: Props) => {
             <Typography variant="h6" color="textSecondary" className={classes.header}>
                 Hazards
             </Typography>
-            <HazardsTable
-                hazards={props.hazards}
-                hazardEdited={props.hazardEdited}
-                hazardDeleted={props.hazardDeleted}
-            />
+            <HazardsTable />
             <div className={classes.tableGutter}></div>
             <Typography variant='h6' color='textSecondary' className={classes.header}>
                 Add New Hazard
@@ -78,13 +77,7 @@ const TableView: React.FC<Props> = (props: Props) => {
                 </Select>
             </FormControl>
             {mishapVictimNode ?
-                <React.Fragment>
-                    <HazardCreate
-                        hazardCreated={props.hazardCreated}
-                        nextHazardId={props.nextHazardId}
-                        node={mishapVictimNode}
-                    />
-                </React.Fragment>
+                <HazardCreate node={mishapVictimNode} />
                 :
                 undefined
             }
@@ -92,4 +85,4 @@ const TableView: React.FC<Props> = (props: Props) => {
     );
 };
 
-export default TableView;
+export default connector(TableView);

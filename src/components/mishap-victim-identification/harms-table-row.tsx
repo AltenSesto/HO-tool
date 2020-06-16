@@ -1,12 +1,31 @@
 import React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
+import { Action, Dispatch } from 'redux';
 import { TableRow, TableCell, Chip, TextField, IconButton, makeStyles } from '@material-ui/core';
 
 import { Add } from '@material-ui/icons';
-import Role from '../../entities/system-description/role';
+import Role, { MishapVictim } from '../../entities/system-description/role';
+import { addPossibleHarm, removePossibleHarm } from '../../store/system-model/actions';
+import { RootState } from '../../store';
+import Hazard from '../../entities/hazard-population/hazard';
 
-interface Props {
+const mapState = (state: RootState) => ({
+    hazards: state.systemModel.hazards
+});
+
+const mapDispatch = (dispatch: Dispatch<Action>) => ({
+    harmAdded: (mishapVictim: MishapVictim, harm: string) =>
+        dispatch(addPossibleHarm(mishapVictim, harm)),
+    harmDeleted: (mishapVictim: MishapVictim, harm: string, hazards: Hazard[]) =>
+        removePossibleHarm(mishapVictim, harm, hazards, dispatch)
+});
+
+const connector = connect(mapState, mapDispatch);
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {
     role: Role;
-    harmsUpdated: (role: Role) => void;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -23,14 +42,11 @@ const HarmsTableRow: React.FC<Props> = (props: Props) => {
         const harm = (form.elements.namedItem("harm") as HTMLInputElement).value;
         form.reset();
         ev.preventDefault();
-
-        const updatedHarms = props.role.possibleHarms.concat(harm);
-        props.harmsUpdated({ ...props.role, ...{ possibleHarms: updatedHarms } });
+        props.harmAdded(props.role, harm);
     };
 
     const deleteHarm = (harm: string) => {
-        const updatedHarms = props.role.possibleHarms.filter(e => e !== harm);
-        props.harmsUpdated({ ...props.role, ...{ possibleHarms: updatedHarms } });
+        props.harmDeleted(props.role, harm, props.hazards);
     };
 
     return (
@@ -70,4 +86,4 @@ const HarmsTableRow: React.FC<Props> = (props: Props) => {
     );
 };
 
-export default HarmsTableRow;
+export default connector(HarmsTableRow);

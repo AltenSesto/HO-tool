@@ -1,21 +1,28 @@
 import React from 'react';
-import { TableContainer, Table, TableRow, TableCell, TableBody, TableHead, withStyles, createStyles, makeStyles } from '@material-ui/core';
-import Hazard from '../../entities/hazard-population/hazard';
+import { connect, ConnectedProps } from 'react-redux';
+import { TableContainer, Table, TableRow, TableCell, TableBody, TableHead, makeStyles } from '@material-ui/core';
 import HazardsRow from './hazard-row';
+import { RootState } from '../../store';
+import { updateHazard, deleteHazard } from '../../store/system-model/actions';
+import { MishapVictim } from '../../entities/system-description/role';
+import TableCellSmall from '../shared/table-cell-small';
 
-interface Props {
-    hazards: Hazard[];
-    hazardEdited: (item: Hazard) => void;
-    hazardDeleted: (id: number) => void;
+const mapState = (state: RootState) => ({
+    hazards: state.systemModel.hazards
+})
+
+const mapDispatch = {
+    hazardEdited: updateHazard,
+    hazardDeleted: deleteHazard
 }
 
-const StyledTableCell = withStyles(theme =>
-    createStyles({
-        sizeSmall: {
-            padding: theme.spacing(1)
-        }
-    })
-)(TableCell);
+const connector = connect(mapState, mapDispatch);
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {
+    selectedMishapVictim?: MishapVictim
+}
 
 const useStyles = makeStyles(() => ({
     id: {
@@ -42,48 +49,54 @@ const useStyles = makeStyles(() => ({
 const HazardsTable: React.FC<Props> = (props) => {
     const classes = useStyles();
 
+    let hazards = props.hazards;
+    const mishapVictim = props.selectedMishapVictim;
+    if (mishapVictim) {
+        hazards = hazards.filter(e => e.mishapVictim.id === mishapVictim.id);
+    }
+
     return (
         <TableContainer>
             <Table size='small'>
                 <TableHead>
                     <TableRow>
-                        <StyledTableCell className={classes.id}>
+                        <TableCellSmall className={classes.id}>
                             ID
-                        </StyledTableCell>
-                        <StyledTableCell className={classes.mishapVictim}>
+                        </TableCellSmall>
+                        <TableCellSmall className={classes.mishapVictim}>
                             Mishap Victim<br />(Env Obj)
-                        </StyledTableCell>
-                        <StyledTableCell className={classes.exposure}>
+                        </TableCellSmall>
+                        <TableCellSmall className={classes.exposure}>
                             Exposure
-                        </StyledTableCell>
-                        <StyledTableCell className={classes.hazardElement}>
+                        </TableCellSmall>
+                        <TableCellSmall className={classes.hazardElement}>
                             Hazard Element<br />(Env Obj)
-                        </StyledTableCell>
-                        <StyledTableCell className={classes.harmTruthmaker}>
+                        </TableCellSmall>
+                        <TableCellSmall className={classes.harmTruthmaker}>
                             Harm TruthMaker
-                        </StyledTableCell>
-                        <StyledTableCell>
+                        </TableCellSmall>
+                        <TableCellSmall>
                             Hazard Description
-                        </StyledTableCell>
-                        <StyledTableCell className={classes.actions} />
+                        </TableCellSmall>
+                        <TableCellSmall className={classes.actions} />
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {props.hazards.length === 0 ?
+                    {hazards.length === 0 ?
                         <TableRow>
                             <TableCell colSpan={7} align='center'>
                                 No hazards identified
                             </TableCell>
                         </TableRow>
                         :
-                        props.hazards
+                        hazards
                             .sort((a, b) => a.id - b.id)
                             .map((hazard, index) => (
-                                <HazardsRow
-                                key={index}
-                                hazard={hazard}
-                                hazardEdited={props.hazardEdited}
-                                hazardDeleted={props.hazardDeleted}
+                                <HazardsRow 
+                                    hazard={hazard}
+                                    key={index}
+                                    hazardEdited={props.hazardEdited}
+                                    hazardDeleted={props.hazardDeleted}
                                 />
                             ))
                     }
@@ -93,4 +106,4 @@ const HazardsTable: React.FC<Props> = (props) => {
     );
 };
 
-export default HazardsTable;
+export default connector(HazardsTable);

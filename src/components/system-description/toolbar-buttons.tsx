@@ -14,13 +14,11 @@ interface Props {
 const useStyles = makeStyles(theme => ({
     root: {
         position: 'fixed',
-        bottom: 0,
-        zIndex: 110
+        bottom: theme.appSpacing.standard,
+        zIndex: theme.zIndex.graphAction
     },
     fab: {
-        marginBottom: theme.spacing(1),
-        marginLeft: theme.spacing(2),
-        display: 'flex'
+        marginLeft: theme.appSpacing.standard,
     }
 }));
 

@@ -1,0 +1,440 @@
+{
+	"projectName": "UC01 Standing up operation",
+	"currentStep": "OHI-3",
+	"lastCompletedStep": "OHI-3",
+	"nextHazardId": 9,
+	"kinds": [
+		{
+			"id": "kind-1585058378636",
+			"name": "Patient",
+			"type": "kind",
+			"posX": 206.72738398344262,
+			"posY": 60.55119272368071,
+			"parent": "subsystem-1585058395389"
+		},
+		{
+			"id": "kind-1585058422474",
+			"name": "Robot",
+			"type": "kind",
+			"posX": 406.0226480822118,
+			"posY": 268.97723448218653,
+			"parent": "subsystem-1585058395389"
+		},
+		{
+			"id": "kind-1585058434187",
+			"name": "Robot Handle",
+			"type": "kind",
+			"posX": 259.9405078384284,
+			"posY": 269.02134614833386,
+			"parent": "subsystem-1585058395389"
+		},
+		{
+			"id": "kind-1585058451882",
+			"name": "Battery",
+			"type": "kind",
+			"posX": 565.6224548896844,
+			"posY": 266.45688304766725,
+			"parent": "subsystem-1585058395389"
+		}
+	],
+	"roles": [
+		{
+			"id": "role-1585058552683",
+			"name": "Being Supported",
+			"type": "role",
+			"posX": 122.0558037341425,
+			"posY": 104.61503975661583,
+			"parent": "subsystem-1585058395389",
+			"possibleHarms": [
+				"Physical damage"
+			]
+		},
+		{
+			"id": "role-1585058573282",
+			"name": "Being Lifted",
+			"type": "role",
+			"posX": 308.5455740876099,
+			"posY": 86.914823094774,
+			"parent": "subsystem-1585058395389",
+			"possibleHarms": [
+				"Physical damage"
+			]
+		},
+		{
+			"id": "role-1585058606570",
+			"name": "Balance Supporter",
+			"type": "role",
+			"posX": 146.2688221719891,
+			"posY": 217.97991609780874,
+			"parent": "subsystem-1585058395389",
+			"possibleHarms": []
+		},
+		{
+			"id": "role-1585058634194",
+			"name": "Object Lifter",
+			"type": "role",
+			"posX": 321.4126197662283,
+			"posY": 212.65770519781245,
+			"parent": "subsystem-1585058395389",
+			"possibleHarms": []
+		},
+		{
+			"id": "role-1585058704434",
+			"name": "Electricity Consumer",
+			"type": "role",
+			"posX": 403.7900045775296,
+			"posY": 124.67598294642008,
+			"parent": "subsystem-1585058395389",
+			"possibleHarms": [
+				"Electic leakage",
+				"Explosion"
+			]
+		},
+		{
+			"id": "role-1585058731786",
+			"name": "Electricity Source",
+			"type": "role",
+			"posX": 568.332271295691,
+			"posY": 118.97722227515445,
+			"parent": "subsystem-1585058395389",
+			"possibleHarms": []
+		}
+	],
+	"relators": [
+		{
+			"id": "relator-1585058906506",
+			"name": "Balance Support",
+			"type": "relator",
+			"posX": 146.812417490929,
+			"posY": 164.01110999138385,
+			"parent": "subsystem-1585058395389"
+		},
+		{
+			"id": "relator-1585058925546",
+			"name": "Lift Up",
+			"type": "relator",
+			"posX": 289.2918535945264,
+			"posY": 157.7729897002967,
+			"parent": "subsystem-1585058395389"
+		},
+		{
+			"id": "relator-1585058937586",
+			"name": "Electricity Consumption",
+			"type": "relator",
+			"posX": 481.45292472603415,
+			"posY": 74.46586428269372,
+			"parent": "subsystem-1585058395389"
+		}
+	],
+	"systemObjectConnections": [
+		{
+			"id": "connection-1585058502992",
+			"source": "kind-1585058434187",
+			"target": "kind-1585058422474",
+			"label": "ispartof",
+			"isOriented": true
+		},
+		{
+			"id": "connection-1585058506104",
+			"source": "kind-1585058451882",
+			"target": "kind-1585058422474",
+			"label": "ispartof",
+			"isOriented": true
+		},
+		{
+			"id": "connection-1585058788898",
+			"source": "kind-1585058434187",
+			"target": "role-1585058606570",
+			"label": "play",
+			"isOriented": true
+		},
+		{
+			"id": "connection-1585058839184",
+			"source": "kind-1585058434187",
+			"target": "role-1585058634194",
+			"label": "play",
+			"isOriented": true
+		},
+		{
+			"id": "connection-1585058853120",
+			"source": "kind-1585058422474",
+			"target": "role-1585058704434",
+			"label": "play",
+			"isOriented": true
+		},
+		{
+			"id": "connection-1585058855809",
+			"source": "kind-1585058451882",
+			"target": "role-1585058731786",
+			"label": "play",
+			"isOriented": true
+		},
+		{
+			"id": "connection-1585058862545",
+			"source": "kind-1585058378636",
+			"target": "role-1585058552683",
+			"label": "play",
+			"isOriented": true
+		},
+		{
+			"id": "connection-1585058864554",
+			"source": "kind-1585058378636",
+			"target": "role-1585058573282",
+			"label": "play",
+			"isOriented": true
+		},
+		{
+			"id": "connection-1585906782692",
+			"source": "role-1585058552683",
+			"target": "relator-1585058906506",
+			"label": "",
+			"isOriented": false
+		},
+		{
+			"id": "connection-1585906790046",
+			"source": "role-1585058606570",
+			"target": "relator-1585058906506",
+			"label": "",
+			"isOriented": false
+		},
+		{
+			"id": "connection-1585906797027",
+			"source": "role-1585058573282",
+			"target": "relator-1585058925546",
+			"label": "",
+			"isOriented": false
+		},
+		{
+			"id": "connection-1585906800204",
+			"source": "role-1585058634194",
+			"target": "relator-1585058925546",
+			"label": "",
+			"isOriented": false
+		},
+		{
+			"id": "connection-1585906802555",
+			"source": "role-1585058704434",
+			"target": "relator-1585058937586",
+			"label": "",
+			"isOriented": false
+		},
+		{
+			"id": "connection-1585906804691",
+			"source": "role-1585058731786",
+			"target": "relator-1585058937586",
+			"label": "",
+			"isOriented": false
+		}
+	],
+	"subsystems": [
+		{
+			"id": "subsystem-1585058395389",
+			"name": "UC01 Standing up operation",
+			"posX": 345.9440375149168,
+			"posY": 164.78626943600727,
+			"isCollapsed": false
+		}
+	],
+	"hazards": [
+		{
+			"id": 1,
+			"harmTruthmaker": "Unstable physical structure",
+			"description": "Unstable physical structure of the robot while lifting a patient",
+			"mishapVictim": {
+				"id": "role-1585058552683",
+				"name": "Being Supported"
+			},
+			"mishapVictimEnvObj": {
+				"id": "kind-1585058378636",
+				"name": "Patient"
+			},
+			"exposure": {
+				"id": "relator-1585058906506",
+				"name": "Balance Support"
+			},
+			"hazardElement": {
+				"id": "role-1585058606570",
+				"name": "Balance Supporter"
+			},
+			"hazardElementEnvObj": {
+				"id": "kind-1585058434187",
+				"name": "Robot Handle"
+			}
+		},
+		{
+			"id": 2,
+			"harmTruthmaker": "Too heavy weight",
+			"description": "The patient is too heavy to be lifted by the robot",
+			"mishapVictim": {
+				"id": "role-1585058552683",
+				"name": "Being Supported"
+			},
+			"mishapVictimEnvObj": {
+				"id": "kind-1585058378636",
+				"name": "Patient"
+			},
+			"exposure": {
+				"id": "relator-1585058906506",
+				"name": "Balance Support"
+			},
+			"hazardElement": {
+				"id": "role-1585058552683",
+				"name": "Being Supported"
+			},
+			"hazardElementEnvObj": {
+				"id": "kind-1585058378636",
+				"name": "Patient"
+			}
+		},
+		{
+			"id": 3,
+			"harmTruthmaker": "Too fast movement",
+			"description": "Too fast movement of the robot handle while lifting a patient",
+			"mishapVictim": {
+				"id": "role-1585058573282",
+				"name": "Being Lifted"
+			},
+			"mishapVictimEnvObj": {
+				"id": "kind-1585058378636",
+				"name": "Patient"
+			},
+			"exposure": {
+				"id": "relator-1585058925546",
+				"name": "Lift Up"
+			},
+			"hazardElement": {
+				"id": "role-1585058634194",
+				"name": "Object Lifter"
+			},
+			"hazardElementEnvObj": {
+				"id": "kind-1585058434187",
+				"name": "Robot Handle"
+			}
+		},
+		{
+			"id": 4,
+			"harmTruthmaker": "Sudden acceleration",
+			"description": "Sudden movement of the robot handle while lifting a patient",
+			"mishapVictim": {
+				"id": "role-1585058573282",
+				"name": "Being Lifted"
+			},
+			"mishapVictimEnvObj": {
+				"id": "kind-1585058378636",
+				"name": "Patient"
+			},
+			"exposure": {
+				"id": "relator-1585058925546",
+				"name": "Lift Up"
+			},
+			"hazardElement": {
+				"id": "role-1585058634194",
+				"name": "Object Lifter"
+			},
+			"hazardElementEnvObj": {
+				"id": "kind-1585058434187",
+				"name": "Robot Handle"
+			}
+		},
+		{
+			"id": 5,
+			"harmTruthmaker": "Improper posture",
+			"description": "Improper posture of a patient while being lifted",
+			"mishapVictim": {
+				"id": "role-1585058573282",
+				"name": "Being Lifted"
+			},
+			"mishapVictimEnvObj": {
+				"id": "kind-1585058378636",
+				"name": "Patient"
+			},
+			"exposure": {
+				"id": "relator-1585058925546",
+				"name": "Lift Up"
+			},
+			"hazardElement": {
+				"id": "role-1585058573282",
+				"name": "Being Lifted"
+			},
+			"hazardElementEnvObj": {
+				"id": "kind-1585058378636",
+				"name": "Patient"
+			}
+		},
+		{
+			"id": 6,
+			"harmTruthmaker": "Inability to hold handles",
+			"description": "Inability of a patient to hold robot handles while being lifted",
+			"mishapVictim": {
+				"id": "role-1585058573282",
+				"name": "Being Lifted"
+			},
+			"mishapVictimEnvObj": {
+				"id": "kind-1585058378636",
+				"name": "Patient"
+			},
+			"exposure": {
+				"id": "relator-1585058925546",
+				"name": "Lift Up"
+			},
+			"hazardElement": {
+				"id": "role-1585058573282",
+				"name": "Being Lifted"
+			},
+			"hazardElementEnvObj": {
+				"id": "kind-1585058378636",
+				"name": "Patient"
+			}
+		},
+		{
+			"id": 7,
+			"harmTruthmaker": "Explosion",
+			"description": "Explosion of battery causing robot damage",
+			"mishapVictim": {
+				"id": "role-1585058704434",
+				"name": "Electricity Consumer"
+			},
+			"mishapVictimEnvObj": {
+				"id": "kind-1585058422474",
+				"name": "Robot"
+			},
+			"exposure": {
+				"id": "relator-1585058937586",
+				"name": "Electricity Consumption"
+			},
+			"hazardElement": {
+				"id": "role-1585058731786",
+				"name": "Electricity Source"
+			},
+			"hazardElementEnvObj": {
+				"id": "kind-1585058451882",
+				"name": "Battery"
+			}
+		},
+		{
+			"id": 8,
+			"harmTruthmaker": "Electric leakage",
+			"description": "Electric leakage of the battery causing fire",
+			"mishapVictim": {
+				"id": "role-1585058704434",
+				"name": "Electricity Consumer"
+			},
+			"mishapVictimEnvObj": {
+				"id": "kind-1585058422474",
+				"name": "Robot"
+			},
+			"exposure": {
+				"id": "relator-1585058937586",
+				"name": "Electricity Consumption"
+			},
+			"hazardElement": {
+				"id": "role-1585058731786",
+				"name": "Electricity Source"
+			},
+			"hazardElementEnvObj": {
+				"id": "kind-1585058451882",
+				"name": "Battery"
+			}
+		}
+	]
+}
