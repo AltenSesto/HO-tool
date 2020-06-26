@@ -19,9 +19,6 @@ const useStyles = makeStyles(theme => ({
     },
     tableGutter: {
         marginBottom: theme.appSpacing.standard
-    },
-    fabSpace: {
-        marginBottom: theme.appSpacing.fabOverlap
     }
 }));
 
@@ -50,8 +47,7 @@ const VictimHazards: React.FC<Props> = (props) => {
                 Add New Hazard
             </Typography>
             <HazardCreate node={props.node} />
-            <div className={classes.fabSpace}></div>
-            <CornerFab onClick={props.close} >
+            <CornerFab separated onClick={props.close} >
                 Back
             </CornerFab>
         </React.Fragment>

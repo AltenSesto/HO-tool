@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { makeStyles, Typography, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
 
@@ -7,18 +7,16 @@ import { NodeSingular } from 'cytoscape';
 import { isMishapVictim } from '../../entities/system-description/role';
 import HazardCreate from './hazard-create';
 import { RootState } from '../../store';
+import { HeadlessGraph } from '../../entities/graph/headless-graph';
 
 const mapState = (state: RootState) => ({
-    mishapVictims: state.systemModel.roles.filter(e => isMishapVictim(e))
+    mishapVictims: state.systemModel.roles.filter(e => isMishapVictim(e)),
+    systemModel: state.systemModel
 })
 
 const connector = connect(mapState);
 
-type PropsFromRedux = ConnectedProps<typeof connector>
-
-type Props = PropsFromRedux & {
-    getNode: (id: string) => NodeSingular | null;
-}
+type Props = ConnectedProps<typeof connector>
 
 const useStyles = makeStyles(theme => ({
     header: {
@@ -38,14 +36,21 @@ const TableView: React.FC<Props> = (props: Props) => {
 
     const [mishapVictimId, setMishapVictimId] = useState('');
     const [mishapVictimNode, setMishapVictimNode] = useState<NodeSingular | null>(null);
+    const headlessGraph = useRef<HeadlessGraph>();
 
     const selectMishapVictim = (ev: React.ChangeEvent<{ value: unknown }>) => {
         const id = ev.target.value as string;
-        const node = props.getNode(id);
-        if (node) {
-            setMishapVictimId(id);
-            setMishapVictimNode(node);
+        if (!headlessGraph.current) {
+            headlessGraph.current = new HeadlessGraph(props.systemModel);
         }
+
+        const node = headlessGraph.current.cy.$(`#${id}`);
+        if (!node || !node.isNode()) {
+            throw new Error(`Node with id ${id} not found`);
+        }
+
+        setMishapVictimId(id);
+        setMishapVictimNode(node);
     };
 
     return (

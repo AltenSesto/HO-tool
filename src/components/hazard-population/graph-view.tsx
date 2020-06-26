@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { EventObject, NodeSingular, Core } from 'cytoscape';
+import { EventObject, NodeSingular } from 'cytoscape';
 import { Typography } from '@material-ui/core';
 
 import GraphElementsFactoryMishapVictims from '../../entities/graph/graph-elements-factory-mishap-victims';
@@ -20,7 +20,6 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
     victimSelected: (node: NodeSingular) => void;
-    cyInitialized: (cy: Core) => void;
 }
 
 const GraphView: React.FC<Props> = (props) => {
@@ -57,7 +56,6 @@ const GraphView: React.FC<Props> = (props) => {
                 mouseEnteredNode={checkVictimPointed}
                 mouseLeftNode={checkVictimPointed}
                 nodeClicked={selectVictim}
-                cy={props.cyInitialized}
             />
             <CornerCard>
                 <Typography>

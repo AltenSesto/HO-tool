@@ -9,8 +9,7 @@ interface Props {
 const useStyles = makeStyles(theme => ({
     button: {
         marginLeft: theme.appSpacing.standard,
-        marginTop: theme.appSpacing.standard,
-        marginBottom: theme.appSpacing.fabOverlap
+        marginTop: theme.appSpacing.standard
     },
 }));
 

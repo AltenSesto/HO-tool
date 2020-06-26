@@ -32,7 +32,7 @@ const OchStep1TableRow: React.FC<Props> = (props) => {
                 <TableCell>
                     <Button variant='outlined' onClick={() => setIsCategorizing(true)}>
                         Categorize
-                </Button>
+                    </Button>
                 </TableCell>
             </TableRow>
             {isCategorizing ? 
