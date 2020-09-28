@@ -33,9 +33,8 @@ const CornerFab: React.FC<Props> = (props) => {
             <Fab variant='extended'
                 className={classes.fab}
                 size='medium'
-                onClick={props.onClick}
-            >
-                {props.children}
+                onClick={props.onClick}>
+                props.children
             </Fab>
         </React.Fragment>
     );
